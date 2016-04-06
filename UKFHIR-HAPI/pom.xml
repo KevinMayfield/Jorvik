@@ -128,6 +128,11 @@
 		</dependencies>
 	</dependencyManagement>
   <dependencies>
+  	<dependency>
+			<groupId>uk.co.mayfieldis</groupId>
+			<artifactId>Jorvik-Core</artifactId>
+			<version>1.0.0-RELEASE</version>
+	</dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
@@ -142,7 +147,7 @@
 			<groupId>io.fabric8.insight</groupId>
 			<artifactId>insight-log4j</artifactId>	
 			<version>${insight-log4j}</version>
-		</dependency>
+	</dependency>
     <dependency>
        <groupId>org.slf4j</groupId>
        <artifactId>slf4j-log4j12</artifactId>

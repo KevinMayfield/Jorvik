@@ -32,7 +32,7 @@ public class ResourceSerialiser {
 				return out.toString();
 			}
 		} catch (Exception e) {
-			logger.error("Unable to serialise FHIR resource", e);
+			logger.error("Unable to serialise FHIR resource " + resource.toString(), e);
 		}
 		return null;
 	}
@@ -52,7 +52,7 @@ public class ResourceSerialiser {
 				return out.toString();
 			}
 		} catch (Exception e) {
-			logger.error("Unable to serialise FHIR Bundle", e);
+			logger.error("Unable to serialise FHIR Bundle ", e);
 		}
 		return null;
 	}

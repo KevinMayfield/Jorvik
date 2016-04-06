@@ -9,15 +9,14 @@ import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
 import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Location;
+import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+public class EnrichLocationwithOrganisation implements AggregationStrategy {
 
-public class EnrichLocationwithLocation implements AggregationStrategy {
-
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichLocationwithLocation.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
@@ -69,9 +68,9 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 					{
 						location = (Location) composer.parse(xmlNewContentBytes);
 						Reference ref = new Reference();
-						Location partOf = (Location) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Location/"+partOf.getId());
-						location.setPartOf(ref);
+						Organization organisation = (Organization) bundle.getEntry().get(0).getResource(); 
+						ref.setReference("Organization/"+organisation.getId());
+						location.setManagingOrganization(ref);
 						
 						String Response = ResourceSerialiser.serialise(location, ParserType.XML);
 						exchange.getIn().setBody(Response);

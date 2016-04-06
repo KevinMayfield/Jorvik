@@ -8,24 +8,22 @@ import org.hl7.fhir.instance.formats.JsonParser;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
 import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Location;
 import org.hl7.fhir.instance.model.Organization;
+import org.hl7.fhir.instance.model.Patient;
 import org.hl7.fhir.instance.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+public class EnrichPatientwithOrganisation implements AggregationStrategy {
 
-public class EnrichLocationwithOrganisation implements AggregationStrategy {
-
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichPatientwithOrganisation.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		
 		Bundle bundle = null;
 		
-		Location location = null;
+		Patient patient = null;
 		
 		try
 		{
@@ -68,19 +66,18 @@ public class EnrichLocationwithOrganisation implements AggregationStrategy {
 				{
 					if (bundle.getEntry().size()>0)
 					{
-						location = (Location) composer.parse(xmlNewContentBytes);
+						patient = (Patient) composer.parse(xmlNewContentBytes);
 						Reference ref = new Reference();
-						Organization organisation = (Organization) bundle.getEntry().get(0).getResource(); 
+						Organization organisation = (Organization) bundle.getEntry().get(0).getResource();
 						ref.setReference("Organization/"+organisation.getId());
-						location.setManagingOrganization(ref);
+						patient.setManagingOrganization(ref);
 						
-						String Response = ResourceSerialiser.serialise(location, ParserType.XML);
+						String Response = ResourceSerialiser.serialise(patient, ParserType.XML);
 						exchange.getIn().setBody(Response);
 					}
 				}
 				catch(Exception ex)
 				{
-					
 					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
 						+" Properties: " + exchange.getProperties().toString()
 						+" Headers: " + exchange.getIn().getHeaders().toString() 

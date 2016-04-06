@@ -5,20 +5,18 @@ import java.io.ByteArrayInputStream;
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.hl7.fhir.instance.formats.JsonParser;
-
+import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
 import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Location;
 import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EnrichwithUpdateType implements AggregationStrategy  {
 
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType.class);
-	
 	
 	private Boolean practitionerCompare(Practitioner oldPractitioner, Practitioner newPractitioner)
 	{
@@ -175,7 +173,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				
 				// This is bit over complex. It converts incoming data into generic FHIR Resource and the converts them to JSON for comparison
 				
-				Resource oldResource=bundle.getEntry().get(0).getResource();
+				//Resource oldResource=bundle.getEntry().get(0).getResource();
 				Organization oldOrganisation = null;
 				Practitioner oldPractitioner = null;
 				Location oldLocation = null;
@@ -265,16 +263,28 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader("FHIRResource","Organization/"+oldOrganisation.getId());
+						
+						newOrganisation.setId(oldOrganisation.getId());
+						String Response = ResourceSerialiser.serialise(newOrganisation, ParserType.XML);
+						exchange.getIn().setBody(Response);
 					}
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader("FHIRResource","Practitioner/"+oldPractitioner.getId());
+						
+						newPractitioner.setId(oldPractitioner.getId());
+						String Response = ResourceSerialiser.serialise(newPractitioner, ParserType.XML);
+						exchange.getIn().setBody(Response);
 					}
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation.getId());
+						
+						newLocation.setId(oldLocation.getId());
+						String Response = ResourceSerialiser.serialise(newLocation, ParserType.XML);
+						exchange.getIn().setBody(Response);
 					}
 				}
 			}
