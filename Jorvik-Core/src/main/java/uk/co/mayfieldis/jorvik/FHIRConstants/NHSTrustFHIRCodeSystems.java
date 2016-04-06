@@ -50,24 +50,8 @@ public class NHSTrustFHIRCodeSystems {
 	 public final static String URI_CHFT_REFERRAL_REASON_ACCPETED_DATE = "http://fhir.chft.nhs.uk/ReferralRequest/AcceptedDate";
 	 
 	 public final static String  uriCHFTLocation = "http://fhir.chft.nhs.uk/LocationId";
-	 /*
-	  * 
-	  * #define uriDistrictNumber "http://fhir.chft.nhs.uk/DistrictNumber"
-#define uriHospitalNumber "http://fhir.chft.nhs.uk/HospitalNumber"
-
-#define uriCHFTConsultantCode "http://fhir.chft.nhs.uk/ConsultantCode"
-
-
-
-#define uriCHFTWinscribeLetter "http://fhir.chft.nhs.uk/DocumentReference/Winscribe"
-
-
-#define uriCHFTWinscribeDocumentType "http://fhir.chft.nhs.uk/DocumentType/Winscribe"
-#define uriCHFTWinscribeDocumentClass "http://england.nhs.uk/HL7v2/zu015"
-#define uriCHFTADPerson "http://fhir.chft.nhs.uk/ActiveDirectory/Person"
-#define uriCHFTWinscribePerson "http://fhir.chft.nhs.uk/Person/Winscribe"
-
-
-	  */
+	 
+	 public final static String uriCHFTAppointmentId = "http://fhir.chft.nhs.uk/Appointment/HSI";
+	 
 }
 
