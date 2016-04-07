@@ -35,7 +35,7 @@
 	    <hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
 	    <insight-log4j>1.2.0.Beta4</insight-log4j>
     	<bundle.symbolicName>UKFHIRHAPICamelRoute.Bundle</bundle.symbolicName>
-    	<bundle.namespace>uk.co.mayfieldis.camelRoute.UKFhirHapi</bundle.namespace>
+    	<bundle.namespace>uk.co.mayfieldis.camelRoute.UKFhirAPI</bundle.namespace>
     	<springframework-version>4.2.1.RELEASE</springframework-version>
 		<spring-security-version>4.0.2.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.7.RELEASE</spring-security-oauth2>
@@ -128,11 +128,8 @@
 		</dependencies>
 	</dependencyManagement>
   <dependencies>
-  	<dependency>
-			<groupId>uk.co.mayfieldis</groupId>
-			<artifactId>Jorvik-Core</artifactId>
-			<version>1.0.0-RELEASE</version>
-	</dependency>
+  
+		
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
@@ -175,18 +172,25 @@
 		  	<version>${activemq-version}</version>
 		</dependency>
 	
-	
-	<!-- Logging -->
+		<!-- Logging -->
 	<dependency>
 			<groupId>io.fabric8.insight</groupId>
 			<artifactId>insight-log4j</artifactId>	
 			<version>${insight-log4j}</version>
 	</dependency>
+	
     <dependency>
        <groupId>org.slf4j</groupId>
        <artifactId>slf4j-log4j12</artifactId>
        <version>${slf4j-version}</version>
      </dependency>
+		
+		<dependency>
+			<groupId>uk.co.mayfieldis</groupId>
+			<artifactId>Jorvik-Core</artifactId>
+			<version>1.0.0-RELEASE</version>
+	</dependency>
+
 	 
    	<dependency>
 		<groupId>me.fhir</groupId>

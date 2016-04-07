@@ -11,12 +11,10 @@ import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Encounter;
 import org.hl7.fhir.instance.model.Patient;
 import org.hl7.fhir.instance.model.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EnrichEncounterwithPatient implements AggregationStrategy {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPatient.class);
+//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPatient.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
@@ -44,7 +42,7 @@ public class EnrichEncounterwithPatient implements AggregationStrategy {
 					}
 					catch(Exception ex)
 					{
-						log.error("#9 JSON Parse failed "+ex.getMessage());
+	//					log.error("#9 JSON Parse failed "+ex.getMessage());
 					}
 				}
 				else
@@ -56,7 +54,7 @@ public class EnrichEncounterwithPatient implements AggregationStrategy {
 					}
 					catch(Exception ex)
 					{
-						log.error("#10 XML Parse failed "+ex.getMessage());
+		//				log.error("#10 XML Parse failed "+ex.getMessage());
 					}
 				}
 				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -80,10 +78,10 @@ public class EnrichEncounterwithPatient implements AggregationStrategy {
 				}
 				catch(Exception ex)
 				{
-					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-					+" Properties: " + exchange.getProperties().toString()
-					+" Headers: " + exchange.getIn().getHeaders().toString() 
-					+ " Message:" + exchange.getIn().getBody().toString());
+		//			log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+		//			+" Properties: " + exchange.getProperties().toString()
+		//			+" Headers: " + exchange.getIn().getHeaders().toString() 
+		//			+ " Message:" + exchange.getIn().getBody().toString());
 				}
 				
 				exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
@@ -92,7 +90,7 @@ public class EnrichEncounterwithPatient implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-			log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
 		}
 		
 		return exchange;

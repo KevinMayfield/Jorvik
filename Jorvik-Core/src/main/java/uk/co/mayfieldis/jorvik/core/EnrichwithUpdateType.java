@@ -11,12 +11,11 @@ import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Location;
 import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Practitioner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 public class EnrichwithUpdateType implements AggregationStrategy  {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType.class);
+	//private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType.class);
 	
 	private Boolean practitionerCompare(Practitioner oldPractitioner, Practitioner newPractitioner)
 	{
@@ -25,7 +24,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 		{
 			if (!oldPractitioner.getName().getFamily().get(0).getValue().equals(newPractitioner.getName().getFamily().get(0).getValue()))
 			{
-				log.info("#13 Old name"+oldPractitioner.getName().getFamily().get(0).getValue()+" New Name "+newPractitioner.getName().getFamily().get(0).getValue());
+	//			log.info("#13 Old name"+oldPractitioner.getName().getFamily().get(0).getValue()+" New Name "+newPractitioner.getName().getFamily().get(0).getValue());
 				same = false;
 			}
 		}
@@ -33,7 +32,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 		{
 			if (!oldPractitioner.getName().getGiven().get(0).getValue().equals(newPractitioner.getName().getGiven().get(0).getValue()))
 			{
-				log.info("#14 Old name"+oldPractitioner.getName().getGiven().get(0).getValue()+" New Name "+newPractitioner.getName().getGiven().get(0).getValue());
+		//		log.info("#14 Old name"+oldPractitioner.getName().getGiven().get(0).getValue()+" New Name "+newPractitioner.getName().getGiven().get(0).getValue());
 				same = false;
 			}
 		}
@@ -41,14 +40,14 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 		if (oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() == null && newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null)
 		{
 			same = false;
-			log.info("#1 Old Organisation null. New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
+		//	log.info("#1 Old Organisation null. New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
 		}
 		else
 		{
 			if (oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null && newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() == null)
 			{
 				same = false;
-				log.info("#2 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation null. ");
+			//	log.info("#2 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation null. ");
 			}
 			else
 			{
@@ -58,7 +57,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					
 					if (!oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference().equals(newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()))
 					{
-						log.info("#3 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
+				//		log.info("#3 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
 						same = false;
 					}
 				}
@@ -74,13 +73,13 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 		if (!oldOrganisation.getName().equals(newOrganisation.getName()))
 		{
 			same = false;
-			log.info("#4 Name "+oldOrganisation.getName()+" "+newOrganisation.getName());
+		//	log.info("#4 Name "+oldOrganisation.getName()+" "+newOrganisation.getName());
 		}
 		
 			if (oldOrganisation.getActive() != newOrganisation.getActive())
 			{
 				same = false;
-				log.info("#5 Active "+oldOrganisation.getActive() + " " + newOrganisation.getActive());
+			//	log.info("#5 Active "+oldOrganisation.getActive() + " " + newOrganisation.getActive());
 			}
 		if (oldOrganisation.getTelecom().size() != oldOrganisation.getTelecom().size())
 		{
@@ -91,7 +90,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			if (!oldOrganisation.getTelecom().get(0).getValue().equals(newOrganisation.getTelecom().get(0).getValue()))
 			{
 				same = false;
-				log.info("#6 Telecom "+oldOrganisation.getTelecom().get(0).getValue()+" "+newOrganisation.getTelecom().get(0).getValue());
+			//	log.info("#6 Telecom "+oldOrganisation.getTelecom().get(0).getValue()+" "+newOrganisation.getTelecom().get(0).getValue());
 			}
 		}
 		if (oldOrganisation.getAddress().size() != oldOrganisation.getAddress().size())
@@ -103,12 +102,12 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			if (!oldOrganisation.getAddress().get(0).getLine().get(0).getValue().equals(newOrganisation.getAddress().get(0).getLine().get(0).getValue()))
 			{
 				same = false;
-				log.info("#7 Line 1 "+oldOrganisation.getAddress().get(0).getLine().get(0).getValue()+" "+newOrganisation.getAddress().get(0).getLine().get(0).getValue());;
+			//	log.info("#7 Line 1 "+oldOrganisation.getAddress().get(0).getLine().get(0).getValue()+" "+newOrganisation.getAddress().get(0).getLine().get(0).getValue());;
 			}
 			if (!oldOrganisation.getAddress().get(0).getPostalCode().equals(newOrganisation.getAddress().get(0).getPostalCode()))
 			{
 				same = false;
-				log.info("#8 PostCode "+oldOrganisation.getAddress().get(0).getPostalCode()+" "+newOrganisation.getAddress().get(0).getPostalCode());;
+			//	log.info("#8 PostCode "+oldOrganisation.getAddress().get(0).getPostalCode()+" "+newOrganisation.getAddress().get(0).getPostalCode());;
 			}
 		}
 		return same;
@@ -134,7 +133,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 				catch(Exception ex)
 				{
-					log.error("#9 JSON Parse failed "+ex.getMessage());
+				//	log.error("#9 JSON Parse failed "+ex.getMessage());
 				}
 			}
 			else
@@ -146,7 +145,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 				catch(Exception ex)
 				{
-					log.error("#10 XML Parse failed "+ex.getMessage());
+				//	log.error("#10 XML Parse failed "+ex.getMessage());
 				}
 			}
 			
@@ -216,7 +215,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					}
 					catch(Exception ex)
 					{
-						log.error("#11 JSON Parse failed 2 "+ex.getMessage());
+					//	log.error("#11 JSON Parse failed 2 "+ex.getMessage());
 					}
 				}
 				else
@@ -239,7 +238,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					}
 					catch(Exception ex)
 					{
-						log.error("#12 XML Parse failed 2 "+ex.getMessage());
+					//	log.error("#12 XML Parse failed 2 "+ex.getMessage());
 					}
 				}
 				Boolean sameResource = false;

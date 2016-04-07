@@ -1,4 +1,4 @@
-package uk.co.mayfieldis.jorvik.camelRoute.hl7v2HAPI;
+package uk.co.mayfieldis.jorvik.camelRoute.hl7v2FHIR;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.hl7.HL7DataFormat;

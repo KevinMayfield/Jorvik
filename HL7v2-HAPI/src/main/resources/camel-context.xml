@@ -54,8 +54,8 @@
 	
 	<camel:endpoint id="hl7MinaListener" uri="mina2:tcp://0.0.0.0:8888?sync=true&amp;disconnectOnNoReply=false&amp;codec=#hl7codec"/>
 	
-  <camel:camelContext id="HL7v2-HAPI" xmlns="http://camel.apache.org/schema/spring">
-  		<package>uk.co.mayfieldis.jorvik.camelRoute.hl7v2HAPI</package>
+  <camel:camelContext id="HL7v2-FHIR" xmlns="http://camel.apache.org/schema/spring">
+  		<package>uk.co.mayfieldis.jorvik.camelRoute.hl7v2FHIR</package>
   </camel:camelContext>
 
 </beans>

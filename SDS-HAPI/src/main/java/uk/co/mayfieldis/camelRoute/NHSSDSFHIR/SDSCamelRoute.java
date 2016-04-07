@@ -1,4 +1,4 @@
-package uk.co.mayfieldis.camelRoute.SDSHAPI;
+package uk.co.mayfieldis.camelRoute.NHSSDSFHIR;
 
 import java.util.Iterator;
 import org.apache.camel.Exchange;

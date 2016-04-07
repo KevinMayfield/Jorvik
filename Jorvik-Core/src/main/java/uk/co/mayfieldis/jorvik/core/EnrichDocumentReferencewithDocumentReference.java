@@ -7,22 +7,20 @@ import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.hl7.fhir.instance.formats.JsonParser;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Appointment;
 import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Reference;
+import org.hl7.fhir.instance.model.DocumentReference;
 
 
-public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
+public class EnrichDocumentReferencewithDocumentReference implements AggregationStrategy {
 
-	//private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithPractitioner.class);
+//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichPatientwithPatient.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		
 		Bundle bundle = null;
 		
-		Appointment appointment = null;
+		DocumentReference documentReference = null;
 		
 		try
 		{
@@ -43,7 +41,7 @@ public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
 					}
 					catch(Exception ex)
 					{
-					//	log.error("#9 JSON Parse failed "+ex.getMessage());
+	//					log.error("#9 JSON Parse failed "+ex.getMessage());
 					}
 				}
 				else
@@ -55,7 +53,7 @@ public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
 					}
 					catch(Exception ex)
 					{
-						//log.error("#10 XML Parse failed "+ex.getMessage());
+		//				log.error("#10 XML Parse failed "+ex.getMessage());
 					}
 				}
 				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -63,33 +61,34 @@ public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
 				XmlParser composer = new XmlParser();
 				try
 				{
+					documentReference = (DocumentReference) composer.parse(xmlNewContentBytes);
 					if (bundle.getEntry().size()>0)
 					{
-						appointment = (Appointment) composer.parse(xmlNewContentBytes);
-						Reference ref = new Reference();
-						Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Practitioner/"+practitioner.getId());
-						appointment.addParticipant()
-						.setActor(ref)
-						.addType()
-							.addCoding()
-								.setCode("CON")
-								.setSystem("http://hl7.org/fhir/v3/ParticipationType");
-						
-						String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
+						DocumentReference hapiDocumentReference = (DocumentReference) bundle.getEntry().get(0).getResource();  
+						documentReference.setId(hapiDocumentReference.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"DocumentReference/"+hapiDocumentReference.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_URI,"");
+						// Have altered resource so process it.
+						String Response = ResourceSerialiser.serialise(documentReference, ParserType.XML);
 						exchange.getIn().setBody(Response);
+					}
+					else
+					{
+						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"DocumentReference");
+						exchange.getIn().setHeader(Exchange.HTTP_URI,"");
 					}
 				}
 				catch(Exception ex)
 				{
-					
-				//	log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-				//		+" Properties: " + exchange.getProperties().toString()
-				//		+" Headers: " + exchange.getIn().getHeaders().toString() 
-				//		+ " Message:" + exchange.getIn().getBody().toString());
+		//			log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+		//			+" Properties: " + exchange.getProperties().toString()
+		//			+" Headers: " + exchange.getIn().getHeaders().toString() 
+		//			+ " Message:" + exchange.getIn().getBody().toString());
 				}
 				
-			
+				exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 				exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 			}
 		}
@@ -102,3 +101,4 @@ public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
 	}
 
 }
+

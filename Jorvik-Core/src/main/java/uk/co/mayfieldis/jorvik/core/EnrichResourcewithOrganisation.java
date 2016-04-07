@@ -1,39 +1,24 @@
 package uk.co.mayfieldis.jorvik.core;
 
 import java.io.ByteArrayInputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.hl7.fhir.instance.formats.JsonParser;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Address;
 import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.HumanName;
 import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Period;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.hl7.fhir.instance.model.Reference;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.instance.model.Extension;
 import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.hl7.fhir.instance.model.valuesets.PractitionerRole;
-import org.slf4j.Logger;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.slf4j.LoggerFactory;
-
-import uk.co.mayfieldis.jorvik.*;
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 
 
 public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation.class);
+//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 
@@ -123,10 +108,10 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 				}
 				catch(Exception ex)
 				{
-					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-						+" Properties: " + exchange.getProperties().toString()
-						+" Headers: " + exchange.getIn().getHeaders().toString() 
-						+ " Message:" + exchange.getIn().getBody().toString());
+//					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+//						+" Properties: " + exchange.getProperties().toString()
+//						+" Headers: " + exchange.getIn().getHeaders().toString() 
+//						+ " Message:" + exchange.getIn().getBody().toString());
 				}
 				
 			}
@@ -165,10 +150,10 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 				}
 				catch(Exception ex)
 				{
-					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-						+" Properties: " + exchange.getProperties().toString()
-						+" Headers: " + exchange.getIn().getHeaders().toString() 
-						+ " Message:" + exchange.getIn().getBody().toString());
+	//				log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+	//					+" Properties: " + exchange.getProperties().toString()
+	//					+" Headers: " + exchange.getIn().getHeaders().toString() 
+	//					+ " Message:" + exchange.getIn().getBody().toString());
 				}
 			}
 		}

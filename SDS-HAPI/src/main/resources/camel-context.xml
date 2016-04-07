@@ -64,8 +64,8 @@
 	    -->
 	</bean>
 	
-	<camelContext id="NHSSDS-HAPI" xmlns="http://camel.apache.org/schema/spring">
-    	<package>uk.co.mayfieldis.camelRoute.SDSHAPI</package>
+	<camelContext id="NHSSDS-FHIR" xmlns="http://camel.apache.org/schema/spring">
+    	<package>uk.co.mayfieldis.camelRoute.NHSSDSFHIR</package>
   	</camelContext>
   
 

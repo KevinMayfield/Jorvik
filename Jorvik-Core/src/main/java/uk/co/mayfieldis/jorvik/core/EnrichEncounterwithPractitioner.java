@@ -11,12 +11,12 @@ import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Encounter;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.hl7.fhir.instance.model.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner.class);
+//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
@@ -29,69 +29,71 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 		{
 			exchange.getIn().setHeader(Exchange.HTTP_METHOD,"GET");
 
-			if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200"))
+			if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200") && enrichment.getIn().getBody() != null)
 			{
 				
 				ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
 				
 				
-				if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
-				{
-					JsonParser composer = new JsonParser();
-					try
+					if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 					{
-						bundle = (Bundle) composer.parse(xmlContentBytes);
+						JsonParser composer = new JsonParser();
+						try
+						{
+							bundle = (Bundle) composer.parse(xmlContentBytes);
+						}
+						catch(Exception ex)
+						{
+	//						log.error("#9 JSON Parse failed "+ex.getMessage());
+						}
 					}
-					catch(Exception ex)
+					else
 					{
-						log.error("#9 JSON Parse failed "+ex.getMessage());
+						XmlParser composer = new XmlParser();
+						try
+						{
+							bundle = (Bundle) composer.parse(xmlContentBytes);
+						}
+						catch(Exception ex)
+						{
+	//						log.error("#10 XML Parse failed "+ex.getMessage());
+						}
 					}
-				}
-				else
-				{
+					ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+					
 					XmlParser composer = new XmlParser();
 					try
 					{
-						bundle = (Bundle) composer.parse(xmlContentBytes);
+						if (bundle.getEntry().size()>0)
+						{
+							encounter = (Encounter) composer.parse(xmlNewContentBytes);
+							Reference ref = new Reference();
+							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
+							ref.setReference("Practitioner/"+practitioner.getId());
+							encounter.addParticipant().setIndividual(ref);
+							
+							String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
+							exchange.getIn().setBody(Response);
+						}
 					}
 					catch(Exception ex)
 					{
-						log.error("#10 XML Parse failed "+ex.getMessage());
-					}
-				}
-				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
-				
-				XmlParser composer = new XmlParser();
-				try
-				{
-					if (bundle.getEntry().size()>0)
-					{
-						encounter = (Encounter) composer.parse(xmlNewContentBytes);
-						Reference ref = new Reference();
-						Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Practitioner/"+practitioner.getId());
-						encounter.addParticipant().setIndividual(ref);
 						
-						String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
-						exchange.getIn().setBody(Response);
+		//				log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+		//					+" Properties: " + exchange.getProperties().toString()
+		//					+" Headers: " + exchange.getIn().getHeaders().toString() 
+		//					+ " Message:" + exchange.getIn().getBody().toString());
 					}
-				}
-				catch(Exception ex)
-				{
 					
-					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-						+" Properties: " + exchange.getProperties().toString()
-						+" Headers: " + exchange.getIn().getHeaders().toString() 
-						+ " Message:" + exchange.getIn().getBody().toString());
+				
+					exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 				}
 				
 			
-				exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
-			}
 		}
 		catch (Exception ex)
 		{
-			log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
 		}
 		
 		return exchange;

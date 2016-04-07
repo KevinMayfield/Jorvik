@@ -1,4 +1,4 @@
-package uk.co.mayfieldis.jorvik.camelRoute.hl7v2HAPI;
+package uk.co.mayfieldis.jorvik.camelRoute.hl7v2FHIR;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class httpOutcomeProcessor implements Processor {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.camelRoute.hl7v2HAPI.httpOutcomeProcessor.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.camelRoute.hl7v2FHIR.httpOutcomeProcessor.class);
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		// 

@@ -7,13 +7,11 @@ import org.apache.camel.Processor;
 import org.hl7.fhir.instance.formats.JsonParser;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Bundle;
+
 import org.hl7.fhir.instance.model.DocumentReference;
 import org.hl7.fhir.instance.model.Encounter;
 import org.hl7.fhir.instance.model.Patient;
-import org.hl7.fhir.instance.model.Person;
 import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Reference;
 import org.hl7.fhir.instance.model.DocumentReference.DocumentReferenceContextComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,7 @@ public class FHIRDocumentReferenceProcess implements Processor {
 		try
 		{
 			DocumentReference documentReference = null;
+			
 				
 			ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
 			
@@ -60,9 +59,16 @@ public class FHIRDocumentReferenceProcess implements Processor {
 					log.error("#10 XML Parse failed "+ex.getMessage());
 				}
 			}
-				
+			
+			// Stop http FHIR queries from processing input parameters
+			exchange.getIn().removeHeaders("*");
+			
 			if (documentReference != null)
 			{
+				// remove any id passed in.
+				
+				documentReference.setId("");
+				
 				for (int f=0;f<documentReference.getContained().size();f++)
 				{
 					String resourceName = documentReference.getContained().get(f).getResourceType().toString();

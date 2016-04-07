@@ -15,14 +15,13 @@ import org.hl7.fhir.instance.model.Practitioner;
 import org.hl7.fhir.instance.model.Reference;
 import org.hl7.fhir.instance.model.Extension;
 import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 
 public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation.class);
+//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 
@@ -101,10 +100,10 @@ public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 				}
 				catch(Exception ex)
 				{
-					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-						+" Properties: " + exchange.getProperties().toString()
-						+" Headers: " + exchange.getIn().getHeaders().toString() 
-						+ " Message:" + exchange.getIn().getBody().toString());
+	//				log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+	//					+" Properties: " + exchange.getProperties().toString()
+	//					+" Headers: " + exchange.getIn().getHeaders().toString() 
+	//					+ " Message:" + exchange.getIn().getBody().toString());
 				}
 			}
 		}

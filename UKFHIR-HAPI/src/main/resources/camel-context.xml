@@ -54,8 +54,8 @@
 	
 	</bean>
 	
-	<camelContext id="UKFHIR-HAPI" xmlns="http://camel.apache.org/schema/spring">
-    	<package>uk.co.mayfieldis.camelRoute.UKFhirHapi</package>
+	<camelContext id="UKAPI-FHIR" xmlns="http://camel.apache.org/schema/spring">
+    	<package>uk.co.mayfieldis.camelRoute.UKFhirAPI</package>
   	</camelContext>
   
 

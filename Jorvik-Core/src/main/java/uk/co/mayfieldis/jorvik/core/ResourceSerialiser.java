@@ -9,11 +9,10 @@ import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.formats.XmlParser;
 import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 public class ResourceSerialiser {
-	private static Logger logger = LoggerFactory.getLogger(ResourceSerialiser.class);
+	//private static Logger logger = LoggerFactory.getLogger(ResourceSerialiser.class);
 	
 	public static String serialise(Resource resource, ParserType type) {
 		try {
@@ -32,7 +31,7 @@ public class ResourceSerialiser {
 				return out.toString();
 			}
 		} catch (Exception e) {
-			logger.error("Unable to serialise FHIR resource " + resource.toString(), e);
+			//logger.error("Unable to serialise FHIR resource " + resource.toString(), e);
 		}
 		return null;
 	}
@@ -52,7 +51,7 @@ public class ResourceSerialiser {
 				return out.toString();
 			}
 		} catch (Exception e) {
-			logger.error("Unable to serialise FHIR Bundle ", e);
+			//logger.error("Unable to serialise FHIR Bundle ", e);
 		}
 		return null;
 	}
