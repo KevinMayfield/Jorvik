@@ -65,7 +65,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 						.enrich("vm:lookupEncounter",enrichDocumentReferencewithEncounter)
 				.end()
 				.enrich("vm:lookupResource",enrichDocumentReferencewithDocumentReference)
-				.to("activemq:HAPIFHIR");
+				.to("vm:HAPIFHIR");
 		
 		rest("/Ping")
 			.post("/")
