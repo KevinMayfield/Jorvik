@@ -290,7 +290,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 		
     	from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")
-			.to("http:localhost:8181/hapi-fhir-jpaserver/baseDstu2?throwExceptionOnFailure=false&connectionsPerRoute=60")
+			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?throwExceptionOnFailure=false&connectionsPerRoute=60")
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
@@ -300,7 +300,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	from("activemq:HAPIFHIR")
 			.routeId("HAPI FHIR MQ")
 			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(3).end()
-			.to("http:localhost:8181/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60")
+			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60")
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIFHIR?showAll=true&multiline=true&level=ERROR")

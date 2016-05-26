@@ -194,11 +194,11 @@ public class SDSCamelRoute extends RouteBuilder {
 		    
     	    from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")
-			.to("http:localhost:8181/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
+			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
     	
 	    	from("activemq:HAPIFHIR")
 				.routeId("HAPI FHIR MQ")
-				.to("http:localhost:8181/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
+				.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
 	    	    
     	    from("vm:FileFHIR")
     			.routeId("FileStore")
