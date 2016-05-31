@@ -11,7 +11,7 @@
 	<groupId>uk.co.mayfieldis</groupId>
 	<artifactId>Jorvik-fhir</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1</version>
+	<version>0.2</version>
 	<name>Jorvik-fhir</name>
 	<url>http://www.mayfield-is.co.uk/</url>
 
@@ -79,7 +79,7 @@
 		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 
 		<!-- This property is used in some of the site documentation where the version is shown, so that we can deploy the site even if the project is on a snapshot version. -->
-		<hapi-fhir-version>1.4</hapi-fhir-version>
+		<hapi-fhir-version>1.5</hapi-fhir-version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -703,6 +703,19 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+							 <pluginExecution>
+									<pluginExecutionFilter>
+									  <groupId>org.apache.maven.plugins</groupId>
+									  <artifactId>maven-enforcer-plugin</artifactId>
+									  <versionRange>[1.0.0,)</versionRange>
+									  <goals>
+										<goal>enforce</goal>
+									  </goals>
+									</pluginExecutionFilter>
+									<action>
+									  <ignore />
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
