@@ -39,7 +39,7 @@
 		<slf4j-version>1.7.12</slf4j-version>
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
-		<camel-version>2.17.0</camel-version>
+		<camel-version>2.17.1</camel-version>
 		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
 		<insight-log4j>1.2.0.Beta4</insight-log4j>
 		<io.hawt>1.4.61</io.hawt>

@@ -15,7 +15,7 @@
   <packaging>war</packaging>
   
   	<properties>
-   		<camel-version>2.17.0</camel-version>
+   		<camel-version>2.17.1</camel-version>
 	    <cxf-version>3.0.4</cxf-version>
 	    <hawtio-version>1.4.64</hawtio-version>
 	    <hsqldb-version>1.8.0.10</hsqldb-version>
