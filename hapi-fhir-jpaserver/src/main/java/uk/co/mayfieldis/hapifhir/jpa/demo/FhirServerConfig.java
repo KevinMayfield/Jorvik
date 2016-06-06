@@ -1,17 +1,22 @@
 package uk.co.mayfieldis.hapifhir.jpa.demo;
 
-import java.sql.SQLException;
+import java.sql.Driver;
+//import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+//import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -25,11 +30,15 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 @Configuration
 @EnableTransactionManagement()
+@PropertySource("classpath:FHIRJPA.properties")
 public class FhirServerConfig extends BaseJavaConfigDstu2 {
 
 	/**
 	 * Configure FHIR properties around the the JPA server via this bean
 	 */
+	@Autowired
+	protected Environment env;
+	
 	@Bean()
 	public DaoConfig daoConfig() {
 		DaoConfig retVal = new DaoConfig();
@@ -48,24 +57,32 @@ public class FhirServerConfig extends BaseJavaConfigDstu2 {
 	 */
 	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
-		BasicDataSource retVal = new BasicDataSource();
+		
 		/*
-		retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-		retVal.setUrl("jdbc:derby:directory:target/jpaserver_derby_files;create=true");
-		*/
+		BasicDataSource retVal = new BasicDataSource();
+		
 		try {
 			retVal.setDriver(new com.mysql.jdbc.Driver());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//
-		retVal.setUrl("jdbc:mysql://localhost:3306/hapifhir");
-		//retVal.setUrl("jdbc:mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/hapisql");
+		*/
 		
+		SimpleDriverDataSource retVal = new SimpleDriverDataSource();
+	    
+	    try {
+	     	 @SuppressWarnings("unchecked")
+	         Class<? extends Driver> driverClass = (Class<? extends Driver>) Class.forName(env.getProperty("jdbc.Driver"));
+	     	retVal.setDriverClass(driverClass);	      
+	    } catch (Exception e) {
+	     //  log.error("Error loading driver class", e);
+	    }
 		
-		retVal.setUsername("fhirjpa");
-		retVal.setPassword("fhirjpa");
+		retVal.setUrl(env.getProperty("jdbc.url"));
+		
+		retVal.setUsername(env.getProperty("jdbc.username"));
+		retVal.setPassword(env.getProperty("jdbc.password"));
 		
 		return retVal;
 	}
