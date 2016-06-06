@@ -18,7 +18,7 @@
 	<bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery" lazy-init="false" scope="singleton"
         init-method="start" destroy-method="stop"/>
 
- 	<bean id="outcome" class="uk.co.mayfieldis.jorvil.hl7v2.processor.operationOutcomeService" />
+ 	<bean id="outcome" class="uk.co.mayfieldis.jorvik.hl7v2.processor.operationOutcomeService" />
    
    <bean id="jmsConnectionFactory" 
    class="org.apache.activemq.ActiveMQConnectionFactory">
