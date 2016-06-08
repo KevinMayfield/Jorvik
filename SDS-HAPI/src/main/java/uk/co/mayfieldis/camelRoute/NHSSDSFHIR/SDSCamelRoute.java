@@ -5,6 +5,10 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipFileDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
@@ -20,8 +24,14 @@ import uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType;
 
+@Component
+@PropertySource("classpath:HAPINHSSDS.properties")
 public class SDSCamelRoute extends RouteBuilder {
 
+	@Autowired
+	protected Environment env;
+	
+	
     @Override
     public void configure() 
     {
@@ -50,20 +60,20 @@ public class SDSCamelRoute extends RouteBuilder {
     	    from("scheduler://egpcur?delay=24h")
     	    	.routeId("Retrieve NHS GP and Practice Amendments Zip")
     	    	.setHeader(Exchange.HTTP_METHOD, constant("GET"))
-    	    	.to("http4://systems.hscic.gov.uk/data/ods/datadownloads/monthamend/current/egpam.zip")
-    	    	.to("file:C:/NHSSDS/zip?fileName=${date:now:yyyyMMdd}-egpcur.zip");
+    	    	.to(env.getProperty("NHSSDS.Amendments"))
+    	    	.to(env.getProperty("NHSSDS.ZipOut"));
     	  
-    	    from("file:C:/NHSSDS/zip?readLock=markerFile&preMove=inprogress&move=.done&include=.*.(zip)&delay=1000")
+    	    from(env.getProperty("NHSSDS.Zip"))
 	    		.routeId("Unzip NHS Reference Files")
 	    		.unmarshal(zipFile)
 	    		.split(body(Iterator.class))
 	    			.streaming()
 	    				.to("log:uk.co.mayfieldis.esb.SDSHAPI.SDSCamelRoute.zip?level=INFO")
-	    				.to("file:C:/NHSSDS/Extract")
+	    				.to(env.getProperty("NHSSDS.ExtractOut"))
 	    			.end()
 	    		.end();
     	    
-    	    from("file:C:/NHSSDS/Extract?readLock=markerFile&preMove=inprogress&move=.done&include=.*.(csv)&delay=1000")
+    	    from(env.getProperty("NHSSDS.Extract"))
     	    	.routeId("Split CSV File")
     	    	.log("File ${header.CamelFileName}")
     	    	.choice()
@@ -164,7 +174,7 @@ public class SDSCamelRoute extends RouteBuilder {
 		    	.choice()
 	    		.when(header(Exchange.FILE_NAME).isEqualTo("egpam.csv"))
 	    			// only send updates for amendment load not a bulk load
-	    			.to("http4:chft-tielive3.xthis.nhs.uk/REST/HAPI?connectionsPerRoute=60");
+	    			.to(env.getProperty("Internal.Amendments"));
 	    		
     	    	
     	    from("vm:lookupOrganisation")
@@ -193,15 +203,15 @@ public class SDSCamelRoute extends RouteBuilder {
 		    	.to("vm:HAPIFHIR");
 		    
     	    from("vm:HAPIFHIR")
-			.routeId("HAPI FHIR")
-			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
+				.routeId("HAPI FHIR")
+				.to(env.getProperty("HAPIFHIR.Server"));
     	
 	    	from("activemq:HAPIFHIR")
 				.routeId("HAPI FHIR MQ")
-				.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60");
+				.to(env.getProperty("HAPIFHIR.Server"));
 	    	    
     	    from("vm:FileFHIR")
     			.routeId("FileStore")
-    			.to("file:C:/NHSSDS/fhir?fileName=${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
+    			.to(env.getProperty("HAPIFHIR.FileStore"));
     }
 }

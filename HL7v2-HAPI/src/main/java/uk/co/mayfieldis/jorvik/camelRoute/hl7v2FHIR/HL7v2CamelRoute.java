@@ -3,6 +3,10 @@ package uk.co.mayfieldis.jorvik.camelRoute.hl7v2FHIR;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.hl7.HL7DataFormat;
 import org.apache.camel.model.RedeliveryPolicyDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
@@ -34,9 +38,13 @@ import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM05toFHIRLocation;
 import static org.apache.camel.component.hl7.HL7.ack;
 import org.apache.camel.Exchange;
 
-
+@Component
+@PropertySource("classpath:HAPIHL7.properties")
 public class HL7v2CamelRoute extends RouteBuilder {
 
+	@Autowired
+	protected Environment env;
+	
     @Override
     public void configure() 
     {
@@ -286,11 +294,11 @@ public class HL7v2CamelRoute extends RouteBuilder {
 	    
     	from("activemq:FileFHIR")
 			.routeId("FileStore")
-			.to("file:C:/NHSSDS/fhir?fileName=${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
+			.to(env.getProperty("HAPIFHIR.FileStore"));
 		
     	from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")
-			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?throwExceptionOnFailure=false&connectionsPerRoute=60")
+			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
@@ -300,7 +308,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	from("activemq:HAPIFHIR")
 			.routeId("HAPI FHIR MQ")
 			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(3).end()
-			.to("http:localhost:8080/hapi-fhir-jpaserver/baseDstu2?connectionsPerRoute=60")
+			.to(env.getProperty("HAPIFHIR.Server"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
