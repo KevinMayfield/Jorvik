@@ -25,6 +25,8 @@ public class ADTA01A04A08toEncounter implements Processor {
 	
 	Terser terser = null;
 	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	private String terserGet(String query)
 	{
 		String result = "";
@@ -91,7 +93,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				encounter.addIdentifier()
-					.setSystem(NHSTrustFHIRCodeSystems.uriCHFTActivityId)
+					.setSystem(TrustFHIRSystems.geturiNHSOrgActivityId())
 					.setValue(terserGet("/.PV1-19-1"));
 			}
 			// StartDate
@@ -141,7 +143,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 					{
 						encounter.addType()
 							.addCoding()
-								.setSystem(NHSTrustFHIRCodeSystems.URI_CHFT_CLINIC_CODE)
+								.setSystem(TrustFHIRSystems.getURI_NHSOrg_CLINIC_CODE())
 								.setCode(terserGet("/.PV1-3-2"))
 								.setDisplay(terserGet("/.PV1-3-9"));
 					}

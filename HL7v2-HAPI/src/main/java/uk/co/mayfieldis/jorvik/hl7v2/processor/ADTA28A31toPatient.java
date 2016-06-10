@@ -28,6 +28,8 @@ public class ADTA28A31toPatient implements Processor {
 	
 	Terser terser = null;
 	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	private String terserGet(String query)
 	{
 		String result = "";
@@ -97,13 +99,18 @@ public class ADTA28A31toPatient implements Processor {
 					{
 						case "PAS":
 							patient.addIdentifier()
-								.setSystem(NHSTrustFHIRCodeSystems.URI_PATIENT_DISTRICT_NUMBER)
+								.setSystem(TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER())
 								.setValue(value);
 							exchange.getIn().setHeader("FHIRPatient", value);
 							break;
 						case "RWY":
 							patient.addIdentifier()
-								.setSystem(NHSTrustFHIRCodeSystems.URI_PATIENT_HOSPITAL_NUMBER)
+								.setSystem(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER())
+								.setValue(value);
+							break;
+						case "MRN":
+							patient.addIdentifier()
+								.setSystem(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER())
 								.setValue(value);
 							break;
 						case "NHS":

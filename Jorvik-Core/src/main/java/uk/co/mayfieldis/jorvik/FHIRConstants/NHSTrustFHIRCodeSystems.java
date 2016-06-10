@@ -1,57 +1,241 @@
 package uk.co.mayfieldis.jorvik.FHIRConstants;
 
+import org.springframework.core.env.Environment;
+
 // 2016-02-05 Added all constants from subprojects
 
 //Added Gp and Practice  19/1/2016 
 public class NHSTrustFHIRCodeSystems {
-	 public final static String URI_PATIENT_HOSPITAL_NUMBER = "http://fhir.chft.nhs.uk/HospitalNumber";
+	
+	 private String URI_PATIENT_HOSPITAL_NUMBER;
 	 
-	 public final static String URI_PATIENT_DISTRICT_NUMBER = "http://fhir.chft.nhs.uk/DistrictNumber";
+	 private String URI_PATIENT_OTHER_NUMBER;
 	 
-	 public final static String URI_CHFT_PAS_CONSULTANT_CODE = "http://fhir.chft.nhs.uk/ConsultantCode";
+	 private String URI_NHSOrg_PAS_CONSULTANT_CODE;
 	 
-	 public final static String URI_CHFT_WARD_CODE = "http://fhir.chft.nhs.uk/WardCode";
+	 private String URI_NHSOrg_WARD_CODE;
 	 
-	 public final static String URI_CHFT_HOSPITAL_CODE = "http://fhir.chft.nhs.uk/HospitalCode";
+	 private String URI_NHSOrg_HOSPITAL_CODE;
 	 
-	 public final static String uri_CHFT_EDMS_DocumentId = "http://fhir.chft.nh.uk/DocumentReference/EDMS";
-	 public final static String uri_CHFT_DocumentIndex = "http://fhir.chft.nhs.uk/DocumentIndex";
-	 public final static String uri_CHFT_Kodak_DocumentId = "http://fhir.chft.nh.uk/DocumentReference/KodakScanning";
+	 private String uri_NHSOrg_EDMS_DocumentId;
 	 
-	 public final static String uriCHFTActivityId = "http://fhir.chft.nhs.uk/HSI";
+	 private String uri_NHSOrg_DocumentIndex;
 	 
-	 public final static String uriCHFTEDISActivityId = "http://fhir.chft.nhs.uk/EDISActivityId";
+	 private String uri_NHSOrg_Kodak_DocumentId;
 	 
-	 public final static String uriCHFTNorthgateDocumentId ="http://fhir.chft.nhs.uk/DocumentReference/NorthgateUUID";
+	 private String uriNHSOrgActivityId;
 	 
-	 public final static String URI_PATIENT_UN1 = "http://fhir.chft.nhs.uk/UN1";
+	 private String uriNHSOrgEDISActivityId;
 	 
-	 public final static String  uriCHFTPASUSer = "http://fhir.chft.nhs.uk/PAS/User";
+	 private String uriNHSOrgNorthgateDocumentId;
 	 
-	 public final static String  uriCHFTClinicalLetter = "http://fhir.chft.nhs.uk/ClinicalLetter";
+	 private String URI_PATIENT_UN1;
 	 
-	 public final static String  uriCHFTDischargeLetter = "http://fhir.chft.nhs.uk/DischargeLetter"; 
+	 private String  uriNHSOrgPASUSer;
 	 
-	 public final static String URI_CHFT_PAS_GP_CODE = "http://fhir.chft.nhs.uk/GPCode";
+	 private String  uriNHSOrgClinicalLetter;
 	 
-	 public final static String uri_CHFT_EDMS_DrawerId = "http://fhir.chft.nhs.uk/DocumentReference/DrawerId";
-	 public final static String uri_CHFT_EDMS_DrawerId_Extension = "http://fhir.chft.nhs.uk/Extension/EDMSD/DrawerId";
+	 private String  uriNHSOrgDischargeLetter; 
 	 
-	 public final static String URI_ENCOUNTER_EDIS_REASON_CODE_SYSTEM = "http://fhir.chft.nhs.uk/EDIS/PresentationType";
+	 private String URI_NHSOrg_PAS_GP_CODE;
 	 
-	 public final static String URI_CHFT_SPECIALTY = "http://fhir.chft.nhs.uk/Specialty";
+	 private String uri_NHSOrg_EDMS_DrawerId;
 	 
-	 public final static String URI_CHFT_CLINIC_CODE = "http://fhir.chft.nhs.uk/ClinicCode";
+	 private String uri_NHSOrg_EDMS_DrawerId_Extension;
 	 
+	 private String URI_NHSOrg_EDIS_REASON_CODE_SYSTEM;
 	 
+	 private String URI_NHSOrg_SPECIALTY;
 	 
-	 public final static String URI_CHFT_REFERRAL_REASON = "http://fhir.chft.nhs.uk/ReferralRequest/ReferralReason";
+	 private String URI_NHSOrg_CLINIC_CODE;
 	 
-	 public final static String URI_CHFT_REFERRAL_REASON_ACCPETED_DATE = "http://fhir.chft.nhs.uk/ReferralRequest/AcceptedDate";
+	 private String URI_NHSOrg_REFERRAL_REASON;
 	 
-	 public final static String  uriCHFTLocation = "http://fhir.chft.nhs.uk/LocationId";
+	 private String URI_NHSOrg_REFERRAL_REASON_ACCPETED_DATE;
 	 
-	 public final static String uriCHFTAppointmentId = "http://fhir.chft.nhs.uk/Appointment/HSI";
+	 private String  uriNHSOrgLocation;
+	 
+	 private String uriNHSOrgAppointmentId;
+	 
+	 public Environment env;
+	 
+	 public void setValues(Environment env)
+	 {
+		 this.env=env;
+		 
+		 this.URI_PATIENT_HOSPITAL_NUMBER = env.getProperty("ORG.URIPATIENTHOSPITALNUMBER");
+		 
+		 this.URI_PATIENT_OTHER_NUMBER = env.getProperty("ORG.URIPATIENTOTHERNUMBER");
+		 
+		 this.URI_NHSOrg_PAS_CONSULTANT_CODE = env.getProperty("ORG.URINHSOrgPASCONSULTANTCODE");
+		 
+		 this.URI_NHSOrg_WARD_CODE = env.getProperty("ORG.URI_NHSOrgWARDCODE");
+		 
+		 this.URI_NHSOrg_HOSPITAL_CODE = env.getProperty("ORG.URINHSOrgHOSPITALCODE");
+		 
+		 this.uri_NHSOrg_EDMS_DocumentId = env.getProperty("ORG.uriNHSOrgEDMSDocumentId ");
+		 
+		 this.uri_NHSOrg_DocumentIndex = env.getProperty("ORG.uriNHSOrgDocumentIndex");
+		 
+		 this.uri_NHSOrg_Kodak_DocumentId = env.getProperty("ORG.uriNHSOrgKodakDocumentId");
+		 
+		 this.uriNHSOrgActivityId = env.getProperty("ORG.uriNHSOrgActivityId");
+		 
+		 this.uriNHSOrgEDISActivityId = env.getProperty("ORG.uriNHSOrgEDISActivityId");
+		 
+		 this.uriNHSOrgNorthgateDocumentId = env.getProperty("ORG.uriNHSOrgNorthgateDocumentId");
+		 
+		 this.URI_PATIENT_UN1 = env.getProperty("ORG.URIPATIENT_UN1");
+		 
+		 this.uriNHSOrgPASUSer = env.getProperty("ORG.uriNHSOrgPASUSer ");
+		 
+		 this.uriNHSOrgClinicalLetter = env.getProperty("ORG.uriNHSOrgClinicalLetter");
+		 
+		 this.uriNHSOrgDischargeLetter = env.getProperty("ORG.uriNHSOrgDischargeLetter");
+		 
+		 this.URI_NHSOrg_PAS_GP_CODE = env.getProperty("ORG.URINHSOrgPASGPCODE");
+		 
+		 this.uri_NHSOrg_EDMS_DrawerId = env.getProperty("ORG.uriNHSOrgEDMSDrawerId ");
+		 
+		 this.uri_NHSOrg_EDMS_DrawerId_Extension = env.getProperty("ORG.uriNHSOrgEDMSDrawerIdExtension");
+		 
+		 this.URI_NHSOrg_EDIS_REASON_CODE_SYSTEM = env.getProperty("ORG.URINHSOrgEDISREASONCODESYSTEM");
+		 
+		 this.URI_NHSOrg_SPECIALTY = env.getProperty("ORG.URINHSOrgSPECIALTY");
+		 
+		 this.URI_NHSOrg_CLINIC_CODE = env.getProperty("ORG.URINHSOrgCLINICCODE");
+		 
+		 this.URI_NHSOrg_REFERRAL_REASON = env.getProperty("ORG.URINHSOrgREFERRALREASON");
+		 
+		 this.URI_NHSOrg_REFERRAL_REASON_ACCPETED_DATE = env.getProperty("ORG.URINHSOrgREFERRALREASONACCPETEDDATE");
+		 
+		 this.uriNHSOrgLocation = env.getProperty("ORG.uriNHSOrgLocation");
+		 
+		 this.uriNHSOrgAppointmentId = env.getProperty("ORG.uriNHSOrgAppointmentId");
+		 
+	 }
+	 
+	 public String getURI_PATIENT_HOSPITAL_NUMBER()
+	 {
+		 return this.URI_PATIENT_HOSPITAL_NUMBER;
+	 }
+	 
+	 public String getURI_PATIENT_OTHER_NUMBER()
+	 {
+		 return this.URI_PATIENT_OTHER_NUMBER;
+	 }
+	 
+	 public String getURI_NHSOrg_PAS_CONSULTANT_CODE()
+	 {
+		 return this.URI_NHSOrg_PAS_CONSULTANT_CODE;
+	 }
+	 
+	 public String getURI_NHSOrg_WARD_CODE()
+	 {
+		 return this.URI_NHSOrg_WARD_CODE;
+	 }
+	 
+	 public String getURI_NHSOrg_HOSPITAL_CODE()
+	 {
+		 return this.URI_NHSOrg_HOSPITAL_CODE;
+	 }
+	 
+	 public String geturi_NHSOrg_EDMS_DocumentId()
+	 {
+		 return this.uri_NHSOrg_EDMS_DocumentId;
+	 }
+	 public String geturi_NHSOrg_DocumentIndex()
+	 {
+		 return this.uri_NHSOrg_DocumentIndex;
+	 }
+	 public String geturi_NHSOrg_Kodak_DocumentId()
+	 {
+		 return this.uri_NHSOrg_Kodak_DocumentId;
+	 }
+	 
+	 public String geturiNHSOrgActivityId()
+	 {
+		 return this.uriNHSOrgActivityId;
+	 }
+	 
+	 public String geturiNHSOrgEDISActivityId()
+	 {
+		 return this.uriNHSOrgEDISActivityId;
+	 }
+	 
+	 public String geturiNHSOrgNorthgateDocumentId()
+	 {
+		 return this.uriNHSOrgNorthgateDocumentId;
+	 }
+	 
+	 public String getURI_PATIENT_UN1()
+	 {
+		 return this.URI_PATIENT_UN1;
+	 }
+	 
+	 public String geturiNHSOrgPASUSer()
+	 {
+		 return this.uriNHSOrgPASUSer;
+	 }
+	 
+	 public String geturiNHSOrgClinicalLetter()
+	 {
+		 return this.uriNHSOrgClinicalLetter;
+	 }
+	 
+	 public String geturiNHSOrgDischargeLetter()
+	 {
+		 return this.uriNHSOrgDischargeLetter;
+	 } 
+	 
+	 public String getURI_NHSOrg_PAS_GP_CODE()
+	 {
+		 return this.URI_NHSOrg_PAS_GP_CODE;
+	 }
+	 
+	 public String geturi_NHSOrg_EDMS_DrawerId()
+	 {
+		 return this.uri_NHSOrg_EDMS_DrawerId;
+	 }
+	 public String geturi_NHSOrg_EDMS_DrawerId_Extension()
+	 {
+		 return this.uri_NHSOrg_EDMS_DrawerId_Extension;
+	 }
+	 
+	 public String getURI_NHSOrg_EDIS_REASON_CODE_SYSTEM()
+	 {
+		 return this.URI_NHSOrg_EDIS_REASON_CODE_SYSTEM;
+	 }
+	 
+	 public String getURI_NHSOrg_SPECIALTY()
+	 {
+		 return this.URI_NHSOrg_SPECIALTY;
+	 }
+	 
+	 public String getURI_NHSOrg_CLINIC_CODE()
+	 {
+		 return this.URI_NHSOrg_CLINIC_CODE;
+	 }
+	 
+	 public String getURI_NHSOrg_REFERRAL_REASON()
+	 {
+		 return this.URI_NHSOrg_REFERRAL_REASON;
+	 }
+	 
+	 public String getURI_NHSOrg_REFERRAL_REASON_ACCPETED_DATE()
+	 {
+		 return this.URI_NHSOrg_REFERRAL_REASON_ACCPETED_DATE;
+	 }
+	 
+	 public String geturiNHSOrgLocation()
+	 {
+		 return this.uriNHSOrgLocation;
+	 }
+	 
+	 public String geturiNHSOrgAppointmentId()
+	 {
+		 return this.uriNHSOrgAppointmentId;
+	 }
 	 
 }
 

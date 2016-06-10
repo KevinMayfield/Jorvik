@@ -19,6 +19,8 @@ public class MFNM05toFHIRLocation implements Processor {
 	
 	Terser terser = null;
 	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	private String terserGet(String query)
 	{
 		String result = "";
@@ -61,7 +63,7 @@ public class MFNM05toFHIRLocation implements Processor {
 			
 			location.addIdentifier()
 				.setValue(terser.get("/.LOC-1-1"))
-				.setSystem(NHSTrustFHIRCodeSystems.uriCHFTLocation);
+				.setSystem(TrustFHIRSystems.geturiNHSOrgLocation());
 			
 			if (terserGet("/.LOC-3-1") != null && !terserGet("/.LOC-3-1").isEmpty())
 			{

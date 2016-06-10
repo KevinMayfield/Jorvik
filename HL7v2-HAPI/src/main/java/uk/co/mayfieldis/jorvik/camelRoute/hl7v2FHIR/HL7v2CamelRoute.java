@@ -48,7 +48,9 @@ public class HL7v2CamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
-    	   	
+    	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
+    	TrustFHIRSystems.setValues(env);
+    	
     	HapiContext hapiContext = new DefaultHapiContext();
     	
     	hapiContext.getParserConfiguration().setValidating(false);
@@ -59,10 +61,19 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	//LightWithFHIR lightWithFHIR = new LightWithFHIR(); 
     	//MFNM05toFHIRLocation enrichMFNM05withLocation = new MFNM05toFHIRLocation();
     	ADTA28A31toPatient adta28a31toPatient = new ADTA28A31toPatient();  
+    	adta28a31toPatient.TrustFHIRSystems = TrustFHIRSystems;
+    	
     	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter();
+    	adta01a04a08toEncounter.TrustFHIRSystems =TrustFHIRSystems;
+    	
     	ADTA05A38toAppointment adta05a38toAppointment = new ADTA05A38toAppointment();
+    	adta05a38toAppointment.TrustFHIRSystems =TrustFHIRSystems;
+    	
     	MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner();
+    	mfnm02PractitionerProcessor.TrustFHIRSystems = TrustFHIRSystems;
+    	
     	MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation();
+    	mfnm05LocationProcessor.TrustFHIRSystems = TrustFHIRSystems;
     	
     	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation();
     	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation();
@@ -232,7 +243,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
     		.setBody(simple(""))
 	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Location",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTLocation+"|${header.FHIRLocation}",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgLocation()+"|${header.FHIRLocation}",String.class))
 	    	.to("vm:HAPIFHIR");
     	    	
     	from("vm:lookupOrganisation")
@@ -265,7 +276,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Patient",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.URI_PATIENT_DISTRICT_NUMBER+"|${header.FHIRPatient}",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER()+"|${header.FHIRPatient}",String.class))
 	    	.to("vm:HAPIFHIR");
     	
     	from("vm:lookupEncounter")
@@ -273,7 +284,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Encounter",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTActivityId+"|${header.FHIREncounter}",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgActivityId()+"|${header.FHIREncounter}",String.class))
 	    	.to("vm:HAPIFHIR");
 	    
     	from("vm:lookupAppointment")
@@ -281,7 +292,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Appointment",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTAppointmentId+"|${header.FHIRAppointment}",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgAppointmentId()+"|${header.FHIRAppointment}",String.class))
 	    	.to("vm:HAPIFHIR");
     	
     	 from("vm:lookupResource")
@@ -294,7 +305,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 	    
     	from("activemq:FileFHIR")
 			.routeId("FileStore")
-			.to(env.getProperty("HAPIFHIR.FileStore"));
+			.to(env.getProperty("HAPIFHIR.FileStore")+"${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
 		
     	from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")

@@ -24,6 +24,8 @@ public class ADTA05A38toAppointment implements Processor {
 	
 	Terser terser = null;
 	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	private String terserGet(String query)
 	{
 		String result = "";
@@ -90,7 +92,7 @@ public class ADTA05A38toAppointment implements Processor {
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				appointment.addIdentifier()
-					.setSystem(NHSTrustFHIRCodeSystems.uriCHFTAppointmentId)
+					.setSystem(TrustFHIRSystems.geturiNHSOrgAppointmentId())
 					.setValue(terserGet("/.PV1-19-1"));
 			}
 			switch (terserGet("/.MSH-9-2"))

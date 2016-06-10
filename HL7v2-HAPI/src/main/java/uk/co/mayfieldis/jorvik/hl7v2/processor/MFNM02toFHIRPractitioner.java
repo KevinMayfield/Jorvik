@@ -23,6 +23,8 @@ public class MFNM02toFHIRPractitioner implements Processor {
 	
 	Terser terser = null;
 	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	private String terserGet(String query)
 	{
 		String result = "";
@@ -78,7 +80,7 @@ public class MFNM02toFHIRPractitioner implements Processor {
 		{
 			practitioner.addIdentifier()
 				.setValue(terserGet("/.STF-2"))
-				.setSystem(NHSTrustFHIRCodeSystems.URI_CHFT_PAS_CONSULTANT_CODE);
+				.setSystem(TrustFHIRSystems.getURI_NHSOrg_PAS_CONSULTANT_CODE());
 		}
 		if (terserGet("/.PRA-5-1") != null && !terserGet("/.PRA-5-1").isEmpty())
 		{
