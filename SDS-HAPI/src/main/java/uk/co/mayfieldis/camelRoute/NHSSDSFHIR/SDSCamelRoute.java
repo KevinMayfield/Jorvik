@@ -35,6 +35,8 @@ public class SDSCamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+    	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
+    	TrustFHIRSystems.setValues(env);
     	
     	ZipFileDataFormat zipFile = new ZipFileDataFormat();
     	zipFile.setUsingIterator(true);
@@ -46,6 +48,7 @@ public class SDSCamelRoute extends RouteBuilder {
     	NHSConsultantEntitiestoFHIRPractitioner consultanttoFHIRPractitioner = new NHSConsultantEntitiestoFHIRPractitioner(); 
     	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation();
     	NHSTrustLocationEntitiestoFHIRLocation trustLocationEntitiestoFHIRLocation = new NHSTrustLocationEntitiestoFHIRLocation();
+    	trustLocationEntitiestoFHIRLocation.TrustFHIRSystems = TrustFHIRSystems;
     	NHSEntitiestoFHIRResource nhsEntitiestoFHIRResource = new NHSEntitiestoFHIRResource();
     	
     	errorHandler(deadLetterChannel("direct:error")
@@ -191,7 +194,7 @@ public class SDSCamelRoute extends RouteBuilder {
 		    	.setBody(simple(""))
 		    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 		    	.setHeader(Exchange.HTTP_PATH, simple("/Location",String.class))
-		    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTLocation+"|${header.FHIRLocation}",String.class))
+		    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgLocation()+"|${header.FHIRLocation}",String.class))
 		    	.to("vm:HAPIFHIR");
     	    
     	    from("vm:lookupResource")

@@ -12,6 +12,8 @@ import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
 
 public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
@@ -20,7 +22,7 @@ public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 		Location location = new Location();
 		
 		location.addIdentifier()
-			.setSystem(NHSTrustFHIRCodeSystems.uriCHFTLocation)
+			.setSystem(TrustFHIRSystems.geturiNHSOrgLocation())
 			.setValue(entity.LocalCode);
 		
 		if (entity.Description != null && !entity.Description.isEmpty())
