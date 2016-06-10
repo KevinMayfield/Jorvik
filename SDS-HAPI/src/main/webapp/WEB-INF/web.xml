@@ -23,7 +23,7 @@
   <display-name>NHS-SDS HAPI Server</display-name>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:camel-context.xml</param-value>
+    <param-value>classpath:Spring.xml</param-value>
   </context-param>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

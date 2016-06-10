@@ -131,7 +131,7 @@
   	<dependency>
 			<groupId>uk.co.mayfieldis</groupId>
 			<artifactId>Jorvik-Core</artifactId>
-			<version>1.0.0-RELEASE</version>
+			<version>1.0.1-RELEASE</version>
 	</dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -246,6 +246,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
         </dependency>  
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
   </dependencies>
 
   

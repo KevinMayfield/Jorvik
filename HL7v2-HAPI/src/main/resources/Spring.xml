@@ -11,7 +11,7 @@
 	 
 	 <context:annotation-config />
 	 <context:property-placeholder location="classpath:HAPIHL7.properties"/>  
-	 <context:component-scan base-package="uk.co.mayfieldis.jorvik.springconfig"></context:component-scan>
+	 <context:component-scan base-package="uk.co.mayfieldis.jorvik.hl7v2.springconfig"></context:component-scan>
 	 
 	 <broker id="broker" brokerName="myBroker" useShutdownHook="false" useJmx="true"
                    persistent="true" dataDirectory="activemq-data"

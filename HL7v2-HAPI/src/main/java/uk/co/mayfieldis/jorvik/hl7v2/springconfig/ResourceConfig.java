@@ -1,4 +1,4 @@
-package uk.co.mayfieldis.jorvik.springconfig;
+package uk.co.mayfieldis.jorvik.hl7v2.springconfig;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -215,6 +215,6 @@ public class SDSCamelRoute extends RouteBuilder {
 	    	    
     	    from("vm:FileFHIR")
     			.routeId("FileStore")
-    			.to(env.getProperty("HAPIFHIR.FileStore"));
+    			.to(env.getProperty("HAPIFHIR.FileStore")+"${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
     }
 }

@@ -21,11 +21,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+	
+	
+	 <context:annotation-config />
+	 <context:property-placeholder location="classpath:HAPINHSSDS.properties"/>  
+	 <context:component-scan base-package="uk.co.mayfieldis.jorvik.NHSSDS.Config"></context:component-scan>
 	
 	<bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery" lazy-init="false" scope="singleton"
         init-method="start" destroy-method="stop"/>
@@ -65,6 +72,7 @@
 	</bean>
 	
 	<camelContext id="NHSSDS-FHIR" xmlns="http://camel.apache.org/schema/spring">
+		<propertyPlaceholder id="properties" location="classpath:HAPINHSSDS.properties"/>
     	<package>uk.co.mayfieldis.camelRoute.NHSSDSFHIR</package>
   	</camelContext>
   
