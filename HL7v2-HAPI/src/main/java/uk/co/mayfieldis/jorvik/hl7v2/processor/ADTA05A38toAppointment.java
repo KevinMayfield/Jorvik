@@ -11,6 +11,8 @@ import org.hl7.fhir.instance.model.Appointment;
 import org.hl7.fhir.instance.model.CodeableConcept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
@@ -25,6 +27,8 @@ public class ADTA05A38toAppointment implements Processor {
 	Terser terser = null;
 	
 	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	public Environment env;
 	
 	private String terserGet(String query)
 	{
@@ -82,7 +86,19 @@ public class ADTA05A38toAppointment implements Processor {
 					switch (code)
 					{
 						case "PAS":
-							exchange.getIn().setHeader("FHIRPatient", value);
+							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							}
+							break;
+						case "NHS":
+							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							}
+							break;
+						default:
+							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							break;
 					}
 				}
@@ -117,6 +133,11 @@ public class ADTA05A38toAppointment implements Processor {
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}
+			}
+			else
+			{
+				// Assume it's a proposed appointment
+				appointment.setStatus(Appointment.AppointmentStatus.PROPOSED);
 			}
 			if (terserGet("/.PV1-45-1") != null && !terserGet("/.PV1-45-1").isEmpty())
 			{
@@ -153,6 +174,11 @@ public class ADTA05A38toAppointment implements Processor {
 				exchange.getIn().setHeader("FHIRAppointment", terserGet("/.PV1-19-1"));
 			}
 			
+			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
+			{
+				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
+			}
+			
 			if (terserGet("/.PV1-9-1") != null && !terserGet("/.PV1-9-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-9-1"));
@@ -167,7 +193,7 @@ public class ADTA05A38toAppointment implements Processor {
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
-		
+		exchange.getIn().setHeader("FHIRResource", "Appointment");
 		String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());

@@ -12,6 +12,8 @@ import org.hl7.fhir.instance.model.Period;
 import org.hl7.fhir.instance.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
@@ -26,6 +28,8 @@ public class ADTA01A04A08toEncounter implements Processor {
 	Terser terser = null;
 	
 	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	public Environment env;
 	
 	private String terserGet(String query)
 	{
@@ -80,16 +84,30 @@ public class ADTA01A04A08toEncounter implements Processor {
 				}
 				if (code != null && !code.isEmpty())
 				{
+					log.debug("Code = "+code);
 					switch (code)
 					{
 						case "PAS":
-							exchange.getIn().setHeader("FHIRPatient", value);
+							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							}
+							break;
+						case "NHS":
+							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							}
+							break;
+						default:
+							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							break;
 					}
+					log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 				}
 			}
 			// Names PID.PatientName
-			//log.info("Patient Name");
+			log.debug("Activity ID");
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				encounter.addIdentifier()
@@ -126,7 +144,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 	        	}
 			}
 			encounter.setPeriod(period);
-			
+			log.debug("Pre-Specialties");
 			if (terserGet("/.PV1-10-1") != null && !terserGet("/.PV1-10-1").isEmpty())
 			{
 				encounter.addType()
@@ -134,27 +152,28 @@ public class ADTA01A04A08toEncounter implements Processor {
 						.setSystem(FHIRCodeSystems.URI_NHS_SPECIALTIES)
 						.setCode(terserGet("/.PV1-10-1"));
 			}
-			
-			switch (terserGet("/.PV1-2"))
+			if (terserGet("/.PV1-2") != null)
 			{
-				case "O" : 
-					encounter.setClass_(Encounter.EncounterClass.OUTPATIENT);
-					if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
-					{
-						encounter.addType()
-							.addCoding()
-								.setSystem(TrustFHIRSystems.getURI_NHSOrg_CLINIC_CODE())
-								.setCode(terserGet("/.PV1-3-2"))
-								.setDisplay(terserGet("/.PV1-3-9"));
-					}
-					break;
-				case "I" : encounter.setClass_(Encounter.EncounterClass.INPATIENT);
-					break;
-				case "E" : encounter.setClass_(Encounter.EncounterClass.EMERGENCY);
-					break;
+				switch (terserGet("/.PV1-2"))
+				{
+					case "O" : 
+						encounter.setClass_(Encounter.EncounterClass.OUTPATIENT);
+						if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
+						{
+							encounter.addType()
+								.addCoding()
+									.setSystem(TrustFHIRSystems.getURI_NHSOrg_CLINIC_CODE())
+									.setCode(terserGet("/.PV1-3-2"))
+									.setDisplay(terserGet("/.PV1-3-9"));
+						}
+						break;
+					case "I" : encounter.setClass_(Encounter.EncounterClass.INPATIENT);
+						break;
+					case "E" : encounter.setClass_(Encounter.EncounterClass.EMERGENCY);
+						break;
+				}
 			}
-			
-			
+			log.debug("Get Reference Material");
 			if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-2"));
@@ -164,15 +183,15 @@ public class ADTA01A04A08toEncounter implements Processor {
 			{
 				exchange.getIn().setHeader("FHIREncounter", terserGet("/.PV1-19-1"));
 			}
-			
+						
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRAppointment", terserGet("/.PV1-19-1"));
 			}
 			
-			if (terserGet("/.PV1-9-1") != null && !terserGet("/.PV1-9-1").isEmpty())
+			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-9-1"));
+				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
 			}
 			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
 			{
@@ -197,7 +216,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
-		
+		exchange.getIn().setHeader("FHIRResource", "Encounter");
 		String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());

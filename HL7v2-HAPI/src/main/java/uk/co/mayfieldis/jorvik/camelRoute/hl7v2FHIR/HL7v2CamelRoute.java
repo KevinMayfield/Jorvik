@@ -19,6 +19,7 @@ import uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithPractitioner;
 import uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithAppointment;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEncounter;
+import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithLocation;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPatient;
@@ -32,6 +33,7 @@ import uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEncounter;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA05A38toAppointment;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA28A31toPatient;
+import uk.co.mayfieldis.jorvik.hl7v2.processor.EncountertoEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM02toFHIRPractitioner;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM05toFHIRLocation;
 
@@ -62,18 +64,24 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	//MFNM05toFHIRLocation enrichMFNM05withLocation = new MFNM05toFHIRLocation();
     	ADTA28A31toPatient adta28a31toPatient = new ADTA28A31toPatient();  
     	adta28a31toPatient.TrustFHIRSystems = TrustFHIRSystems;
+    	adta28a31toPatient.env = this.env;
     	
     	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter();
     	adta01a04a08toEncounter.TrustFHIRSystems =TrustFHIRSystems;
+    	adta01a04a08toEncounter.env = this.env;
     	
     	ADTA05A38toAppointment adta05a38toAppointment = new ADTA05A38toAppointment();
     	adta05a38toAppointment.TrustFHIRSystems =TrustFHIRSystems;
+    	adta05a38toAppointment.env = this.env;
     	
     	MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner();
     	mfnm02PractitionerProcessor.TrustFHIRSystems = TrustFHIRSystems;
     	
     	MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation();
     	mfnm05LocationProcessor.TrustFHIRSystems = TrustFHIRSystems;
+    	
+    	EncountertoEpisodeOfCare encountertoEpisodeOfCare = new EncountertoEpisodeOfCare();
+    	encountertoEpisodeOfCare.env = this.env;
     	
     	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation();
     	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation();
@@ -88,7 +96,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	EnrichEncounterwithOrganisation enrichEncounterwithOrganisation = new EnrichEncounterwithOrganisation();
     	EnrichEncounterwithLocation enrichEncounterwithLocation = new EnrichEncounterwithLocation();
     	EnrichEncounterwithAppointment enrichEncounterwithAppointment = new EnrichEncounterwithAppointment();
-    	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter(); 
+    	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter();
+    	EnrichEncounterwithEpisodeOfCare enrichEncounterwithEpisode = new EnrichEncounterwithEpisodeOfCare(); 
     	
     	EnrichAppointmentwithPatient enrichAppointmentwithPatient = new EnrichAppointmentwithPatient();
     	EnrichAppointmentwithPractitioner enrichAppointmentwithPractitioner = new EnrichAppointmentwithPractitioner();
@@ -220,6 +229,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.when(header("FHIRAppointment").isNotNull())
 				.enrich("vm:lookupAppointment",enrichEncounterwithAppointment)
 			.end()
+			// Episode lookup comes towards the end as it will use previous to simplfy the create/post lookup
+			.enrich("vm:lookupEpisode",enrichEncounterwithEpisode)
 			.enrich("vm:lookupEncounter",enrichEncounterwithEncounter)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to("activemq:HAPIFHIR");
@@ -276,7 +287,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Patient",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER()+"|${header.FHIRPatient}",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier=${header.FHIRPatient}",String.class))
 	    	.to("vm:HAPIFHIR");
     	
     	from("vm:lookupEncounter")
@@ -286,7 +297,18 @@ public class HL7v2CamelRoute extends RouteBuilder {
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Encounter",String.class))
 	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgActivityId()+"|${header.FHIREncounter}",String.class))
 	    	.to("vm:HAPIFHIR");
-	    
+    	
+    	from("vm:lookupEpisode")
+			.routeId("Lookup FHIR Episode")
+			// this line of code ensures Episode is present
+			.process(encountertoEpisodeOfCare)
+			.to("vm:HAPIFHIR")
+			.setBody(simple(""))
+			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
+	    	.setHeader(Exchange.HTTP_PATH, simple("/EpisodeOfCare",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+env.getProperty("ORG.TrustEpisodeOfCare")+"|${header.FHIREpisode}",String.class))
+	    	.to("vm:HAPIFHIR");
+		    
     	from("vm:lookupAppointment")
 			.routeId("Lookup FHIR Appointment")
 			.setBody(simple(""))

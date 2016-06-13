@@ -15,10 +15,12 @@ import org.hl7.fhir.instance.model.DateType;
 import org.hl7.fhir.instance.model.Enumerations.AdministrativeGender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
+//import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
 
@@ -29,6 +31,8 @@ public class ADTA28A31toPatient implements Processor {
 	Terser terser = null;
 	
 	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	public Environment env;
 	
 	private String terserGet(String query)
 	{
@@ -99,25 +103,42 @@ public class ADTA28A31toPatient implements Processor {
 					{
 						case "PAS":
 							patient.addIdentifier()
-								.setSystem(TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER())
+								.setSystem(env.getProperty("ORG.PatientIdentifierPAS"))
 								.setValue(value);
-							exchange.getIn().setHeader("FHIRPatient", value);
+							if (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient", env.getProperty("ORG.PatientIdentifierPAS")+"|"+value);
+							}
 							break;
 						case "RWY":
 							patient.addIdentifier()
-								.setSystem(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER())
+								.setSystem(env.getProperty("ORG.PatientIdentifierRWY"))
 								.setValue(value);
+							// Want to search on main trust identifier 
+							exchange.getIn().setHeader("FHIRPatient", env.getProperty("ORG.PatientIdentifierRWY")+"|"+value);
 							break;
 						case "MRN":
 							patient.addIdentifier()
-								.setSystem(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER())
+								.setSystem(env.getProperty("ORG.PatientIdentifierUN1"))
 								.setValue(value);
 							break;
 						case "NHS":
 							patient.addIdentifier()
-								.setSystem(FHIRCodeSystems.URI_NHS_NUMBER_ENGLAND)
+								.setSystem(env.getProperty("ORG.PatientIdentifierNHS"))
 								.setValue(value);
+							// May need to add search on NHS number but for trust systems  NHSNumber is transient.
 							break;
+						default:
+							if (!(env.getProperty("ORG.PatientIdentifier"+code)).isEmpty())
+							{
+								patient.addIdentifier()
+									.setSystem(env.getProperty("ORG.PatientIdentifier"+code))
+									.setValue(value);
+								if (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+								{
+									exchange.getIn().setHeader("FHIRPatient", env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+								}
+							}
 					}
 				}
 			}
@@ -176,10 +197,10 @@ public class ADTA28A31toPatient implements Processor {
 			if ((terserGet("/.PID-11-1") !=null && !terserGet("/.PID-11-1").isEmpty()) || (terserGet("/.PID-11-5") != null && !terserGet("/.PID-11-5").isEmpty()))
 		    {
 	        	patient.addAddress()
-	        		.addLine(terserGet("/.PID-11-1"))
-	        		.addLine(terserGet("/.PID-11-2"))
-	        		.setCity(terserGet("/.PID-11-3"))
-	        		.setState(terserGet("/.PID-11-4"))
+	        		.addLine(terserGet("/.PID-11-1").replaceAll("\"",""))
+	        		.addLine(terserGet("/.PID-11-2").replaceAll("\"",""))
+	        		.setCity(terserGet("/.PID-11-3").replaceAll("\"",""))
+	        		.setState(terserGet("/.PID-11-4").replaceAll("\"",""))
 	        		.setPostalCode(terserGet("/.PID-11-5"));
 		     }
 			// Phone numbers
