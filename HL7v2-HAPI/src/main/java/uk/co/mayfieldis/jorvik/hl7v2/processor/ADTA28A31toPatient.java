@@ -8,6 +8,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.model.Patient;
+import org.hl7.fhir.instance.model.Address;
 import org.hl7.fhir.instance.model.ContactPoint;
 import org.hl7.fhir.instance.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.instance.model.ContactPoint.ContactPointUse;
@@ -143,7 +144,7 @@ public class ADTA28A31toPatient implements Processor {
 				}
 			}
 			// Names PID.PatientName
-			//log.info("Patient Name");
+			log.debug("Patient Name");
 			if ((terserGet("/.PID-5-1") != null && !terserGet("/.PID-5-1").isEmpty() ) || (terserGet("/.PID-5-2") != null && !terserGet("/.PID-5-2").isEmpty()))
 			{
 				patient.addName()
@@ -151,7 +152,7 @@ public class ADTA28A31toPatient implements Processor {
 	    		.addGiven(terserGet("/.PID-5-2"))
 	    		.addPrefix(terserGet("/.PID-5-5"));
 			}
-			//log.info("Patient Date Of Birth");
+			log.debug("Patient Date Of Birth");
 			// Date Of Birth
 			if (terserGet("/.PID-7-1") != null && !terserGet("/.PID-7-1").isEmpty())
 			{
@@ -166,7 +167,7 @@ public class ADTA28A31toPatient implements Processor {
 	        	}
 			}
 			// Gender
-			//log.info("Patient Gender");
+			log.debug("Patient Gender");
 			if (terserGet("/.PID-8") != null && !terserGet("/.PID-8").isEmpty())
 			{
 				switch (terserGet("/.PID-8"))
@@ -193,18 +194,34 @@ public class ADTA28A31toPatient implements Processor {
 				patient.setGender(AdministrativeGender.UNKNOWN);
 			}
 			// Address
-			//log.info("Patient Address");
+			log.debug("Patient Address");
 			if ((terserGet("/.PID-11-1") !=null && !terserGet("/.PID-11-1").isEmpty()) || (terserGet("/.PID-11-5") != null && !terserGet("/.PID-11-5").isEmpty()))
 		    {
-	        	patient.addAddress()
-	        		.addLine(terserGet("/.PID-11-1").replaceAll("\"",""))
-	        		.addLine(terserGet("/.PID-11-2").replaceAll("\"",""))
-	        		.setCity(terserGet("/.PID-11-3").replaceAll("\"",""))
-	        		.setState(terserGet("/.PID-11-4").replaceAll("\"",""))
-	        		.setPostalCode(terserGet("/.PID-11-5"));
+	        	Address address = patient.addAddress();
+	        	
+	        	if (terserGet("/.PID-11-1") != null && !terserGet("/.PID-11-1").replaceAll("\"","").isEmpty())
+	        	{
+	        		address.addLine(terserGet("/.PID-11-1").replaceAll("\"",""));
+	        	}
+	        	if (terserGet("/.PID-11-2") != null && !terserGet("/.PID-11-2").replaceAll("\"","").isEmpty())
+	        	{
+	        		address.addLine(terserGet("/.PID-11-2").replaceAll("\"",""));
+	        	}
+	        	if (terserGet("/.PID-11-3") != null && !terserGet("/.PID-11-3").replaceAll("\"","").isEmpty())
+	        	{
+	        		address.setCity(terserGet("/.PID-11-3").replaceAll("\"",""));
+	        	}
+	        	if (terserGet("/.PID-11-4") != null && !terserGet("/.PID-11-4").replaceAll("\"","").isEmpty())
+	        	{
+	        		address.setState(terserGet("/.PID-11-4").replaceAll("\"",""));
+	        	}
+	        	if (terserGet("/.PID-11-5") != null && !terserGet("/.PID-11-5").replaceAll("\"","").isEmpty())
+	        	{
+	        		address.setPostalCode(terserGet("/.PID-11-5"));
+	        	}
 		     }
 			// Phone numbers
-			//log.info("Patient Telecom");
+			log.debug("Patient Telecom");
 			for (int f=0;f<maxRepitions;f++)
 			{
 				String code =null;
@@ -238,18 +255,20 @@ public class ADTA28A31toPatient implements Processor {
 								.setSystem(ContactPointSystem.PHONE);
 							break;
 					}
-					switch (value1)
+					if (value1 !=null && !value1.isEmpty())
 					{
-						case "PH":
-							contactPoint
-								.setUse(ContactPointUse.HOME);
-							break;
-						case "CP":
-							contactPoint
-								.setUse(ContactPointUse.MOBILE);
-							break;
+						switch (value1)
+						{
+							case "PH":
+								contactPoint
+									.setUse(ContactPointUse.HOME);
+								break;
+							case "CP":
+								contactPoint
+									.setUse(ContactPointUse.MOBILE);
+								break;
+						}
 					}
-					
 				}
 			}
 			for (int f=0;f<maxRepitions;f++)
@@ -293,22 +312,25 @@ public class ADTA28A31toPatient implements Processor {
 								.setUse(ContactPointUse.WORK);
 							break;
 					}
-					switch (value1)
-					{
-						case "PH":
-							contactPoint
-								.setUse(ContactPointUse.HOME);
-							break;
-						case "CP":
-							contactPoint
-								.setUse(ContactPointUse.MOBILE);
-							break;
-					}
 					
+					if (value1 !=null && !value1.isEmpty())
+					{
+						switch (value1)
+						{
+							case "PH":
+								contactPoint
+									.setUse(ContactPointUse.HOME);
+								break;
+							case "CP":
+								contactPoint
+									.setUse(ContactPointUse.MOBILE);
+								break;
+						}
+					}
 				}
 			}
 			// Date Of Death
-			//log.info("Patient DoD");
+			log.debug("Patient DoD");
 			if (terserGet("/.PID-29-1") != null && !terserGet("/.PID-29-1").isEmpty())
 			{
 				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -323,10 +345,12 @@ public class ADTA28A31toPatient implements Processor {
 	        	// TODO Auto-generated catch block
 	        	}
 			}
+			log.debug("Patient Org");
 			if (terserGet("/.PD1-3-3") != null && !terserGet("/.PD1-3-3").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIROrganisationCode",terserGet("/.PD1-3-3"));
 			}
+			log.debug("Patient GP");
 			if (terserGet("/.PD1-4-1") != null && !terserGet("/.PD1-4-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRGP", terserGet("/.PD1-4-1"));

@@ -182,10 +182,6 @@ public class ADTA01A04A08toEncounter implements Processor {
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIREncounter", terserGet("/.PV1-19-1"));
-			}
-						
-			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
-			{
 				exchange.getIn().setHeader("FHIRAppointment", terserGet("/.PV1-19-1"));
 			}
 			
