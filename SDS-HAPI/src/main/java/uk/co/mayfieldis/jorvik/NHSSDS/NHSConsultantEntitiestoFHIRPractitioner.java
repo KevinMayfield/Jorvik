@@ -1,19 +1,13 @@
 package uk.co.mayfieldis.jorvik.NHSSDS;
 
-import java.io.ByteArrayInputStream;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.JsonParser;
 import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Bundle;
+
 import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.Extension;
 import org.hl7.fhir.instance.model.HumanName;
-import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Reference;
 import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.hl7.fhir.instance.model.valuesets.PractitionerRole;
 
@@ -76,8 +70,9 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 			exchange.getIn().setBody(Response);
 		}
 		
-		
-		exchange.getIn().setHeader("ParentOrganisationCode",entity.LocationOrganisationCode);
+		exchange.getIn().setHeader("FHIROrganisationCode",entity.LocationOrganisationCode);
+		// This is replace by line above
+		//exchange.getIn().setHeader("ParentOrganisationCode",entity.LocationOrganisationCode);
 	}
 
 }

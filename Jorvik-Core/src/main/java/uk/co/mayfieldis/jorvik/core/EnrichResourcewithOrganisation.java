@@ -139,7 +139,7 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 					parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
 					CodeableConcept parentCode = new CodeableConcept();
 					parentCode.addCoding()
-						.setCode(exchange.getIn().getHeader("FHIRtOrganisationCode").toString())
+						.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
 						.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
 				
 					parentOrg.setValue(parentCode);

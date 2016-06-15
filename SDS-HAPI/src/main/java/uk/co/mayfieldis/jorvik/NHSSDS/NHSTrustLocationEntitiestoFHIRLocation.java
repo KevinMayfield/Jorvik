@@ -40,7 +40,7 @@ public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 		
 		if (entity.managingOrganization != null && !entity.managingOrganization.isEmpty())
 		{
-			exchange.getIn().setHeader("ParentOrganisationCode",entity.managingOrganization);
+			exchange.getIn().setHeader("FHIROrganisationCode",entity.managingOrganization);
 		}
 		
 		if (entity.PartOf != null && !entity.PartOf.isEmpty())

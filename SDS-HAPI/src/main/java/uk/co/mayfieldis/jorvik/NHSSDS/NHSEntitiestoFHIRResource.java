@@ -323,7 +323,7 @@ public class NHSEntitiestoFHIRResource implements Processor {
 	
 		}
 		exchange.getIn().setHeader("NHSEntityId", entity.OrganisationCode);
-		exchange.getIn().setHeader("OrganisationCode",entity.OrganisationCode);
+		//exchange.getIn().setHeader("FHIROrganisationCode",entity.OrganisationCode);
 		if (entity.ParentOrganisationCode != null && !entity.ParentOrganisationCode.isEmpty())
 		{
 			exchange.getIn().setHeader("FHIROrganisationCode",entity.ParentOrganisationCode);

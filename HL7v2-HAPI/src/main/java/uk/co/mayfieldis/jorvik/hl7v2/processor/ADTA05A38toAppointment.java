@@ -147,7 +147,7 @@ public class ADTA05A38toAppointment implements Processor {
 	        		Date date;
 	        		date = fmt.parse(terserGet("/.PV1-45-1"));
 	        		appointment.setEnd(date);
-	        		
+	        		appointment.setStatus(Appointment.AppointmentStatus.FULFILLED);
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}
