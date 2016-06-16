@@ -11,11 +11,13 @@ import org.hl7.fhir.instance.model.Bundle;
 import org.hl7.fhir.instance.model.Location;
 import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Practitioner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EnrichwithUpdateType implements AggregationStrategy  {
 
-	//private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType.class);
 	
 	private Boolean practitionerCompare(Practitioner oldPractitioner, Practitioner newPractitioner)
 	{
@@ -69,22 +71,24 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 	private Boolean organisationCompare(Organization oldOrganisation, Organization newOrganisation)
 	{
 		Boolean same = true;
-	
+		log.debug("Check 1");
 		if (!oldOrganisation.getName().equals(newOrganisation.getName()))
 		{
 			same = false;
 		//	log.info("#4 Name "+oldOrganisation.getName()+" "+newOrganisation.getName());
 		}
-		
-			if (oldOrganisation.getActive() != newOrganisation.getActive())
-			{
-				same = false;
-			//	log.info("#5 Active "+oldOrganisation.getActive() + " " + newOrganisation.getActive());
-			}
+		log.debug("Check 2");
+		if (oldOrganisation.getActive() != newOrganisation.getActive())
+		{
+			same = false;
+		//	log.info("#5 Active "+oldOrganisation.getActive() + " " + newOrganisation.getActive());
+		}
+		log.debug("Check 3");
 		if (oldOrganisation.getTelecom().size() != oldOrganisation.getTelecom().size())
 		{
 			same =false;
 		}
+		log.debug("Check 4");
 		if (oldOrganisation.getTelecom().size() > 0  && oldOrganisation.getTelecom().size() > 0)
 		{
 			if (!oldOrganisation.getTelecom().get(0).getValue().equals(newOrganisation.getTelecom().get(0).getValue()))
@@ -93,10 +97,12 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			//	log.info("#6 Telecom "+oldOrganisation.getTelecom().get(0).getValue()+" "+newOrganisation.getTelecom().get(0).getValue());
 			}
 		}
+		log.debug("Check 5");
 		if (oldOrganisation.getAddress().size() != oldOrganisation.getAddress().size())
 		{
 			same =false;
 		}
+		log.debug("Check 6");
 		if (oldOrganisation.getAddress().size() >0 && oldOrganisation.getAddress().size()>0)
 		{	
 			if (!oldOrganisation.getAddress().get(0).getLine().get(0).getValue().equals(newOrganisation.getAddress().get(0).getLine().get(0).getValue()))
@@ -110,6 +116,22 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			//	log.info("#8 PostCode "+oldOrganisation.getAddress().get(0).getPostalCode()+" "+newOrganisation.getAddress().get(0).getPostalCode());;
 			}
 		}
+		log.debug("Check 7");
+		String oldRef="";
+		String newRef="";
+		if (oldOrganisation.getPartOf() !=null && oldOrganisation.getPartOf().getReference() !=null)
+		{
+			oldRef=oldOrganisation.getPartOf().getReference();
+		}
+		if (newOrganisation.getPartOf() !=null && newOrganisation.getPartOf().getReference() !=null)
+		{
+			newRef=newOrganisation.getPartOf().getReference();
+		}
+		if (!oldRef.equals(newRef))
+		{
+			same=false;
+		}
+		
 		return same;
 	}
 	
@@ -117,7 +139,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 
 	{
 		exchange.getIn().setHeader(Exchange.HTTP_METHOD,"GET");
-
+		log.debug("Update Resource Start. Previous Resonse "+enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString());
 		if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200"))
 		{
 			
@@ -151,6 +173,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			
 			if (bundle!=null && bundle.getEntry().size()==0)
 			{
+				log.debug("Update Resource - no data found");
 				// No resource found go ahead
 				exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");	
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
@@ -169,7 +192,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			
 			if (bundle!=null && bundle.getEntry().size()>0)
 			{
-				
+				log.debug("Update Resource - Resource found="+bundle.getEntry().size());
 				// This is bit over complex. It converts incoming data into generic FHIR Resource and the converts them to JSON for comparison
 				
 				//Resource oldResource=bundle.getEntry().get(0).getResource();
@@ -192,7 +215,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				{
 					oldLocation = (Location) bundle.getEntry().get(0).getResource();
 				}
-				
+				log.debug("Processed OLD response to resource object");
 				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
 				if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 				{
@@ -241,9 +264,11 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					//	log.error("#12 XML Parse failed 2 "+ex.getMessage());
 					}
 				}
+				log.debug("Processed NEW response to resource object");
 				Boolean sameResource = false;
 				if (oldOrganisation !=null)
 				{
+					log.debug("Check for differences on the organization resource");
 					sameResource = organisationCompare(oldOrganisation, newOrganisation);
 				}
 				if (oldPractitioner !=null)
@@ -257,6 +282,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				if (!sameResource)
 				{
 					// Record is different so update it
+					log.debug("Resource is an update");
 					
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 					{
@@ -287,6 +313,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					}
 				}
 			}
+			log.debug("Update Resource End");
 			exchange.getIn().setHeader("FHIRQuery","");
 			// XML as Ensemble doesn't like JSON
 			exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");

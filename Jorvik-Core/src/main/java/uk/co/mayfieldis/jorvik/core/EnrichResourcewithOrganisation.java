@@ -11,6 +11,8 @@ import org.hl7.fhir.instance.model.CodeableConcept;
 import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.hl7.fhir.instance.model.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hl7.fhir.instance.model.Extension;
 import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
@@ -18,150 +20,164 @@ import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 
 public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 
-//	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation.class);
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 
 	{
-		
-		Organization parentOrganisation = null;
-		//
-		if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200"))
+		try
 		{
-			ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
-			
-			
-			if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
+			Organization parentOrganisation = null;
+			//
+			log.debug("Response Code = " +enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString());
+			if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200"))
 			{
-				JsonParser composer = new JsonParser();
-				try
+				ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+				
+				
+				if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 				{
-					Bundle bundle = (Bundle) composer.parse(xmlContentBytes);
-					if (bundle.getEntry().size()>0)
+					JsonParser composer = new JsonParser();
+					try
 					{
-						parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
+						Bundle bundle = (Bundle) composer.parse(xmlContentBytes);
+						if (bundle.getEntry().size()>0)
+						{
+							parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
+						}
+					}
+					catch(Exception ex)
+					{
+						
 					}
 				}
-				catch(Exception ex)
+				else
 				{
+					XmlParser composer = new XmlParser();
+					try
+					{
+						Bundle bundle = (Bundle) composer.parse(xmlContentBytes);
+						if (bundle.getEntry().size()>0)
+						{
+							parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
+						}
+					}
+					catch(Exception ex)
+					{
+						
+					}
+				}
+				  
+			}
+			
+			/*
+			 * 
+			 *  PASTE
+			 * 
+			 */
+			log.debug("Adding Org to Entity");
+			String Id = exchange.getIn().getHeader("NHSEntityId").toString();
+			
+			log.debug("NHSEntity = "+Id);
+			if ( (Id.startsWith("G") || Id.startsWith("C")) && Id.length()>6)
+			{
+				
+				if (parentOrganisation !=null)
+				{
+					
+					ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+					
+					XmlParser composer = new XmlParser();
+					try
+					{
+						// Add in the parent organisation code
+						Practitioner gp = (Practitioner) composer.parse(xmlNewContentBytes);
+						
+						PractitionerPractitionerRoleComponent practitionerRole = gp.getPractitionerRole().get(0);
+					
+	
+						Reference organisation = new Reference();
+						organisation.setReference("Organization/"+parentOrganisation.getId());
+						practitionerRole.setManagingOrganization(organisation);
+						Extension parentOrg= new Extension();
+						parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
+						CodeableConcept parentCode = new CodeableConcept();
+						parentCode.addCoding()
+							.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
+							.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+						
+						parentOrg.setValue(parentCode);
+						practitionerRole.addExtension(parentOrg);
+						
+						String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
+						exchange.getIn().setBody(Response);
+					}
+					catch(Exception ex)
+					{
+	//					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+	//						+" Properties: " + exchange.getProperties().toString()
+	//						+" Headers: " + exchange.getIn().getHeaders().toString() 
+	//						+ " Message:" + exchange.getIn().getBody().toString());
+					}
 					
 				}
 			}
 			else
 			{
-				XmlParser composer = new XmlParser();
-				try
+				
+				if (parentOrganisation !=null)
 				{
-					Bundle bundle = (Bundle) composer.parse(xmlContentBytes);
-					if (bundle.getEntry().size()>0)
+					ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+					
+					XmlParser composer = new XmlParser();
+					try
 					{
-						parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
+						// Add in the parent organisation code
+						log.debug("Adding organisation");
+						Organization organisation = (Organization) composer.parse(xmlNewContentBytes);
+					
+						Reference ccg = new Reference();
+						ccg.setReference("/Organization/"+parentOrganisation.getId());
+						organisation.setPartOf(ccg);
+						log.debug("Adding organisation Ref= "+ccg.getReference());
+						Extension parentOrg= new Extension();
+						parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
+						CodeableConcept parentCode = new CodeableConcept();
+						parentCode.addCoding()
+							.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
+							.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+					
+						parentOrg.setValue(parentCode);
+						organisation.addExtension(parentOrg);
+						
+						String Response = ResourceSerialiser.serialise(organisation, ParserType.XML);
+						exchange.getIn().setBody(Response);
+					}
+					catch(Exception ex)
+					{
+		//				log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
+		//					+" Properties: " + exchange.getProperties().toString()
+		//					+" Headers: " + exchange.getIn().getHeaders().toString() 
+		//					+ " Message:" + exchange.getIn().getBody().toString());
 					}
 				}
-				catch(Exception ex)
+				else
 				{
-					
+					log.debug("No parent org found");
 				}
 			}
-			  
-		}
+			/*
+			 *  ENDP
+			 */
 		
-		/*
-		 * 
-		 *  PASTE
-		 * 
-		 */
-		String Id = exchange.getIn().getHeader("NHSEntityId").toString();
-		
-		if ( (Id.startsWith("G") || Id.startsWith("C")) && Id.length()>6)
-		{
-			
-			if (parentOrganisation !=null)
-			{
-				
-				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
-				
-				XmlParser composer = new XmlParser();
-				try
-				{
-					// Add in the parent organisation code
-					Practitioner gp = (Practitioner) composer.parse(xmlNewContentBytes);
-					
-					PractitionerPractitionerRoleComponent practitionerRole = gp.getPractitionerRole().get(0);
-				
-
-					Reference organisation = new Reference();
-					organisation.setReference("Organization/"+parentOrganisation.getId());
-					practitionerRole.setManagingOrganization(organisation);
-					Extension parentOrg= new Extension();
-					parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
-					CodeableConcept parentCode = new CodeableConcept();
-					parentCode.addCoding()
-						.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
-						.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
-					
-					parentOrg.setValue(parentCode);
-					practitionerRole.addExtension(parentOrg);
-					
-					String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
-					exchange.getIn().setBody(Response);
-				}
-				catch(Exception ex)
-				{
-//					log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-//						+" Properties: " + exchange.getProperties().toString()
-//						+" Headers: " + exchange.getIn().getHeaders().toString() 
-//						+ " Message:" + exchange.getIn().getBody().toString());
-				}
-				
-			}
+			exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD,"GET");
 		}
-		else
+		catch(Exception ex)
 		{
-			if (parentOrganisation !=null)
-			{
-				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
-				
-				XmlParser composer = new XmlParser();
-				try
-				{
-					// Add in the parent organisation code
-					
-					Organization organisation = (Organization) composer.parse(xmlNewContentBytes);
-					
-					//PractitionerPractitionerRoleComponent practitionerRole = gp.getPractitionerRole().get(0);
-					
-					Reference ccg = new Reference();
-					ccg.setReference("/Organization/"+parentOrganisation.getId());
-					organisation.setPartOf(ccg);
-				
-					Extension parentOrg= new Extension();
-					parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
-					CodeableConcept parentCode = new CodeableConcept();
-					parentCode.addCoding()
-						.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
-						.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
-				
-					parentOrg.setValue(parentCode);
-					organisation.addExtension(parentOrg);
-					
-					String Response = ResourceSerialiser.serialise(organisation, ParserType.XML);
-					exchange.getIn().setBody(Response);
-				}
-				catch(Exception ex)
-				{
-	//				log.error("#12 XML Parse failed 2"+ exchange.getExchangeId() + " "  + ex.getMessage() 
-	//					+" Properties: " + exchange.getProperties().toString()
-	//					+" Headers: " + exchange.getIn().getHeaders().toString() 
-	//					+ " Message:" + exchange.getIn().getBody().toString());
-				}
-			}
+			log.error(ex.getMessage());
 		}
-		/*
-		 *  ENDP
-		 */
-		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
-		exchange.getIn().setHeader(Exchange.HTTP_METHOD,"GET");
+		log.debug("Finish Enrich with Org");
 		return exchange;
 	}
 
