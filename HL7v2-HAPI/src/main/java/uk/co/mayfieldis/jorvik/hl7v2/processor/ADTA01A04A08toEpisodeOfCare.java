@@ -9,7 +9,8 @@ import org.apache.camel.Processor;
 import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.model.Period;
 
-import org.hl7.fhir.instance.model.Encounter;
+import org.hl7.fhir.instance.model.EpisodeOfCare;
+import org.hl7.fhir.instance.model.EpisodeOfCare.EpisodeOfCareStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -21,9 +22,9 @@ import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
 
-public class ADTA01A04A08toEncounter implements Processor {
+public class ADTA01A04A08toEpisodeOfCare implements Processor {
 
-	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEncounter.class);
+	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEpisodeOfCare.class);
 	
 	Terser terser = null;
 	
@@ -58,7 +59,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 		
 		Message message = exchange.getIn().getBody(Message.class);
 		
-		Encounter encounter = new Encounter();
+		EpisodeOfCare episode = new EpisodeOfCare();
 		
 		// Use Terser as code is more readable
 		terser = new Terser(message);
@@ -108,14 +109,47 @@ public class ADTA01A04A08toEncounter implements Processor {
 			}
 			// Names PID.PatientName
 			log.debug("Activity ID");
-			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
+			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
 			{
-				encounter.addIdentifier()
-					.setSystem(TrustFHIRSystems.geturiNHSOrgActivityId())
-					.setValue(terserGet("/.PV1-19-1"));
+				episode.addIdentifier()
+					.setSystem(env.getProperty("ORG.TrustEpisodeOfCare"))
+					.setValue(terserGet("/.PV1-50-1"));
 			}
 			// StartDate
-			encounter.setStatus(Encounter.EncounterState.ARRIVED);
+			episode.setStatus(EpisodeOfCareStatus.ACTIVE);
+			
+			
+			if (terserGet("/.PV1-2") != null)
+			{
+				exchange.getIn().setHeader("FHIREpisodeType", terserGet("/.PV1-2"));
+				switch (terserGet("/.PV1-2"))
+				{
+					case "O" : 
+					case "E" :	
+					case "I" : 
+						break;
+					case "P" :
+						episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.PLANNED);
+						break;
+					case "W" :
+						episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.WAITLIST);
+						break;
+					
+				}
+			}
+			if (terserGet("/.MSH-9-2") != null)
+			{
+				if (terserGet("/.MSH-9-2").equals("A03"))
+				{
+					episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.FINISHED);
+				}
+				if (terserGet("/.MSH-9-2") != null && terserGet("/.MSH-9-2").equals("A11"))
+				{
+					episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.CANCELLED);
+				}
+			}
+
+			
 			Period period = new Period();
 			if (terserGet("/.PV1-44-1") != null && !terserGet("/.PV1-44-1").isEmpty())
 			{
@@ -125,7 +159,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 	        		Date date;
 	        		date = fmt.parse(terserGet("/.PV1-44-1"));
 	        		period.setStart(date);
-	        		encounter.setStatus(Encounter.EncounterState.INPROGRESS);
+	        		
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}
@@ -138,56 +172,37 @@ public class ADTA01A04A08toEncounter implements Processor {
 	        		Date date;
 	        		date = fmt.parse(terserGet("/.PV1-45-1"));
 	        		period.setEnd(date);
-	        		encounter.setStatus(Encounter.EncounterState.FINISHED);
+	        		
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}
 			}
-			encounter.setPeriod(period);
+			// Last updated
+			if (terserGet("/.EVN-2-1") != null && !terserGet("/.EVN-2-1").isEmpty())
+			{
+				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+				
+	        	try {
+	        		Date date;
+	        		date = fmt.parse(terserGet("/.EVN-2-1"));
+	        		episode.getMeta().setLastUpdated(date);
+	        		
+	        	} catch (ParseException e1) {
+	        	// TODO Auto-generated catch block
+	        	}
+			}
+			episode.setPeriod(period);
 			log.debug("Pre-Specialties");
 			if (terserGet("/.PV1-10-1") != null && !terserGet("/.PV1-10-1").isEmpty())
 			{
-				encounter.addType()
+				episode.addType()
 					.addCoding()
 						.setSystem(FHIRCodeSystems.URI_NHS_SPECIALTIES)
 						.setCode(terserGet("/.PV1-10-1"));
 			}
-			if (terserGet("/.PV1-2") != null)
-			{
-				exchange.getIn().setHeader("FHIREpisodeType", terserGet("/.PV1-2"));
-				switch (terserGet("/.PV1-2"))
-				{
-					case "O" : 
-						encounter.setClass_(Encounter.EncounterClass.OUTPATIENT);
-						if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
-						{
-							encounter.addType()
-								.addCoding()
-									.setSystem(TrustFHIRSystems.getURI_NHSOrg_CLINIC_CODE())
-									.setCode(terserGet("/.PV1-3-2"))
-									.setDisplay(terserGet("/.PV1-3-9"));
-						}
-						break;
-					case "I" : encounter.setClass_(Encounter.EncounterClass.INPATIENT);
-						break;
-					case "E" : encounter.setClass_(Encounter.EncounterClass.EMERGENCY);
-						break;
-					default : encounter.setClass_(Encounter.EncounterClass.OTHER);
-						break;
-				}
-			}
+			
 			log.debug("Get Reference Material");
-			if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
-			{
-				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-2"));
-			}
-			
-			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
-			{
-				exchange.getIn().setHeader("FHIREncounter", terserGet("/.PV1-19-1"));
-				exchange.getIn().setHeader("FHIRAppointment", terserGet("/.PV1-19-1"));
-			}
-			
+						
 			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
@@ -207,6 +222,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 			{
 				case "A01":
 				case "A08":
+				case "A03":
 					exchange.getIn().setHeader(Exchange.HTTP_PATH,"POST");
 					break;
 				default:
@@ -220,10 +236,10 @@ public class ADTA01A04A08toEncounter implements Processor {
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
-		exchange.getIn().setHeader("FHIRResource", "Encounter");
-		String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
+		exchange.getIn().setHeader("FHIRResource", "EpisodeOfCare");
+		String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
-		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());
+
 		exchange.getIn().setBody(Response);
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		

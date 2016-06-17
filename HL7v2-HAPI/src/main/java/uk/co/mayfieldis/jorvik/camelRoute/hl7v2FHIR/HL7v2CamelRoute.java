@@ -24,6 +24,10 @@ import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithLocation;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPatient;
 import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner;
+import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithEpisode;
+import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithOrganisation;
+import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithPatient;
+import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithPractitioner;
 import uk.co.mayfieldis.jorvik.core.EnrichLocationwithLocation;
 import uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation;
 import uk.co.mayfieldis.jorvik.core.EnrichPatientwithOrganisation;
@@ -31,6 +35,7 @@ import uk.co.mayfieldis.jorvik.core.EnrichPatientwithPatient;
 import uk.co.mayfieldis.jorvik.core.EnrichPatientwithPractitioner;
 import uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEncounter;
+import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA05A38toAppointment;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA28A31toPatient;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.EncountertoEpisodeOfCare;
@@ -66,6 +71,10 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	adta28a31toPatient.TrustFHIRSystems = TrustFHIRSystems;
     	adta28a31toPatient.env = this.env;
     	
+    	ADTA01A04A08toEpisodeOfCare adta01a04a08toEpisodeOfCare = new ADTA01A04A08toEpisodeOfCare();
+    	adta01a04a08toEpisodeOfCare.TrustFHIRSystems = TrustFHIRSystems;
+    	adta01a04a08toEpisodeOfCare.env = this.env;
+    	
     	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter();
     	adta01a04a08toEncounter.TrustFHIRSystems =TrustFHIRSystems;
     	adta01a04a08toEncounter.env = this.env;
@@ -98,6 +107,11 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	EnrichEncounterwithAppointment enrichEncounterwithAppointment = new EnrichEncounterwithAppointment();
     	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter();
     	EnrichEncounterwithEpisodeOfCare enrichEncounterwithEpisode = new EnrichEncounterwithEpisodeOfCare(); 
+    	
+    	EnrichEpisodewithPatient enrichEpisodewithPatient = new EnrichEpisodewithPatient();
+    	EnrichEpisodewithPractitioner enrichEpisodewithPractitioner = new EnrichEpisodewithPractitioner();
+    	EnrichEpisodewithOrganisation enrichEpisodewithOrganisation = new EnrichEpisodewithOrganisation();
+    	EnrichEpisodewithEpisode enrichEpisodewithEpisode = new EnrichEpisodewithEpisode();
     	
     	EnrichAppointmentwithPatient enrichAppointmentwithPatient = new EnrichAppointmentwithPatient();
     	EnrichAppointmentwithPractitioner enrichAppointmentwithPractitioner = new EnrichAppointmentwithPractitioner();
@@ -188,14 +202,14 @@ public class HL7v2CamelRoute extends RouteBuilder {
     		.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true")
     		.choice()
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A01")).to("activemq:ADT_A01A04A08")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A02")).to("activemq:ADT_A01A04A08")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A03")).to("activemq:ADT_A01A04A08")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A02")).to("activemq:ADT_A01A04A08Encounter")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A03")).to("activemq:ADT_A01A04A08Encounter")
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A04")).to("activemq:ADT_A01A04A08")
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A05")).to("activemq:ADT_A05A38")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A08")).to("activemq:ADT_A01A04A08")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A11")).to("activemq:ADT_A01A04A08")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A12")).to("activemq:ADT_A01A04A08")
-				.when(header("CamelHL7TriggerEvent").isEqualTo("A13")).to("activemq:ADT_A01A04A08")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A08")).to("activemq:ADT_A01A04A08Encounter")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A11")).to("activemq:ADT_A01A04A08Encounter")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A12")).to("activemq:ADT_A01A04A08Encounter")
+				.when(header("CamelHL7TriggerEvent").isEqualTo("A13")).to("activemq:ADT_A01A04A08Encounter")
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A38")).to("activemq:ADT_A05A38") 
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A28")).to("activemq:ADT_A28A31")
 				.when(header("CamelHL7TriggerEvent").isEqualTo("A31")).to("activemq:ADT_A28A31")
@@ -203,6 +217,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.end();
     	
     	
+    	
+    		
     	// Demographics 
 		from("activemq:ADT_A28A31")
 			.routeId("ADT_A28A31 Demographics")
@@ -218,10 +234,27 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.enrich("vm:lookupPatient",enrichPatientwithPatient)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to("activemq:HAPIFHIR");
-			
 		
-    	// Encounters and Episodes
 		from("activemq:ADT_A01A04A08")
+			.routeId("ADT_A01A04A08")
+			.multicast()
+				.to("activemq:ADT_Episode","activemq:ADT_A01A04A08Encounter");
+		
+		from("activemq:ADT_Episode")
+			.routeId("ADT_Episode")
+			.process(adta01a04a08toEpisodeOfCare)
+			.enrich("vm:lookupPatient",enrichEpisodewithPatient)
+			.choice()
+				.when(header("FHIRPractitioner").isNotNull())
+					.enrich("vm:lookupConsultant",enrichEpisodewithPractitioner)
+			.end()
+			.enrich("vm:lookupOrganisation",enrichEpisodewithOrganisation)
+			.enrich("vm:lookupEpisode",enrichEpisodewithEpisode)
+			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
+			.to("activemq:HAPIFHIR");
+			
+    	// Encounters and Episodes
+		from("activemq:ADT_A01A04A08Encounter")
 			.routeId("ADT_A01A04A08 Encounters")
 			.process(adta01a04a08toEncounter)
 			.enrich("vm:lookupPatient",enrichEncounterwithPatient)
@@ -239,13 +272,20 @@ public class HL7v2CamelRoute extends RouteBuilder {
 				.enrich("vm:lookupAppointment",enrichEncounterwithAppointment)
 			.end()
 			// Episode lookup comes towards the end as it will use previous to simplfy the create/post lookup
-			.enrich("vm:lookupEpisode",enrichEncounterwithEpisode)
+			.enrich("vm:lookupEpisodeAndAdd",enrichEncounterwithEpisode)
 			.enrich("vm:lookupEncounter",enrichEncounterwithEncounter)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to("activemq:HAPIFHIR");
 		
-		// Encounters and Episodes
+		// Appointments and pre op
+		
 		from("activemq:ADT_A05A38")
+		.routeId("ADT_A05A38")
+		.multicast()
+			.to("activemq:ADT_A05A38Appointment","activemq:ADT_Episode");
+		
+		
+		from("activemq:ADT_A05A38Appointment")
 			.routeId("ADT_A05A38 Appointments")
 			.process(adta05a38toAppointment)
 			.enrich("vm:lookupPatient",enrichAppointmentwithPatient)
@@ -310,11 +350,19 @@ public class HL7v2CamelRoute extends RouteBuilder {
 	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgActivityId()+"|${header.FHIREncounter}",String.class))
 	    	.to("vm:HAPIFHIR");
     	
-    	from("vm:lookupEpisode")
-			.routeId("Lookup FHIR Episode")
+    	from("vm:lookupEpisodeAndAdd")
+			.routeId("Lookup FHIR Episode plus Add")
 			// this line of code ensures Episode is present
 			.process(encountertoEpisodeOfCare)
 			.to("vm:HAPIFHIR")
+			.setBody(simple(""))
+			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
+	    	.setHeader(Exchange.HTTP_PATH, simple("/EpisodeOfCare",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+env.getProperty("ORG.TrustEpisodeOfCare")+"|${header.FHIREpisode}",String.class))
+	    	.to("vm:HAPIFHIR");
+    	
+    	from("vm:lookupEpisode")
+			.routeId("Lookup FHIR Episode")
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/EpisodeOfCare",String.class))
@@ -352,8 +400,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	
     	from("activemq:HAPIFHIR")
 			.routeId("HAPI FHIR MQ")
-			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(3).end()
-			.to(env.getProperty("HAPIFHIR.Server"))
+			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(0).end()
+			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
