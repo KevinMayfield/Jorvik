@@ -88,13 +88,13 @@ public class ADTA05A38toAppointment implements Processor {
 					switch (code)
 					{
 						case "PAS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "NHS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -129,7 +129,12 @@ public class ADTA05A38toAppointment implements Processor {
 				
 	        	try {
 	        		Date date;
-	        		date = fmt.parse(terserGet("/.PV1-44-1"));
+	        		String tempDate = terserGet("/.PV1-44-1");
+	        		if (tempDate.length()==12)
+	        		{
+	        			tempDate = tempDate+"00";
+	        		}
+	        		date = fmt.parse(tempDate);
 	        		
 	        		appointment.setStart(date);
 	        	} catch (ParseException e1) {
@@ -147,7 +152,12 @@ public class ADTA05A38toAppointment implements Processor {
 				
 	        	try {
 	        		Date date;
-	        		date = fmt.parse(terserGet("/.PV1-45-1"));
+	        		String tempDate = terserGet("/.PV1-45-1");
+	        		if (tempDate.length()==12)
+	        		{
+	        			tempDate = tempDate+"00";
+	        		}
+	        		date = fmt.parse(tempDate);
 	        		appointment.setEnd(date);
 	        		appointment.setStatus(Appointment.AppointmentStatus.FULFILLED);
 	        	} catch (ParseException e1) {
