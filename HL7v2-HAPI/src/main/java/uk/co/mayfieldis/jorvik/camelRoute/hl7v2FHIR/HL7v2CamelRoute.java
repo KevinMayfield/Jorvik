@@ -143,6 +143,19 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	
     	errorHandler(defaultErrorHandler().maximumRedeliveries(3));
     	
+    	from(env.getProperty("NHSITK.Path"))
+    		.routeId("HL7v2 File")
+    		.unmarshal(hl7)
+    		//.process("HL7v2Service")
+    		.choice()
+				.when(header("CamelHL7MessageType").isEqualTo("ADT"))
+					.wireTap("activemq:ADT")
+					.end()
+				.when(header("CamelHL7MessageType").isEqualTo("MFN"))
+					.wireTap("activemq:MFN")
+					.end()
+			.end();
+			
     	from("hl7MinaListener")
     		.routeId("HL7v2")
     		.unmarshal(hl7)
@@ -184,7 +197,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.log("Org = ${header.FHIROrganisationCode}")
 			.enrich("vm:lookupOrganisation",consultantEnrichwithOrganisation)
 	    	.enrich("vm:lookupResource",enrichUpdateType)
-			.to("activemq:HAPIFHIR");
+			.to("activemq:HAPIHL7v2");
 	
 		from("activemq:MFN_M05")
 			.routeId("MFN_M05 Clinic Locations")
@@ -195,7 +208,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 					.enrich("vm:lookupLocation",enrichLocationwithLocation)
 			.end()
 	    	.enrich("vm:lookupResource",enrichUpdateType)
-			.to("activemq:HAPIFHIR");
+			.to("activemq:HAPIHL7v2");
 	    	
     	from("activemq:ADT")
     		.routeId("ADT")
@@ -233,7 +246,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.end()
 			.enrich("vm:lookupPatient",enrichPatientwithPatient)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
-			.to("activemq:HAPIFHIR");
+			.to("activemq:HAPIHL7v2");
 		
 		from("activemq:ADT_A01A04A08")
 			.routeId("ADT_A01A04A08")
@@ -243,6 +256,12 @@ public class HL7v2CamelRoute extends RouteBuilder {
 		from("activemq:ADT_Episode")
 			.routeId("ADT_Episode")
 			.process(adta01a04a08toEpisodeOfCare)
+			//Only process if episode Id is supplied
+			.choice()
+				.when(header("FHIREpisode").isNotNull())
+					.to("direct:sub_Episode");
+		
+		from("direct:sub_Episode")
 			.enrich("vm:lookupPatient",enrichEpisodewithPatient)
 			.choice()
 				.when(header("FHIRPractitioner").isNotNull())
@@ -251,8 +270,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.enrich("vm:lookupOrganisation",enrichEpisodewithOrganisation)
 			.enrich("vm:lookupEpisode",enrichEpisodewithEpisode)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
-			.to("activemq:HAPIFHIR");
-			
+			.to("activemq:HAPIHL7v2");
+		
     	// Encounters and Episodes
 		from("activemq:ADT_A01A04A08Encounter")
 			.routeId("ADT_A01A04A08 Encounters")
@@ -272,17 +291,20 @@ public class HL7v2CamelRoute extends RouteBuilder {
 				.enrich("vm:lookupAppointment",enrichEncounterwithAppointment)
 			.end()
 			// Episode lookup comes towards the end as it will use previous to simplfy the create/post lookup
-			.enrich("vm:lookupEpisodeAndAdd",enrichEncounterwithEpisode)
+			.choice()
+				.when(header("FHIREpisode").isNotNull())
+					.enrich("vm:lookupEpisodeAndAdd",enrichEncounterwithEpisode)
+			.end()
 			.enrich("vm:lookupEncounter",enrichEncounterwithEncounter)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
-			.to("activemq:HAPIFHIR");
+			.to("activemq:HAPIHL7v2");
 		
 		// Appointments and pre op
 		
 		from("activemq:ADT_A05A38")
-		.routeId("ADT_A05A38")
-		.multicast()
-			.to("activemq:ADT_A05A38Appointment","activemq:ADT_Episode");
+			.routeId("ADT_A05A38")
+			.multicast()
+				.to("activemq:ADT_A05A38Appointment","activemq:ADT_Episode");
 		
 		
 		from("activemq:ADT_A05A38Appointment")
@@ -299,7 +321,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.end()
 			.enrich("vm:lookupAppointment",enrichAppointmentwithAppointment)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
-			.to("activemq:HAPIFHIR");
+			.to("activemq:HAPIHL7v2");
  
     	from("vm:lookupLocation")
     		.routeId("Loookup FHIR Location")
@@ -398,13 +420,13 @@ public class HL7v2CamelRoute extends RouteBuilder {
 					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
 			.end();
     	
-    	from("activemq:HAPIFHIR")
+    	from("activemq:HAPIHL7v2")
 			.routeId("HAPI FHIR MQ")
 			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(0).end()
 			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
-					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
+					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIHL7v2?showAll=true&multiline=true&level=ERROR")
 					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
 			.end();
     	

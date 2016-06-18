@@ -82,19 +82,20 @@ public class ADTA01A04A08toEncounter implements Processor {
 					code =terserGet("/.PID-3("+f+")-4");
 					value =terserGet("/.PID-3("+f+")-1");
 				}
+				
 				if (code != null && !code.isEmpty())
 				{
-					log.debug("Code = "+code);
+					log.info("PID "+code+" "+value);
 					switch (code)
 					{
 						case "PAS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "NHS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -103,11 +104,12 @@ public class ADTA01A04A08toEncounter implements Processor {
 							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							break;
 					}
-					log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+					
 				}
 			}
+			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
-			log.debug("Activity ID");
+			log.info("Activity ID");
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				encounter.addIdentifier()
@@ -176,7 +178,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 						break;
 				}
 			}
-			log.debug("Get Reference Material");
+			log.info("Get Reference Material");
 			if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-2"));
@@ -206,7 +208,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 			switch (terserGet("/.MSH-9-2"))
 			{
 				case "A01":
-				case "A08":
+				case "A04":
 					exchange.getIn().setHeader(Exchange.HTTP_PATH,"POST");
 					break;
 				default:
@@ -215,7 +217,8 @@ public class ADTA01A04A08toEncounter implements Processor {
 		}
 		catch (Exception ex)
 		{
-			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
+			ex.printStackTrace();
+			log.error("#3 "+  exchange.getExchangeId() + " " + ex.getMessage() +  " "  + ex.getStackTrace() 
 					+" Properties: " + exchange.getProperties().toString()
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());

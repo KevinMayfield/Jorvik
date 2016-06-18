@@ -81,18 +81,20 @@ public class ADTA05A38toAppointment implements Processor {
 					code =terserGet("/.PID-3("+f+")-4");
 					value =terserGet("/.PID-3("+f+")-1");
 				}
+			
 				if (code != null && !code.isEmpty())
 				{
+					log.info("PID "+code+" "+value);
 					switch (code)
 					{
 						case "PAS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "NHS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -104,7 +106,7 @@ public class ADTA05A38toAppointment implements Processor {
 				}
 			}
 			// Names PID.PatientName
-			//log.info("Patient Name");
+			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				appointment.addIdentifier()
@@ -189,7 +191,8 @@ public class ADTA05A38toAppointment implements Processor {
 		}
 		catch (Exception ex)
 		{
-			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
+			ex.printStackTrace();
+			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() +  " "  + ex.getStackTrace() 
 					+" Properties: " + exchange.getProperties().toString()
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());

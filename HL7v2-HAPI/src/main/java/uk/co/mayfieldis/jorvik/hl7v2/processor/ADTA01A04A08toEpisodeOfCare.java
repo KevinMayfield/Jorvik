@@ -83,19 +83,21 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 					code =terserGet("/.PID-3("+f+")-4");
 					value =terserGet("/.PID-3("+f+")-1");
 				}
+				
 				if (code != null && !code.isEmpty())
 				{
-					log.debug("Code = "+code);
+					log.info("PID "+code+" "+value);
+					
 					switch (code)
 					{
 						case "PAS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "NHS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null && exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -104,9 +106,9 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							break;
 					}
-					log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 				}
 			}
+			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
 			log.debug("Activity ID");
 			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
@@ -231,7 +233,8 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 		}
 		catch (Exception ex)
 		{
-			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
+			ex.printStackTrace();
+			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() +  " "  + ex.getStackTrace() 
 					+" Properties: " + exchange.getProperties().toString()
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
 					+ " Message:" + exchange.getIn().getBody().toString());

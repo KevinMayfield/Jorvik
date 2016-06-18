@@ -106,9 +106,9 @@ public class ADTA28A31toPatient implements Processor {
 							patient.addIdentifier()
 								.setSystem(env.getProperty("ORG.PatientIdentifierPAS"))
 								.setValue(value);
-							if (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
-								exchange.getIn().setHeader("FHIRPatient", env.getProperty("ORG.PatientIdentifierPAS")+"|"+value);
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "RWY":
@@ -127,6 +127,10 @@ public class ADTA28A31toPatient implements Processor {
 							patient.addIdentifier()
 								.setSystem(env.getProperty("ORG.PatientIdentifierNHS"))
 								.setValue(value);
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							{
+								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							}
 							// May need to add search on NHS number but for trust systems  NHSNumber is transient.
 							break;
 						default:
@@ -143,6 +147,7 @@ public class ADTA28A31toPatient implements Processor {
 					}
 				}
 			}
+			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
 			log.debug("Patient Name");
 			if ((terserGet("/.PID-5-1") != null && !terserGet("/.PID-5-1").isEmpty() ) || (terserGet("/.PID-5-2") != null && !terserGet("/.PID-5-2").isEmpty()))
@@ -160,7 +165,8 @@ public class ADTA28A31toPatient implements Processor {
 				
 	        	try {
 	        		Date dob;
-	        		dob = fmt.parse(terserGet("/.PID-7-1"));
+	        		
+	        		dob = fmt.parse(terserGet("/.PID-7-1").substring(0, 8));
 	        		patient.setBirthDate(dob);
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
@@ -242,6 +248,10 @@ public class ADTA28A31toPatient implements Processor {
 				if (value !=null && !value.isEmpty())
 				{
 					ContactPoint contactPoint =patient.addTelecom(); 
+					if (code == null || code.isEmpty())
+					{
+						code="PRN";
+					}
 					switch (code)
 					{
 						case "PRN":
@@ -292,7 +302,10 @@ public class ADTA28A31toPatient implements Processor {
 				if (value !=null && !value.isEmpty())
 				{
 					ContactPoint contactPoint =patient.addTelecom(); 
-					
+					if (code == null || code.isEmpty())
+					{
+						code="WPN";
+					}
 					switch (code)
 					{
 						case "PRN":
@@ -366,6 +379,7 @@ public class ADTA28A31toPatient implements Processor {
 		}
 		catch (Exception ex)
 		{
+			ex.printStackTrace();
 			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
 					+" Properties: " + exchange.getProperties().toString()
 					+" Headers: " + exchange.getIn().getHeaders().toString() 
