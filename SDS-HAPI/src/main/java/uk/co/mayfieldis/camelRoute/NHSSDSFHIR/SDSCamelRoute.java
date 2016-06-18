@@ -60,12 +60,13 @@ public class SDSCamelRoute extends RouteBuilder {
     	
     	
     		// Should follow Practice upload otherwise practice won't exist
+    	    
     	    from("scheduler://egpcur?delay=24h")
     	    	.routeId("Retrieve NHS GP and Practice Amendments Zip")
     	    	.setHeader(Exchange.HTTP_METHOD, constant("GET"))
     	    	.to(env.getProperty("NHSSDS.Amendments"))
     	    	.to(env.getProperty("NHSSDS.ZipOut"));
-    	  
+    	  	
     	    from(env.getProperty("NHSSDS.Zip"))
 	    		.routeId("Unzip NHS Reference Files")
 	    		.unmarshal(zipFile)
@@ -183,12 +184,13 @@ public class SDSCamelRoute extends RouteBuilder {
 		    	.log("Update type ${header.CamelHttpMethod} ${header.CamelHttpPath} ${header.CamelHttpQuery} Record Entity ID = ${header.FHIROrganisationCode} partOf ${header.FHIROrganisationCode}")
 		    	.setHeader("Prefer", simple("return=representation",String.class))
 		    	.to("log:uk.co.mayfieldis.esb.SDSHAPI.SDSCamelRoute?level=INFO&showBody=true&showHeaders=true")
-		    	.to("activemq:HAPIFHIR")
+		    	.to("activemq:HAPIFHIR");
+		    	/*
 		    	.choice()
 	    		.when(header(Exchange.FILE_NAME).isEqualTo("egpam.csv"))
 	    			// only send updates for amendment load not a bulk load
 	    			.to(env.getProperty("Internal.Amendments"));
-	    		
+	    		*/
     	    	
     	    from("vm:lookupOrganisation")
     	    	.routeId("Lookup FHIR Organisation")

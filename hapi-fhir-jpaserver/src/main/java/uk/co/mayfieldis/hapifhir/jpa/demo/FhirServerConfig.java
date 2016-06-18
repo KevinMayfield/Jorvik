@@ -30,7 +30,7 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("classpath:FHIRJPA.properties")
+@PropertySource("classpath:HAPIJPA.properties")
 public class FhirServerConfig extends BaseJavaConfigDstu2 {
 
 	/**
@@ -55,7 +55,7 @@ public class FhirServerConfig extends BaseJavaConfigDstu2 {
 	 * 
 	 * A URL to a remote database could also be placed here, along with login credentials and other properties supported by BasicDataSource.
 	 */
-	@Bean(destroyMethod = "close")
+	@Bean
 	public DataSource dataSource() {
 		
 		/*
