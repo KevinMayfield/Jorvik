@@ -88,13 +88,20 @@ public class FHIRDocumentReferenceProcess implements Processor {
 								
 								if (code.equals(TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER()))
 								{
-										exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+patient.getIdentifier().get(g).getValue() );
+										exchange.getIn().setHeader("FHIRPatient",TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER()+"|"+patient.getIdentifier().get(g).getValue() );
 								}
-								if (code.equals(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER()) || code.equals(FHIRCodeSystems.URI_NHS_NUMBER_ENGLAND))
+								else if (code.equals(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER()))
 								{
 									if ((exchange.getIn().getHeader("FHIRPatient") == null) || (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty()))
 									{
-										exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+patient.getIdentifier().get(g).getValue() );
+										exchange.getIn().setHeader("FHIRPatient",TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER()+"|"+patient.getIdentifier().get(g).getValue() );
+									}
+								}
+								else if (code.equals(FHIRCodeSystems.URI_NHS_NUMBER_ENGLAND))
+								{
+									if ((exchange.getIn().getHeader("FHIRPatient") == null) || (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty()))
+									{
+										exchange.getIn().setHeader("FHIRPatient",FHIRCodeSystems.URI_NHS_NUMBER_ENGLAND+"|"+patient.getIdentifier().get(g).getValue() );
 									}
 								}
 							}

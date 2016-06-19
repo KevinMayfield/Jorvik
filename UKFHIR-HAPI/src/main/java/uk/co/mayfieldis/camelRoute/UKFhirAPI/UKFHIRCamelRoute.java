@@ -72,6 +72,10 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 		
 		from(env.getProperty("NHSITK.Path"))
 			.routeId("DocumentReference POST File")
+			.setHeader(Exchange.HTTP_METHOD, simple("POST", String.class))
+	    	.setHeader(Exchange.HTTP_PATH, simple("DocumentReference",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("",String.class))
+	    	.setHeader(Exchange.CONTENT_TYPE,simple("application/xml+fhir",String.class))
 			.to("activemq:DocumentReference");
 		
 		from("activemq:DocumentReference")
@@ -132,6 +136,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 	    	
 		from("vm:lookupPatient")
 			.routeId("Lookup FHIR Patient")
+			.log("Patient.identifier=${header.FHIRPatient}")
 			.setBody(simple(""))
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 			.setHeader(Exchange.HTTP_URI, simple("/Patient", String.class))

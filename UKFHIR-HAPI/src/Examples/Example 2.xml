@@ -1,0 +1,11 @@
+<DocumentReference xmlns="http://hl7.org/fhir"><id value="665568"></id><contained>
+<Patient><id value="#pat"></id>
+<identifier><system value="urn:fhir.nhs.uk:id/NHSNumber"></system><value value="3333333333"></value></identifier>
+<name><family value="ZZZTEST"></family><given value="LETTER"></given><prefix value="MR"></prefix></name><gender value="male"></gender><birthDate value="1980-01-01"></birthDate></Patient></contained>
+<contained><Encounter><id value="#enc"></id><identifier><system value="http://fhir.chft.nhs.uk/HSI"></system><value value="2139"></value></identifier><status value="in-progress"></status><class value="inpatient"></class><period><start value="2016-06-01T14:49:00"></start></period></Encounter></contained>
+<contained><Practitioner><id value="#prac"></id><identifier><system value="urn:oid:2.16.840.1.113883.2.1.4.4"></system><value value="C4421434"></value></identifier><name><family value="Kenneth"></family><given value="Catherine"></given><prefix value="Dr"></prefix></name></Practitioner></contained>
+<identifier><system value="http://fhir.chft.nhs.uk/Cerner/HNAM_CEREF"></system><value value="3350561"></value></identifier>
+<identifier><system value="http://fhir.chft.nhs.uk/ClinicalLetter"></system><value value="665568"></value></identifier>
+<identifier><system value="http://fhir.chft.nhs.uk/DocumentIndex"></system><value value="665568"></value></identifier>
+<identifier><system value="http://fhir.chft.nh.uk/DocumentReference/EDMS"></system><value value="321Z069_007XXP0M500001G"></value></identifier>
+<subject><reference value="#pat"></reference></subject><type><coding><system value="http://snomed.info/sct"></system><code value="823701000000103"></code><display value="Discharge Letters"></display></coding></type><class><coding><system value="http://england.nhs.uk/HL7v2/zu015"></system><code value="300"></code></coding></class><author><reference value="#prac"></reference></author><created value="2016-06-01T15:10:00"></created><content><attachment><contentType value="application/rtf"></contentType><url value="Binary/3350561-GPDischargeLetter.doc"></url></attachment></content><context><encounter><reference value="#enc"></reference></encounter><period><start value="2016-06-01T14:49:00"></start></period></context></DocumentReference>
