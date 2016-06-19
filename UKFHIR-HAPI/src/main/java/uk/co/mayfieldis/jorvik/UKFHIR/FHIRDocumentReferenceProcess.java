@@ -15,6 +15,7 @@ import org.hl7.fhir.instance.model.Practitioner;
 import org.hl7.fhir.instance.model.DocumentReference.DocumentReferenceContextComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
@@ -23,6 +24,10 @@ import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
 public class FHIRDocumentReferenceProcess implements Processor {
 
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.UKFHIR.FHIRDocumentReferenceProcess.class);
+	
+	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	public Environment env;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -79,9 +84,18 @@ public class FHIRDocumentReferenceProcess implements Processor {
 							Patient patient = (Patient) documentReference.getContained().get(f);
 							for (int g=0;g<patient.getIdentifier().size();g++)
 							{
-								if (patient.getIdentifier().get(g).getSystem().equals(NHSTrustFHIRCodeSystems.URI_PATIENT_DISTRICT_NUMBER))
+								String code = patient.getIdentifier().get(g).getSystem();
+								
+								if (code.equals(TrustFHIRSystems.getURI_PATIENT_OTHER_NUMBER()))
 								{
-									exchange.getIn().setHeader("FHIRPatient",patient.getIdentifier().get(g).getValue() );
+										exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+patient.getIdentifier().get(g).getValue() );
+								}
+								if (code.equals(TrustFHIRSystems.getURI_PATIENT_HOSPITAL_NUMBER()) || code.equals(FHIRCodeSystems.URI_NHS_NUMBER_ENGLAND))
+								{
+									if ((exchange.getIn().getHeader("FHIRPatient") == null) || (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty()))
+									{
+										exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+patient.getIdentifier().get(g).getValue() );
+									}
 								}
 							}
 							documentReference.setSubject(null);
@@ -107,7 +121,7 @@ public class FHIRDocumentReferenceProcess implements Processor {
 							Encounter encounter = (Encounter) documentReference.getContained().get(f);
 							for (int g=0;g<encounter.getIdentifier().size();g++)
 							{
-								if (encounter.getIdentifier().get(g).getSystem().equals(NHSTrustFHIRCodeSystems.uriCHFTActivityId))
+								if (encounter.getIdentifier().get(g).getSystem().equals(TrustFHIRSystems.geturiNHSOrgActivityId()))
 								{
 									exchange.getIn().setHeader("FHIREncounter",encounter.getIdentifier().get(g).getValue());
 								}
@@ -138,7 +152,9 @@ public class FHIRDocumentReferenceProcess implements Processor {
 		}
 		catch (Exception ex)
 		{
-			log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + exchange.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
+			//log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + exchange.getProperties().toString());
 		}
 	}
 

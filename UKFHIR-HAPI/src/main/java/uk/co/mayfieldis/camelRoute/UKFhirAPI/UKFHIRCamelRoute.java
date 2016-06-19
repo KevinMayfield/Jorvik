@@ -3,6 +3,10 @@ package uk.co.mayfieldis.camelRoute.UKFhirAPI;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
@@ -12,12 +16,23 @@ import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithEncounter;
 import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithPatient;
 import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithPractitioner;
 
+@Component
+@PropertySource("classpath:HAPIHL7FHIR.properties")
 public class UKFHIRCamelRoute extends RouteBuilder {
 
+	@Autowired
+	protected Environment env;
+	
     @Override
     public void configure() 
     {
+    	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
+    	TrustFHIRSystems.setValues(env);
+    	
     	FHIRDocumentReferenceProcess fhirDocumentReferenceProcess = new FHIRDocumentReferenceProcess();
+    	fhirDocumentReferenceProcess.env = env;
+    	fhirDocumentReferenceProcess.TrustFHIRSystems = TrustFHIRSystems;
+    	
     	EnrichDocumentReferencewithPatient enrichDocumentReferencewithPatient = new EnrichDocumentReferencewithPatient();
     	EnrichDocumentReferencewithPractitioner enrichDocumentReferencewithPractitioner = new EnrichDocumentReferencewithPractitioner();
     	EnrichDocumentReferencewithEncounter enrichDocumentReferencewithEncounter = new EnrichDocumentReferencewithEncounter();
@@ -47,25 +62,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 			.post("/")
 			.route()
 				.routeId("DocumentReference POST")
-				.process(fhirDocumentReferenceProcess)
-				.choice()
-					.when(header("FHIRPatient").isNotNull())
-						.enrich("vm:lookupPatient",enrichDocumentReferencewithPatient)
-				.end()
-				.choice()
-					.when(header("FHIRPractitioner").isNotNull())
-						.enrich("vm:lookupConsultant",enrichDocumentReferencewithPractitioner)
-				.end()
-				.choice()
-					.when(header("FHIRGP").isNotNull())
-						.enrich("vm:lookupGP",enrichDocumentReferencewithPractitioner)
-				.end()
-				.choice()
-					.when(header("FHIREncounter").isNotNull())
-						.enrich("vm:lookupEncounter",enrichDocumentReferencewithEncounter)
-				.end()
-				.enrich("vm:lookupResource",enrichDocumentReferencewithDocumentReference)
-				.to("vm:HAPIFHIR");
+				.to("activemq:DocumentReference");
 		
 		rest("/Ping")
 			.post("/")
@@ -73,8 +70,32 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 				.routeId("Ping POST")
 				.to("direct:ping");
 		
-	
+		from(env.getProperty("NHSITK.Path"))
+			.routeId("DocumentReference POST File")
+			.to("activemq:DocumentReference");
 		
+		from("activemq:DocumentReference")
+		.routeId("DocumentReference POST ActiveMQ")
+			.process(fhirDocumentReferenceProcess)
+			.choice()
+				.when(header("FHIRPatient").isNotNull())
+					.enrich("vm:lookupPatient",enrichDocumentReferencewithPatient)
+			.end()
+			.choice()
+				.when(header("FHIRPractitioner").isNotNull())
+					.enrich("vm:lookupConsultant",enrichDocumentReferencewithPractitioner)
+			.end()
+			.choice()
+				.when(header("FHIRGP").isNotNull())
+					.enrich("vm:lookupGP",enrichDocumentReferencewithPractitioner)
+			.end()
+			.choice()
+				.when(header("FHIREncounter").isNotNull())
+					.enrich("vm:lookupEncounter",enrichDocumentReferencewithEncounter)
+			.end()
+			.enrich("vm:lookupResource",enrichDocumentReferencewithDocumentReference)
+			.to("activemq:HAPIFHIRAPI");
+			
 		from("direct:ping")
 			.routeId("Ping")
 			.transform(constant("Pong"));
@@ -86,7 +107,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_BASE_URI, simple("", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Location",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTLocation+"|${header.FHIRLocation}&_format=xml",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgLocation()+"|${header.FHIRLocation}&_format=xml",String.class))
 	    	.to("vm:HAPIFHIR");
 	    	
 	
@@ -115,7 +136,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 			.setHeader(Exchange.HTTP_URI, simple("/Patient", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Patient",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.URI_PATIENT_DISTRICT_NUMBER+"|${header.FHIRPatient}&_format=xml",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier=${header.FHIRPatient}",String.class))
 	    	.to("vm:HAPIFHIR");
 		
 		from("vm:lookupEncounter")
@@ -124,7 +145,7 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 			.setHeader(Exchange.HTTP_URI, simple("/Encounter", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Encounter",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+NHSTrustFHIRCodeSystems.uriCHFTActivityId+"|${header.FHIREncounter}&_format=xml",String.class))
+	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgActivityId()+"|${header.FHIREncounter}&_format=xml",String.class))
 	    	.to("vm:HAPIFHIR");
 		
 		 from("vm:lookupResource")
@@ -137,7 +158,19 @@ public class UKFHIRCamelRoute extends RouteBuilder {
 		
 		from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")
-			.to("http:localhost:8181/hapi-fhir-jpaserver/baseDstu2?throwExceptionOnFailure=false&connectionsPerRoute=60&bridgeEndpoint=true")
+			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
+			.choice()
+				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
+					.to("log:uk.co.mayfieldis.camelRoute.UKFhirAPI.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
+					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
+				.when(simple("${in.header.CamelHttpResponseCode} == 400"))
+					.to("log:uk.co.mayfieldis.camelRoute.UKFhirAPI.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
+					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 400")
+			.end();
+		
+		from("activemq:HAPIFHIRAPI")
+			.routeId("HAPI FHIR API")
+			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.camelRoute.UKFhirAPI.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")

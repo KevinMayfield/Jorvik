@@ -188,8 +188,8 @@
 		<dependency>
 			<groupId>uk.co.mayfieldis</groupId>
 			<artifactId>Jorvik-Core</artifactId>
-			<version>1.0.0-RELEASE</version>
-	</dependency>
+			<version>1.0.1-RELEASE</version>
+		</dependency>
 
 	 
    	<dependency>
