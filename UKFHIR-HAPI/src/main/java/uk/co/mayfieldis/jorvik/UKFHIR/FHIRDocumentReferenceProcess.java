@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 public class FHIRDocumentReferenceProcess implements Processor {
 

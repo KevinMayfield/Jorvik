@@ -8,13 +8,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.UKFHIR.FHIRDocumentReferenceProcess;
-import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithDocumentReference;
-import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithEncounter;
-import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithPatient;
-import uk.co.mayfieldis.jorvik.core.EnrichDocumentReferencewithPractitioner;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichDocumentReferencewithDocumentReference;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichDocumentReferencewithEncounter;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichDocumentReferencewithPatient;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichDocumentReferencewithPractitioner;
 
 @Component
 @PropertySource("classpath:HAPIHL7FHIR.properties")

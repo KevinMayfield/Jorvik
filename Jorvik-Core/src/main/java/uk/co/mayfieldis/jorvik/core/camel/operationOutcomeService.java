@@ -1,4 +1,4 @@
-package uk.co.mayfieldis.jorvik.hl7v2.processor;
+package uk.co.mayfieldis.jorvik.core.camel;
 
 
 import org.hl7.fhir.instance.formats.ParserType;
@@ -7,7 +7,6 @@ import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.instance.model.OperationOutcome.IssueType;
 
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 
 public class operationOutcomeService {

@@ -10,30 +10,30 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithAppointment;
-import uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithLocation;
-import uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithPatient;
-import uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithAppointment;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEncounter;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEpisodeOfCare;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithLocation;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPatient;
-import uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithEpisode;
-import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithPatient;
-import uk.co.mayfieldis.jorvik.core.EnrichEpisodewithPractitioner;
-import uk.co.mayfieldis.jorvik.core.EnrichLocationwithLocation;
-import uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichPatientwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichPatientwithPatient;
-import uk.co.mayfieldis.jorvik.core.EnrichPatientwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithAppointment;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithLocation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithPatient;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithPractitioner;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichConsultantwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithAppointment;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithEncounter;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithEpisodeOfCare;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithLocation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithPatient;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithPractitioner;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithEpisode;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithPatient;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithPractitioner;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithLocation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithPatient;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithPractitioner;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichwithUpdateType;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEncounter;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA05A38toAppointment;
@@ -262,12 +262,16 @@ public class HL7v2CamelRoute extends RouteBuilder {
 					.to("direct:sub_Episode");
 		
 		from("direct:sub_Episode")
+			.routeId("ADT_sub_Episode")
 			.enrich("vm:lookupPatient",enrichEpisodewithPatient)
 			.choice()
 				.when(header("FHIRPractitioner").isNotNull())
 					.enrich("vm:lookupConsultant",enrichEpisodewithPractitioner)
 			.end()
-			.enrich("vm:lookupOrganisation",enrichEpisodewithOrganisation)
+			.choice()
+				.when(header("FHIROrganisationCode").isNotNull())
+					.enrich("vm:lookupOrganisation",enrichEpisodewithOrganisation)
+			.end()
 			.enrich("vm:lookupEpisode",enrichEpisodewithEpisode)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to("activemq:HAPIHL7v2");

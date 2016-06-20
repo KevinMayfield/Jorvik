@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 
 

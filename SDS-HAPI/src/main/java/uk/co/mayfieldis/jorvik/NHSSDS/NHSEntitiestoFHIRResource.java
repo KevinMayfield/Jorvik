@@ -18,8 +18,8 @@ import org.hl7.fhir.instance.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.hl7.fhir.instance.model.valuesets.PractitionerRole;
 
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 
 public class NHSEntitiestoFHIRResource implements Processor {

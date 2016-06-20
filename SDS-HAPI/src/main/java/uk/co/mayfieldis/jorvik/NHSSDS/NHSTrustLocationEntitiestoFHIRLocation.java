@@ -6,8 +6,8 @@ import org.hl7.fhir.instance.formats.ParserType;
 import org.hl7.fhir.instance.model.CodeableConcept;
 import org.hl7.fhir.instance.model.Location;
 
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 
 public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {

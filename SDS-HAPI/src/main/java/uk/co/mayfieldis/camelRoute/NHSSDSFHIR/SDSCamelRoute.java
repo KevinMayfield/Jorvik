@@ -10,19 +10,19 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import uk.co.mayfieldis.jorvik.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.FHIRConstants.NHSTrustFHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSConsultantEntities;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSConsultantEntitiestoFHIRPractitioner;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSEntities;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSEntitiestoFHIRResource;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSTrustLocationEntities;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSTrustLocationEntitiestoFHIRLocation;
-import uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichLocationwithLocation;
-import uk.co.mayfieldis.jorvik.core.EnrichLocationwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichResourcewithOrganisation;
-import uk.co.mayfieldis.jorvik.core.EnrichwithUpdateType;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichConsultantwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithLocation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichResourcewithOrganisation;
+import uk.co.mayfieldis.jorvik.core.camel.EnrichwithUpdateType;
 
 @Component
 @PropertySource("classpath:HAPINHSSDS.properties")

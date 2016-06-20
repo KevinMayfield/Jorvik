@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-
-import uk.co.mayfieldis.jorvik.core.ResourceSerialiser;
+import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 public class EncountertoEpisodeOfCare implements Processor {
 
