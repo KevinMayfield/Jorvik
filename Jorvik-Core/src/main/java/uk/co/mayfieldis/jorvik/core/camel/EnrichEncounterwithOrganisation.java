@@ -69,8 +69,8 @@ public class EnrichEncounterwithOrganisation implements AggregationStrategy {
 						Reference ref = new Reference();
 						Organization organisation = (Organization) bundle.getEntry().get(0).getResource(); 
 						ref.setReference("Organization/"+organisation.getId());
+						exchange.getIn().setHeader("FHIROrganisationRef","Organization/"+organisation.getId());
 						encounter.setServiceProvider(ref);
-						
 						String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 						exchange.getIn().setBody(Response);
 					}

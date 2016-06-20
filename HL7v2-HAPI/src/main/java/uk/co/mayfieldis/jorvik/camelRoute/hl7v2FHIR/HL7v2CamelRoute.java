@@ -39,6 +39,7 @@ import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA05A38toAppointment;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA28A31toPatient;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.EncountertoEpisodeOfCare;
+import uk.co.mayfieldis.jorvik.hl7v2.processor.FHIRResourcetoLocation;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM02toFHIRPractitioner;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM05toFHIRLocation;
 
@@ -120,6 +121,8 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	
     	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation();
     	
+    	FHIRResourcetoLocation fhirResourcetoLocation = new FHIRResourcetoLocation();
+    	fhirResourcetoLocation.env = this.env;
     	//httpOutcomeProcessor httpOutcomeProcessor = new httpOutcomeProcessor();
     	
     	onException(org.apache.
@@ -285,7 +288,10 @@ public class HL7v2CamelRoute extends RouteBuilder {
 				.when(header("FHIRPractitioner").isNotNull())
 					.enrich("vm:lookupConsultant",enrichEncounterwithPractitioner)
 			.end()
-			.enrich("vm:lookupOrganisation",enrichEncounterwithOrganisation)
+			.choice()
+				.when(header("FHIROrganisationCode").isNotNull())
+					.enrich("vm:lookupOrganisation",enrichEncounterwithOrganisation)
+			.end()
 			.choice()
 				.when(header("FHIRLocation").isNotNull())
 					.enrich("vm:lookupLocation",enrichEncounterwithLocation)
@@ -329,6 +335,12 @@ public class HL7v2CamelRoute extends RouteBuilder {
  
     	from("vm:lookupLocation")
     		.routeId("Loookup FHIR Location")
+    		// Only add check up Location when Org provided
+    		.process(fhirResourcetoLocation)
+			.choice()
+    			.when(header("FHIROrganisationRef").isNotNull())
+    				.to("vm:HAPIFHIR")
+    		.end()
     		.setBody(simple(""))
 	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
 	    	.setHeader(Exchange.HTTP_PATH, simple("/Location",String.class))
@@ -417,11 +429,17 @@ public class HL7v2CamelRoute extends RouteBuilder {
 		
     	from("vm:HAPIFHIR")
 			.routeId("HAPI FHIR")
+			.to("log:uk.co.mayfieldis.hl7v2.hapi.vmHAPIFHIR?showAll=true&multiline=true")
 			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
 			.choice()
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
 					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
+			.end()
+			.choice()
+				.when(simple("${in.header.CamelHttpResponseCode} == 400"))
+					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=WARN")
+					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 400")
 			.end();
     	
     	from("activemq:HAPIHL7v2")
@@ -432,6 +450,11 @@ public class HL7v2CamelRoute extends RouteBuilder {
 				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.activemq.HAPIHL7v2?showAll=true&multiline=true&level=ERROR")
 					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
+			.end()
+			.choice()
+				.when(simple("${in.header.CamelHttpResponseCode} == 400"))
+					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=WARN")
+					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 400")
 			.end();
     	
     }

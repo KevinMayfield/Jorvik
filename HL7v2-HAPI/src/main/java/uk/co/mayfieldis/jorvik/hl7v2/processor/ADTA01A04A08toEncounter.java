@@ -179,9 +179,9 @@ public class ADTA01A04A08toEncounter implements Processor {
 				}
 			}
 			log.info("Get Reference Material");
-			if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
+			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-2"));
+				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ', '-'));
 			}
 			
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
@@ -194,9 +194,9 @@ public class ADTA01A04A08toEncounter implements Processor {
 			{
 				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
 			}
-			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
+			if (terserGet("/.PV1-3-4") != null && !terserGet("/.PV1-3-4").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-1"));
+				exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-4"));
 			}
 			
 			if (terserGet("/.PV1-7-1") != null && !terserGet("/.PV1-7-1").isEmpty())

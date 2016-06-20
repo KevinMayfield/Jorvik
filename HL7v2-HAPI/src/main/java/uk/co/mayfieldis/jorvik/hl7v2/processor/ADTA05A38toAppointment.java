@@ -176,9 +176,14 @@ public class ADTA05A38toAppointment implements Processor {
 			}
 			
 			
-			if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
+			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-2"));
+				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ','-'));
+			}
+			
+			if (terserGet("/.PV1-3-4") != null && !terserGet("/.PV1-3-4").isEmpty())
+			{
+				exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-4"));
 			}
 			
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
