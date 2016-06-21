@@ -85,7 +85,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 				
 				if (code != null && !code.isEmpty())
 				{
-					log.info("PID "+code+" "+value);
+					log.debug("PID "+code+" "+value);
 					switch (code)
 					{
 						case "PAS":
@@ -107,11 +107,13 @@ public class ADTA01A04A08toEncounter implements Processor {
 					
 				}
 			}
-			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
-			log.info("Activity ID");
+			
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
+				log.debug("Activity ID "+terserGet("/.PV1-19-1"));
+				
 				encounter.addIdentifier()
 					.setSystem(TrustFHIRSystems.geturiNHSOrgActivityId())
 					.setValue(terserGet("/.PV1-19-1"));
@@ -178,7 +180,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 						break;
 				}
 			}
-			log.info("Get Reference Material");
+			log.debug("Get Reference Material");
 			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ', '-'));

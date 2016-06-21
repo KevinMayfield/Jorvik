@@ -86,7 +86,7 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 				
 				if (code != null && !code.isEmpty())
 				{
-					log.info("PID "+code+" "+value);
+					log.debug("PID "+code+" "+value);
 					
 					switch (code)
 					{
@@ -108,7 +108,7 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 					}
 				}
 			}
-			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
 			log.debug("Activity ID");
 			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
@@ -139,18 +139,29 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 					
 				}
 			}
+			if ((terserGet("/.ZU3-4") != null) && (terserGet("/.ZU3-4").equals("1")))
+			{
+				episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.FINISHED);
+			}
 			if (terserGet("/.MSH-9-2") != null)
 			{
 				if (terserGet("/.MSH-9-2").equals("A03"))
 				{
-					episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.FINISHED);
+						if ((terserGet("/.PV1-2") != null) && (terserGet("/.PV1-2").equals("O")))  
+						{
+							// Null see ZU3 code
+						}
+						else
+						{
+							// Only for non outpatients
+							episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.FINISHED);
+						}
 				}
 				if (terserGet("/.MSH-9-2") != null && terserGet("/.MSH-9-2").equals("A11"))
 				{
 					episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.CANCELLED);
 				}
 			}
-
 			
 			Period period = new Period();
 			if (terserGet("/.PV1-44-1") != null && !terserGet("/.PV1-44-1").isEmpty())
@@ -239,10 +250,7 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() +  " "  + ex.getStackTrace() 
-					+" Properties: " + exchange.getProperties().toString()
-					+" Headers: " + exchange.getIn().getHeaders().toString() 
-					+ " Message:" + exchange.getIn().getBody().toString());
+			throw ex;
 		}
 		exchange.getIn().setHeader("FHIRResource", "EpisodeOfCare");
 		String Response = ResourceSerialiser.serialise(episode, ParserType.XML);

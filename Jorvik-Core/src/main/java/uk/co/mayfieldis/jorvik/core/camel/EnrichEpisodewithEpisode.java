@@ -83,6 +83,25 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 							statusHistory.setPeriod(period);
 							episode.addStatusHistory(statusHistory);
 						}
+						if (hapiEpisode.getPeriod() != null && episode.getPeriod() != null)
+						{
+							if (hapiEpisode.getPeriod().getStart() != null)
+							{
+								// Restore original start date
+								episode.getPeriod().setStart(hapiEpisode.getPeriod().getStart());
+							}
+							if ((episode.getStatus().equals(EpisodeOfCare.EpisodeOfCareStatus.FINISHED) || episode.getStatus().equals(EpisodeOfCare.EpisodeOfCareStatus.CANCELLED)))
+							{
+								// do nothing
+							
+							}
+							else
+							{
+								// Remove end date as episode not finished
+								episode.getPeriod().setEnd(null);
+							}
+							
+						}
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader(Exchange.HTTP_PATH,"EpisodeOfCare/"+hapiEpisode.getId());
 						// Have altered resource so process it.
@@ -91,9 +110,18 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 					}
 					else
 					{
+						if (episode.getPeriod() != null)
+						{
+							if ((episode.getStatus().equals(EpisodeOfCare.EpisodeOfCareStatus.FINISHED) || episode.getStatus().equals(EpisodeOfCare.EpisodeOfCareStatus.CANCELLED)))
+							{
+								// Remove end date as episode not finished
+								episode.getPeriod().setEnd(null);
+							}
+						}
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 						exchange.getIn().setHeader(Exchange.HTTP_PATH,"EpisodeOfCare");
-						
+						String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
+						exchange.getIn().setBody(Response);
 					}
 				}
 				catch(Exception ex)

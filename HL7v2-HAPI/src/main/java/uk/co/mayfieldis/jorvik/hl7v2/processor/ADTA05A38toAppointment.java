@@ -84,7 +84,7 @@ public class ADTA05A38toAppointment implements Processor {
 			
 				if (code != null && !code.isEmpty())
 				{
-					log.info("PID "+code+" "+value);
+					log.debug("PID "+code+" "+value);
 					switch (code)
 					{
 						case "PAS":
@@ -106,7 +106,7 @@ public class ADTA05A38toAppointment implements Processor {
 				}
 			}
 			// Names PID.PatientName
-			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				appointment.addIdentifier()

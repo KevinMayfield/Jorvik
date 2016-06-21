@@ -146,7 +146,7 @@ public class ADTA28A31toPatient implements Processor {
 					}
 				}
 			}
-			log.info("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
 			// Names PID.PatientName
 			log.debug("Patient Name");
 			if ((terserGet("/.PID-5-1") != null && !terserGet("/.PID-5-1").isEmpty() ) || (terserGet("/.PID-5-2") != null && !terserGet("/.PID-5-2").isEmpty()))
