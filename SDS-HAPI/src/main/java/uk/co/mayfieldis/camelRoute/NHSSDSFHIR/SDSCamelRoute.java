@@ -65,7 +65,7 @@ public class SDSCamelRoute extends RouteBuilder {
     	    	.routeId("Retrieve NHS GP and Practice Amendments Zip")
     	    	.setHeader(Exchange.HTTP_METHOD, constant("GET"))
     	    	.to(env.getProperty("NHSSDS.Amendments"))
-    	    	.to(env.getProperty("NHSSDS.ZipOut"));
+    	    	.to(env.getProperty("NHSSDS.ZipOut")+"${date:now:yyyyMMdd}-egpcur.zip");
     	  	
     	    from(env.getProperty("NHSSDS.Zip"))
 	    		.routeId("Unzip NHS Reference Files")
