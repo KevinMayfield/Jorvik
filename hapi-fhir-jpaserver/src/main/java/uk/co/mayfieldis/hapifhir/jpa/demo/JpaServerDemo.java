@@ -13,8 +13,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu1;
-import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
+
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
@@ -57,11 +56,7 @@ public class JpaServerDemo extends RestfulServer {
 		 * contains bean definitions for a resource provider for each resource type
 		 */
 		String resourceProviderBeanName;
-		if (fhirVersion == FhirVersionEnum.DSTU1) {
-			resourceProviderBeanName = "myResourceProvidersDstu1";
-		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
-			resourceProviderBeanName = "myResourceProvidersDstu2";
-		} else if (fhirVersion == FhirVersionEnum.DSTU3) {
+		if (fhirVersion == FhirVersionEnum.DSTU3) {
 			resourceProviderBeanName = "myResourceProvidersDstu3";
 		} else {
 			throw new IllegalStateException();
@@ -74,11 +69,7 @@ public class JpaServerDemo extends RestfulServer {
 		 * transaction, and global history.
 		 */
 		Object systemProvider;
-		if (fhirVersion == FhirVersionEnum.DSTU1) {
-			systemProvider = myAppCtx.getBean("mySystemProviderDstu1", JpaSystemProviderDstu1.class);
-		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
-			systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class);
-		} else if (fhirVersion == FhirVersionEnum.DSTU3) {
+		if (fhirVersion == FhirVersionEnum.DSTU3) {
 			systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
 		} else {
 			throw new IllegalStateException();
