@@ -19,16 +19,17 @@ import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu1;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.EncodingEnum;
-import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+
 
 public class JpaServerDemo extends RestfulServer {
 
@@ -47,14 +48,14 @@ public class JpaServerDemo extends RestfulServer {
 		 *
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
 		 */
-		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU2;
+		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
 		setFhirContext(new FhirContext(fhirVersion));
 
 		// Get the spring context from the web container (it's declared in web.xml)
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 
 		/* 
-		 * The hapi-fhir-server-resourceproviders-dev.xml file is a spring configuration
+		 * The BaseJavaConfigDstu2.java class is a spring configuration
 		 * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
 		 * contains bean definitions for a resource provider for each resource type
 		 */
@@ -63,8 +64,8 @@ public class JpaServerDemo extends RestfulServer {
 			resourceProviderBeanName = "myResourceProvidersDstu1";
 		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
 			resourceProviderBeanName = "myResourceProvidersDstu2";
-		}	else if (fhirVersion == FhirVersionEnum.DSTU3) {
-				resourceProviderBeanName = "myResourceProvidersDstu3";
+		} else if (fhirVersion == FhirVersionEnum.DSTU3) {
+			resourceProviderBeanName = "myResourceProvidersDstu3";
 		} else {
 			throw new IllegalStateException();
 		}
@@ -80,7 +81,7 @@ public class JpaServerDemo extends RestfulServer {
 			systemProvider = myAppCtx.getBean("mySystemProviderDstu1", JpaSystemProviderDstu1.class);
 		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
 			systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class);
-		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
+		} else if (fhirVersion == FhirVersionEnum.DSTU3) {
 			systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
 		} else {
 			throw new IllegalStateException();
@@ -127,15 +128,17 @@ public class JpaServerDemo extends RestfulServer {
 		ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 
 		/*
-		 * Default to XML and pretty printing
+		 * Default to JSON and pretty printing
 		 */
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
 
 		/*
-		 * This is a simple paging strategy that keeps the last 10 searches in memory
+		 * -- New in HAPI FHIR 1.5 --
+		 * This configures the server to page search results to and from
+		 * the database
 		 */
-		setPagingProvider(new FifoMemoryPagingProvider(10));
+		setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
 
 		/*
 		 * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
@@ -145,6 +148,14 @@ public class JpaServerDemo extends RestfulServer {
 			this.registerInterceptor(interceptor);
 		}
 
+		/*
+		 * If you are hosting this server at a specific DNS name, the server will try to 
+		 * figure out the FHIR base URL based on what the web container tells it, but
+		 * this doesn't always work. If you are setting links in your search bundles that
+		 * just refer to "localhost", you might want to use a server address strategy:
+		 */
+		//setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
+		
 	}
 
 }

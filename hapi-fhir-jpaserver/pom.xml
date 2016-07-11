@@ -3,7 +3,7 @@
 	<artifactId>hapi-fhir-jpaserver</artifactId>
 	<packaging>war</packaging>
 	<groupId>uk.co.mayfieldis</groupId>
-	<version>0.2</version>
+	<version>1.6</version>
 	<name>HAPI FHIR JPA Server - UK Example</name>
 
 	<repositories>
@@ -32,7 +32,7 @@
 		<slf4j-version>1.7.12</slf4j-version>
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
-		<hapi-fhir-version>1.5</hapi-fhir-version>
+		<hapi-fhir-version>1.6</hapi-fhir-version>
 		<thymeleaf-version>2.1.4.RELEASE</thymeleaf-version>
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
 		<phloc_schematron_version>2.7.1</phloc_schematron_version>
@@ -48,14 +48,10 @@
 		</dependency>
 
 		<!-- At least one "structures" JAR must also be included -->
+		
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-structures-dstu</artifactId>
-			<version>${hapi-fhir-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-structures-dstu2</artifactId>
+			<artifactId>hapi-fhir-structures-dstu3</artifactId>
 			<version>${hapi-fhir-version}</version>
 		</dependency>
 

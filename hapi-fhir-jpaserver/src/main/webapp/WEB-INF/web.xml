@@ -42,14 +42,14 @@
 		</init-param>
 		<init-param>
 			<param-name>FhirVersion</param-name>
-			<param-value>DSTU2</param-value>
+			<param-value>DSTU3</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>fhirServlet</servlet-name>
-		<url-pattern>/baseDstu2/*</url-pattern>
+		<url-pattern>/baseStu3/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
