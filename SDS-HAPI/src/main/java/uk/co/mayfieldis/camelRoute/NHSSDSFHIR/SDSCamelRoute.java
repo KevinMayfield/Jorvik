@@ -36,6 +36,7 @@ public class SDSCamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+    	// only use one context. Expensive to create.
     	FhirContext ctx = FhirContext.forDstu3();
     	
     	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
