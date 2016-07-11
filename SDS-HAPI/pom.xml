@@ -7,7 +7,7 @@
 
   <artifactId>SDS-HAPI</artifactId>
   <groupId>uk.co.mayfieldis.esb</groupId>
-  <version>2.0.0</version>
+  <version>1.6.0-RELEASE</version>
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
   
   
@@ -31,16 +31,16 @@
 	    <!-- use utf-8 encoding -->
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	    <fhir-version>1.2</fhir-version>
-	    <hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
+	    	  
 	    <insight-log4j>1.2.0.Beta4</insight-log4j>
     	<bundle.symbolicName>SDSHAPICamelRoute.Bundle</bundle.symbolicName>
     	<bundle.namespace>uk.co.mayfieldis.esb.SDSHAPI</bundle.namespace>
     	<springframework-version>4.2.1.RELEASE</springframework-version>
 		<spring-security-version>4.0.2.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.7.RELEASE</spring-security-oauth2>
-		<derby-version>10.12.1.1</derby-version>
-			<hibernate_version>5.0.7.Final</hibernate_version>
+		<hapi-fhir-version>1.6</hapi-fhir-version>
+		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
+		<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<activemq-version>5.11.1</activemq-version>
   	</properties>
@@ -131,7 +131,7 @@
   	<dependency>
 			<groupId>uk.co.mayfieldis</groupId>
 			<artifactId>Jorvik-Core</artifactId>
-			<version>1.0.1-RELEASE</version>
+			<version>1.6.0-RELEASE</version>
 	</dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -189,45 +189,19 @@
 		  	<artifactId>activemq-camel</artifactId>
 		  	<version>${activemq-version}</version>
 		</dependency>
-	
-   	<dependency>
-		<groupId>me.fhir</groupId>
-		<artifactId>fhir-dstu2</artifactId>
-		<version>${hl7-fhir-me-version}</version>
-	</dependency>
-	
-	<!-- 
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-core</artifactId>
-		<version>${hibernate_version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-ehcache</artifactId>
-		<version>${hibernate_version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-entitymanager</artifactId>
-		<version>${hibernate_version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-validator</artifactId>
-		<version>${hibernate_validator_version}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-search-orm</artifactId>
-		<version>5.5.2.Final</version>
-	</dependency>
-	<dependency>
-		<groupId>org.javassist</groupId>
-		<artifactId>javassist</artifactId>
-		<version>3.20.0-GA</version>
-	</dependency>
- -->
+		<!--
+		<dependency>
+			<groupId>me.fhir</groupId>
+			<artifactId>fhir-dstu2</artifactId>
+			<version>${hl7-fhir-me-version}</version>
+		</dependency>
+	  -->
+   		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-dstu3</artifactId>
+			<version>${hapi-fhir-version}</version>
+		</dependency>
+		
 	
 	
 		<dependency>

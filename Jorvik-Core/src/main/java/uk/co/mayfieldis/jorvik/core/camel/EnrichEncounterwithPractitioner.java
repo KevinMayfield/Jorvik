@@ -1,23 +1,25 @@
 package uk.co.mayfieldis.jorvik.core.camel;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
-import org.hl7.fhir.instance.formats.JsonParser;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Encounter;
-import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Reference;
+import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Reference;
+
+import ca.uhn.fhir.model.api.Bundle;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.context.FhirContext;
 
 public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner.class);
-	
+	public FhirContext ctx;
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		
@@ -32,47 +34,51 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 			if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200") && enrichment.getIn().getBody() != null)
 			{
 				
-				ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+				//ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+				Reader reader = new InputStreamReader(new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class)));
 				
-				
-					if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
-					{
-						JsonParser composer = new JsonParser();
-						try
-						{
-							bundle = (Bundle) composer.parse(xmlContentBytes);
-						}
-						catch(Exception ex)
-						{
-	//						log.error("#9 JSON Parse failed "+ex.getMessage());
-						}
-					}
-					else
-					{
-						XmlParser composer = new XmlParser();
-						try
-						{
-							bundle = (Bundle) composer.parse(xmlContentBytes);
-						}
-						catch(Exception ex)
-						{
-	//						log.error("#10 XML Parse failed "+ex.getMessage());
-						}
-					}
-					ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+				if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
+				{
+					//JsonParser parser = new JsonParser();
+					IParser parser = ctx.newJsonParser();
 					
-					XmlParser composer = new XmlParser();
 					try
 					{
-						if (bundle.getEntry().size()>0)
+						bundle = parser.parseBundle(reader);
+					}
+					catch(Exception ex)
+					{
+	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+					}
+				}
+				else
+				{
+					// XmlParser parser = new XmlParser();
+					IParser parser = ctx.newXmlParser();
+					try
+					{
+						bundle = parser.parseBundle(reader);
+					}
+					catch(Exception ex)
+					{
+		//				log.error("#10 XML Parse failed "+ex.getMessage());
+					}
+				}
+				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+				Reader readerNew = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
+				//XmlParser parser = new XmlParser();
+				IParser parser = ctx.newXmlParser();
+					try
+					{
+						if (bundle.getEntries().size()>0)
 						{
-							encounter = (Encounter) composer.parse(xmlNewContentBytes);
+							encounter = parser.parseResource(Encounter.class, readerNew);
 							Reference ref = new Reference();
-							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
+							Practitioner practitioner = (Practitioner) bundle.getEntries().get(0).getResource(); 
 							ref.setReference("Practitioner/"+practitioner.getId());
 							encounter.addParticipant().setIndividual(ref);
-							
-							String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
+							String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
+							//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 							exchange.getIn().setBody(Response);
 						}
 					}

@@ -5,29 +5,31 @@ import java.text.SimpleDateFormat;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.Extension;
-import org.hl7.fhir.instance.model.HumanName;
-import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Period;
-import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.hl7.fhir.instance.model.valuesets.PractitionerRole;
+import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 
+import ca.uhn.fhir.context.FhirContext;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 
 public class NHSEntitiestoFHIRResource implements Processor {
 
+	public FhirContext ctx;
+	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		NHSEntities entity = exchange.getIn().getBody(NHSEntities.class);
+		NHSEntities entity = (NHSEntities) exchange.getIn().getBody(NHSEntities.class);
 		
 		String Id = entity.OrganisationCode; 
 		
@@ -54,7 +56,7 @@ public class NHSEntitiestoFHIRResource implements Processor {
 					name.addGiven(names[f]);
 				}
 			}
-			gp.setName(name);
+			gp.addName(name);
 			
 			Address address = gp.addAddress();
 			
@@ -169,7 +171,8 @@ public class NHSEntitiestoFHIRResource implements Processor {
 			
 			gp.addPractitionerRole(practitionerRole);
 			// XML as Ensemble doesn't like JSON
-			String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(gp);
+			//String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
 			exchange.getIn().setHeader("FHIRResource","/Practitioner");
 			exchange.getIn().setHeader("FHIRQuery","identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue());
 			exchange.getIn().setBody(Response);
@@ -315,7 +318,8 @@ public class NHSEntitiestoFHIRResource implements Processor {
 				organisation.addExtension(activePeriod);
 			}
 			// XML as Ensemble doesn't like JSON
-			String Response = ResourceSerialiser.serialise(organisation, ParserType.XML);
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(organisation);
+			//String Response = ResourceSerialiser.serialise(organisation, ParserType.XML);
 			exchange.getIn().setHeader("FHIRResource","/Organization");
 			exchange.getIn().setHeader("FHIRQuery","identifier="+organisation.getIdentifier().get(0).getSystem()+"|"+organisation.getIdentifier().get(0).getValue());
 			exchange.getIn().setBody(Response);

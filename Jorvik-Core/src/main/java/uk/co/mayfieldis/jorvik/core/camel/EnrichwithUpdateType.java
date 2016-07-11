@@ -1,52 +1,58 @@
 package uk.co.mayfieldis.jorvik.core.camel;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
-import org.hl7.fhir.instance.formats.JsonParser;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Location;
-import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Location;
+import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Practitioner;
+
+import ca.uhn.fhir.model.api.Bundle;
+import ca.uhn.fhir.parser.IParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ca.uhn.fhir.context.FhirContext;
 
 
 public class EnrichwithUpdateType implements AggregationStrategy  {
 
+	public FhirContext ctx;
+	
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.camel.EnrichwithUpdateType.class);
 	
 	private Boolean practitionerCompare(Practitioner oldPractitioner, Practitioner newPractitioner)
 	{
 		Boolean same = true;
-		if (oldPractitioner.getName().getFamily().size()>0 && newPractitioner.getName().getFamily().size()>0)
+		if (oldPractitioner.getName().get(0).getFamily().size()>0 && newPractitioner.getName().get(0).getFamily().size()>0)
 		{
-			if (!oldPractitioner.getName().getFamily().get(0).getValue().equals(newPractitioner.getName().getFamily().get(0).getValue()))
+			if (!oldPractitioner.getName().get(0).getFamily().get(0).getValue().equals(newPractitioner.getName().get(0).getFamily().get(0).getValue()))
 			{
 	//			log.info("#13 Old name"+oldPractitioner.getName().getFamily().get(0).getValue()+" New Name "+newPractitioner.getName().getFamily().get(0).getValue());
 				same = false;
 			}
 		}
-		if (oldPractitioner.getName().getGiven().size()>0 && newPractitioner.getName().getGiven().size()>0)
+		if (oldPractitioner.getName().get(0).getGiven().size()>0 && newPractitioner.getName().get(0).getGiven().size()>0)
 		{
-			if (!oldPractitioner.getName().getGiven().get(0).getValue().equals(newPractitioner.getName().getGiven().get(0).getValue()))
+			if (!oldPractitioner.getName().get(0).getGiven().get(0).getValue().equals(newPractitioner.getName().get(0).getGiven().get(0).getValue()))
 			{
 		//		log.info("#14 Old name"+oldPractitioner.getName().getGiven().get(0).getValue()+" New Name "+newPractitioner.getName().getGiven().get(0).getValue());
 				same = false;
 			}
 		}
 		// Check organisations - bit more involved to cope with organisations not being in the database
-		if (oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() == null && newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null)
+		if (oldPractitioner.getPractitionerRole().get(0).getOrganization().getReference() == null && newPractitioner.getPractitionerRole().get(0).getOrganization().getReference() != null)
 		{
 			same = false;
 		//	log.info("#1 Old Organisation null. New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
 		}
 		else
 		{
-			if (oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null && newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() == null)
+			if (oldPractitioner.getPractitionerRole().get(0).getOrganization().getReference() != null && newPractitioner.getPractitionerRole().get(0).getOrganization().getReference() == null)
 			{
 				same = false;
 			//	log.info("#2 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation null. ");
@@ -54,10 +60,10 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			else
 			{
 				
-				if (oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null && newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null)
+				if (oldPractitioner.getPractitionerRole().get(0).getOrganization().getReference() != null && newPractitioner.getPractitionerRole().get(0).getOrganization().getReference() != null)
 				{
 					
-					if (!oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference().equals(newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()))
+					if (!oldPractitioner.getPractitionerRole().get(0).getOrganization().getReference().equals(newPractitioner.getPractitionerRole().get(0).getOrganization().getReference()))
 					{
 				//		log.info("#3 Old Organisation = "+oldPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference()+" New Organisation = "+newPractitioner.getPractitionerRole().get(0).getManagingOrganization().getReference());
 						same = false;
@@ -143,15 +149,17 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 		if (enrichment.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("200"))
 		{
 			
-			ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+			//ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+			Reader reader = new InputStreamReader(new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class)));
 			Bundle bundle = null;
 			
 			if (enrichment.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 			{
-				JsonParser composer = new JsonParser();
+				//JsonParser parser = new JsonParser();
+				IParser parser = ctx.newJsonParser();
 				try
 				{
-					bundle = (Bundle) composer.parse(xmlContentBytes);
+					bundle = parser.parseBundle(reader);
 				}
 				catch(Exception ex)
 				{
@@ -160,10 +168,11 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 			}
 			else
 			{
-				XmlParser composer = new XmlParser();
+				// XmlParser parser = new XmlParser();
+				IParser parser = ctx.newXmlParser();
 				try
 				{
-					bundle = (Bundle) composer.parse(xmlContentBytes);
+					bundle = parser.parseBundle(reader);
 				}
 				catch(Exception ex)
 				{
@@ -171,7 +180,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 			}
 			
-			if (bundle!=null && bundle.getEntry().size()==0)
+			if (bundle!=null && bundle.getEntries().size()==0)
 			{
 				log.debug("Update Resource - no data found");
 				// No resource found go ahead
@@ -190,9 +199,9 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 			}
 			
-			if (bundle!=null && bundle.getEntry().size()>0)
+			if (bundle!=null && bundle.getEntries().size()>0)
 			{
-				log.debug("Update Resource - Resource found="+bundle.getEntry().size());
+				log.debug("Update Resource - Resource found="+bundle.getEntries().size());
 				// This is bit over complex. It converts incoming data into generic FHIR Resource and the converts them to JSON for comparison
 				
 				//Resource oldResource=bundle.getEntry().get(0).getResource();
@@ -204,36 +213,39 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				Location newLocation = null;
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 				{
-					oldOrganisation = (Organization) bundle.getEntry().get(0).getResource();
+					oldOrganisation = (Organization) bundle.getEntries().get(0).getResource();
 				}
 				
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 				{
-					oldPractitioner = (Practitioner) bundle.getEntry().get(0).getResource();
+					oldPractitioner = (Practitioner) bundle.getEntries().get(0).getResource();
 				}
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 				{
-					oldLocation = (Location) bundle.getEntry().get(0).getResource();
+					oldLocation = (Location) bundle.getEntries().get(0).getResource();
 				}
 				log.debug("Processed OLD response to resource object");
-				ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+				Reader readerNew = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
+				
 				if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 				{
-					JsonParser composer = new JsonParser();
+					//JsonParser parser = new JsonParser();
+					IParser parser = ctx.newJsonParser();
 					try
 					{
 						
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 						{
-							newPractitioner = (Practitioner) composer.parse(xmlNewContentBytes);
+							newPractitioner = parser.parseResource(Practitioner.class, readerNew);
 						}
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 						{
-							newOrganisation = (Organization) composer.parse(xmlNewContentBytes);
+							newOrganisation = parser.parseResource(Organization.class, readerNew);
 						}
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 						{
-							newLocation = (Location) composer.parse(xmlNewContentBytes);
+							newLocation = parser.parseResource(Location.class, readerNew);
 						}
 					}
 					catch(Exception ex)
@@ -244,20 +256,21 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 				else
 				{
-					XmlParser composer = new XmlParser();
+					//XmlParser parser = new XmlParser();
+					IParser parser = ctx.newXmlParser();
 					try
 					{
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 						{
-							newPractitioner = (Practitioner) composer.parse(xmlNewContentBytes);
+							newPractitioner = parser.parseResource(Practitioner.class, readerNew);
 						}
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 						{
-							newOrganisation = (Organization) composer.parse(xmlNewContentBytes);
+							newOrganisation = parser.parseResource(Organization.class, readerNew);
 						}
 						if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 						{
-							newLocation = (Location) composer.parse(xmlNewContentBytes);
+							newLocation = parser.parseResource(Location.class, readerNew);
 						}
 					}
 					catch(Exception ex)
@@ -293,7 +306,8 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 						exchange.getIn().setHeader("FHIRResource","Organization/"+oldOrganisation.getId());
 						
 						newOrganisation.setId(oldOrganisation.getId());
-						String Response = ResourceSerialiser.serialise(newOrganisation, ParserType.XML);
+						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newOrganisation);
+						//String Response = ResourceSerialiser.serialise(newOrganisation, ParserType.XML);
 						exchange.getIn().setBody(Response);
 					}
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
@@ -302,7 +316,8 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 						exchange.getIn().setHeader("FHIRResource","Practitioner/"+oldPractitioner.getId());
 						
 						newPractitioner.setId(oldPractitioner.getId());
-						String Response = ResourceSerialiser.serialise(newPractitioner, ParserType.XML);
+						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newPractitioner);
+						//String Response = ResourceSerialiser.serialise(newPractitioner, ParserType.XML);
 						exchange.getIn().setBody(Response);
 					}
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
@@ -311,7 +326,8 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation.getId());
 						
 						newLocation.setId(oldLocation.getId());
-						String Response = ResourceSerialiser.serialise(newLocation, ParserType.XML);
+						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newLocation);
+						//String Response = ResourceSerialiser.serialise(newLocation, ParserType.XML);
 						exchange.getIn().setBody(Response);
 					}
 				}

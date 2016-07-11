@@ -105,7 +105,7 @@ public class ADTA28A31toPatient implements Processor {
 							patient.addIdentifier()
 								.setSystem(env.getProperty("ORG.PatientIdentifierPAS"))
 								.setValue(value);
-							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -138,7 +138,7 @@ public class ADTA28A31toPatient implements Processor {
 								patient.addIdentifier()
 									.setSystem(env.getProperty("ORG.PatientIdentifier"+code))
 									.setValue(value);
-								if (exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+								if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 								{
 									exchange.getIn().setHeader("FHIRPatient", env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 								}

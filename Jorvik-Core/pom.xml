@@ -1,11 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <artifactId>Jorvik-Core</artifactId>
-  
-  <name>Jorvik-Core</name>
-
- <groupId>uk.co.mayfieldis</groupId>
+	<artifactId>Jorvik-Core</artifactId>
+  	<name>Jorvik-Core</name>
+	<groupId>uk.co.mayfieldis</groupId>
+	<version>1.6.0-RELEASE</version>
   
   <properties>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +20,7 @@
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
 		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
+		<hapi-fhir-version>1.6</hapi-fhir-version>
 		<springframework-version>4.2.1.RELEASE</springframework-version>
 	</properties>
 	
@@ -92,11 +92,7 @@
 				<version>${camel-version}</version>
 		</dependency> 
 		
-		<dependency>
-			<groupId>me.fhir</groupId>
-			<artifactId>fhir-dstu2</artifactId>
-			<version>${hl7-fhir-me-version}</version>
-		</dependency>
+	
 
 		<dependency>
 			<groupId>javax.annotation</groupId>
@@ -139,6 +135,20 @@
     		<version>2.6.2</version>
 		</dependency>
 		
+		<!-- 
+		<dependency>
+			<groupId>me.fhir</groupId>
+			<artifactId>fhir-dstu2</artifactId>
+			<version>${hl7-fhir-me-version}</version>
+		</dependency>
+		 -->
+   		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-dstu3</artifactId>
+			<version>${hapi-fhir-version}</version>
+		</dependency>
+		
+	
 	</dependencies>
 
 	<build>
@@ -171,5 +181,5 @@
 	</build>
   
   
-	<version>1.0.1-RELEASE</version>
+
 </project>

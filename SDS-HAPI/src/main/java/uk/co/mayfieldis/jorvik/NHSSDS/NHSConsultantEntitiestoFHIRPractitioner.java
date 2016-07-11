@@ -3,24 +3,24 @@ package uk.co.mayfieldis.jorvik.NHSSDS;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.HumanName;
-import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.hl7.fhir.instance.model.valuesets.PractitionerRole;
-
+import ca.uhn.fhir.context.FhirContext;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 
 public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 
+	public FhirContext ctx;
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		NHSConsultantEntities entity = exchange.getIn().getBody(NHSConsultantEntities.class);
+		NHSConsultantEntities entity = (NHSConsultantEntities) exchange.getIn().getBody(NHSConsultantEntities.class);
 		
 		String Id = entity.PractitionerCode; 
 		
@@ -44,7 +44,7 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 			{
 				name.addGiven(entity.Initials);
 			}
-			gp.setName(name);
+			gp.addName(name);
 			
 			PractitionerPractitionerRoleComponent practitionerRole = new PractitionerPractitionerRoleComponent();
 			
@@ -64,7 +64,8 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 				
 			gp.addPractitionerRole(practitionerRole);
 			// XML as Ensemble doesn't like JSON
-			String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(gp);
+			//String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
 			exchange.getIn().setHeader("FHIRResource","/Practitioner");
 			exchange.getIn().setHeader("FHIRQuery","identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue());
 			exchange.getIn().setBody(Response);

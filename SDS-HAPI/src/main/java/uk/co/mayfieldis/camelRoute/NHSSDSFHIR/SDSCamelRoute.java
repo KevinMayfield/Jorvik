@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.context.FhirContext;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSConsultantEntities;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSConsultantEntitiestoFHIRPractitioner;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSEntities;
@@ -35,6 +36,8 @@ public class SDSCamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+    	FhirContext ctx = FhirContext.forDstu3();
+    	
     	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
     	TrustFHIRSystems.setValues(env);
     	
@@ -42,14 +45,29 @@ public class SDSCamelRoute extends RouteBuilder {
     	zipFile.setUsingIterator(true);
     	
     	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation();
+    	enrichLocationwithLocation.ctx = ctx;
+    	
     	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation();
+    	enrichLocationwithOrganisation.ctx = ctx;
+    	
     	EnrichResourcewithOrganisation enrichOrg = new EnrichResourcewithOrganisation();
+    	enrichOrg.ctx = ctx;
+    	
     	EnrichwithUpdateType enrichUpdateType = new EnrichwithUpdateType();
-    	NHSConsultantEntitiestoFHIRPractitioner consultanttoFHIRPractitioner = new NHSConsultantEntitiestoFHIRPractitioner(); 
+    	enrichUpdateType.ctx = ctx;
+    	
+    	NHSConsultantEntitiestoFHIRPractitioner consultanttoFHIRPractitioner = new NHSConsultantEntitiestoFHIRPractitioner();
+    	consultanttoFHIRPractitioner.ctx = ctx;
+    	
     	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation();
+    	consultantEnrichwithOrganisation.ctx = ctx;
+    	
     	NHSTrustLocationEntitiestoFHIRLocation trustLocationEntitiestoFHIRLocation = new NHSTrustLocationEntitiestoFHIRLocation();
+    	trustLocationEntitiestoFHIRLocation.ctx = ctx;
     	trustLocationEntitiestoFHIRLocation.TrustFHIRSystems = TrustFHIRSystems;
+    	
     	NHSEntitiestoFHIRResource nhsEntitiestoFHIRResource = new NHSEntitiestoFHIRResource();
+    	nhsEntitiestoFHIRResource.ctx = ctx;
     	
     	errorHandler(deadLetterChannel("direct:error")
         		.maximumRedeliveries(2));

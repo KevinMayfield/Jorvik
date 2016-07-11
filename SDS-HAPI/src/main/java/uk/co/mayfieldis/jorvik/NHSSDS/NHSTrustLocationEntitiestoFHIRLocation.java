@@ -2,17 +2,19 @@ package uk.co.mayfieldis.jorvik.NHSSDS;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.Location;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Location;
 
+import ca.uhn.fhir.context.FhirContext;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 
 public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 
 	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	public FhirContext ctx;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -48,7 +50,8 @@ public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 			exchange.getIn().setHeader("FHIRLocation",entity.PartOf);
 		}
 		
-		String Response = ResourceSerialiser.serialise(location, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location);
+		//String Response = ResourceSerialiser.serialise(location, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		exchange.getIn().setHeader("FHIRResource","/Location");
 		exchange.getIn().setHeader("FHIRQuery","identifier="+location.getIdentifier().get(0).getSystem()+"|"+location.getIdentifier().get(0).getValue());
