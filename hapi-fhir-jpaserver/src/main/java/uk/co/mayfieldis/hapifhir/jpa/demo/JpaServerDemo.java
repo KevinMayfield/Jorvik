@@ -13,16 +13,13 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu1;
-import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu1;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.model.api.IResource;
-import ca.uhn.fhir.model.dstu2.composite.MetaDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
+
+
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.EncodingEnum;
@@ -93,19 +90,7 @@ public class JpaServerDemo extends RestfulServer {
 		 * this server. The JPA version adds resource counts to the exported statement, so it
 		 * is a nice addition.
 		 */
-		if (fhirVersion == FhirVersionEnum.DSTU1) {
-			IFhirSystemDao<List<IResource>, MetaDt> systemDao = myAppCtx.getBean("mySystemDaoDstu1",
-					IFhirSystemDao.class);
-			JpaConformanceProviderDstu1 confProvider = new JpaConformanceProviderDstu1(this, systemDao);
-			confProvider.setImplementationDescription("Example Server");
-			setServerConformanceProvider(confProvider);
-		} else if (fhirVersion == FhirVersionEnum.DSTU2) {
-			IFhirSystemDao<Bundle, MetaDt> systemDao = myAppCtx.getBean("mySystemDaoDstu2", IFhirSystemDao.class);
-			JpaConformanceProviderDstu2 confProvider = new JpaConformanceProviderDstu2(this, systemDao,
-					myAppCtx.getBean(DaoConfig.class));
-			confProvider.setImplementationDescription("Example Server");
-			setServerConformanceProvider(confProvider);
-		} else if (fhirVersion == FhirVersionEnum.DSTU3) {
+		if (fhirVersion == FhirVersionEnum.DSTU3) {
 			IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao = myAppCtx
 					.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
 			JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
