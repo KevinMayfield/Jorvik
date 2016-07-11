@@ -101,7 +101,7 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 
 		private Properties jpaProperties() {
 			Properties extraProperties = new Properties();
-			extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
+			extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQLDialect.class.getName());
 			extraProperties.put("hibernate.format_sql", "true");
 			extraProperties.put("hibernate.show_sql", "false");
 			extraProperties.put("hibernate.hbm2ddl.auto", "update");
@@ -111,7 +111,8 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			extraProperties.put("hibernate.cache.use_structured_entries", "false");
 			extraProperties.put("hibernate.cache.use_minimal_puts", "false");
 			extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
-			extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
+			// needed to set properties of this directory sudo chmod -R 777 .
+			extraProperties.put("hibernate.search.default.indexBase", "/Development/lucene/indexes");
 			extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
 //			extraProperties.put("hibernate.search.default.worker.execution", "async");
 			return extraProperties;
