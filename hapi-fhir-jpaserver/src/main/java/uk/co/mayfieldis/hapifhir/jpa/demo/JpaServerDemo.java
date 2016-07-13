@@ -16,6 +16,7 @@ import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 
@@ -131,6 +132,25 @@ public class JpaServerDemo extends RestfulServer {
 		 * just refer to "localhost", you might want to use a server address strategy:
 		 */
 		//setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
+		
+		/*
+		 * If you are using DSTU3+, you may want to add a terminology uploader, which allows 
+		 * uploading of external terminologies such as Snomed CT. Note that this uploader
+		 * does not have any security attached (any anonymous user may use it by default)
+		 * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
+		 * with this feature.
+		 */
+		if (fhirVersion == FhirVersionEnum.DSTU3) {
+			try
+			{
+				registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+			}
+			catch (Exception ex)
+			{
+			}
+			
+			
+		}
 		
 	}
 
