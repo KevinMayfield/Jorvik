@@ -1,16 +1,26 @@
 package uk.co.mayfieldis.jorvik.hl7v2.processor;
 
 
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.OperationOutcome;
-import org.hl7.fhir.instance.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.instance.model.OperationOutcome.IssueType;
 
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.dstu3.model.OperationOutcome.IssueType;
+
+
+import ca.uhn.fhir.context.FhirContext;
 
 
 public class operationOutcomeService {
+	
+	public operationOutcomeService(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	
+	private FhirContext ctx;
 	
 	public operationOutcomeService() {
         
@@ -47,7 +57,7 @@ public class operationOutcomeService {
 			.setCode(IssueType.VALUE)
 			.setDetails(details);
 		
-		String output=null;
+		String Response=null;
 		
 		if (contentType==null)
 		{
@@ -56,13 +66,15 @@ public class operationOutcomeService {
 		
 		if (contentType.contains("json"))	
 		{
-			output = ResourceSerialiser.serialise(outcome, ParserType.JSON);
+			Response = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(outcome);
+			//output = ResourceSerialiser.serialise(outcome, ParserType.JSON);
 		}
 		else
 		{
-			output = ResourceSerialiser.serialise(outcome, ParserType.XML);
+			Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome);
+			//output = ResourceSerialiser.serialise(outcome, ParserType.XML);
 		}
 		
-        return output;
+        return Response;
     }
 }

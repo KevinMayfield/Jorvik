@@ -22,7 +22,12 @@ import ca.uhn.fhir.parser.IParser;
 public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEncounter.class);
-	public FhirContext ctx;
+	public EnrichEncounterwithEpisodeOfCare(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private FhirContext ctx;
 	
 	
 	@Override

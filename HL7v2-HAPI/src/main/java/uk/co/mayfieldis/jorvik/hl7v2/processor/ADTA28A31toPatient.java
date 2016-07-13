@@ -6,23 +6,22 @@ import java.util.Date;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.Patient;
-import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.ContactPoint;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.instance.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.instance.model.DateType;
-import org.hl7.fhir.instance.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.ContactPoint;
+import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.dstu3.model.DateType;
+import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
-import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 public class ADTA28A31toPatient implements Processor {
 
@@ -30,9 +29,15 @@ public class ADTA28A31toPatient implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public ADTA28A31toPatient(FhirContext ctx, Environment env)
+	{
+		this.ctx = ctx;
+		this.env = env;
+	}
 	
-	public Environment env;
+	private Environment env;
+	
+	private FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -385,9 +390,10 @@ public class ADTA28A31toPatient implements Processor {
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
 		
-		String Response = ResourceSerialiser.serialise(patient, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
+		//String Response = ResourceSerialiser.serialise(patient, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
-		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());
+		
 		exchange.getIn().setBody(Response);
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		

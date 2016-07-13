@@ -7,17 +7,24 @@ import java.io.Reader;
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.hl7.fhir.dstu3.model.DocumentReference;
-
+import org.springframework.core.env.Environment;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Bundle;
 import ca.uhn.fhir.parser.IParser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
 
 
 public class EnrichDocumentReferencewithDocumentReference implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichPatientwithPatient.class);
-	public FhirContext ctx;
+	
+	public EnrichDocumentReferencewithDocumentReference(FhirContext ctx)
+	{
+		this.ctx = ctx;
+	}
+	
+	private FhirContext ctx;
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {

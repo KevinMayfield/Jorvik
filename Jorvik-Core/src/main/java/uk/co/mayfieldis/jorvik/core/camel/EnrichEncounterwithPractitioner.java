@@ -19,7 +19,12 @@ import ca.uhn.fhir.context.FhirContext;
 public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithPractitioner.class);
-	public FhirContext ctx;
+	public EnrichEncounterwithPractitioner(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private  FhirContext ctx;
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		

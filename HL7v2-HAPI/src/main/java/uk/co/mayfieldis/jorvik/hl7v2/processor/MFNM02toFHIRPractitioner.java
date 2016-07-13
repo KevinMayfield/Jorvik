@@ -2,18 +2,18 @@ package uk.co.mayfieldis.jorvik.hl7v2.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.HumanName;
-import org.hl7.fhir.instance.model.Practitioner;
+import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 
 
@@ -23,7 +23,16 @@ public class MFNM02toFHIRPractitioner implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public MFNM02toFHIRPractitioner(FhirContext ctx, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+		
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
+	
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	private FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -68,7 +77,7 @@ public class MFNM02toFHIRPractitioner implements Processor {
 		{
 			name.addPrefix(terserGet("/.STF-3-5"));
 		}
-		practitioner.setName(name);
+		practitioner.addName(name);
 		
 		if (terserGet("/.STF-1") != null && !terserGet("/.STF-1").isEmpty())
 		{
@@ -94,7 +103,8 @@ public class MFNM02toFHIRPractitioner implements Processor {
 		exchange.getIn().setHeader("FHIROrganisationCode","RWY");
 		
 		
-		String Response = ResourceSerialiser.serialise(practitioner, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner);
+		//String Response = ResourceSerialiser.serialise(practitioner, ParserType.XML);
 		
 		exchange.getIn().setHeader("FHIRResource","/Practitioner");
 		exchange.getIn().setHeader("FHIRQuery","identifier="+practitioner.getIdentifier().get(0).getSystem()+"|"+practitioner.getIdentifier().get(0).getValue());

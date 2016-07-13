@@ -1,44 +1,56 @@
 package uk.co.mayfieldis.jorvik.hl7v2.processor;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.JsonParser;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.formats.XmlParser;
-import org.hl7.fhir.instance.model.Encounter;
-import org.hl7.fhir.instance.model.EpisodeOfCare;
-import org.hl7.fhir.instance.model.EpisodeOfCare.EpisodeOfCareStatus;
+import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.EpisodeOfCare;
+import org.hl7.fhir.dstu3.model.EpisodeOfCare.EpisodeOfCareStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 
 public class EncountertoEpisodeOfCare implements Processor {
 
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.hl7v2.processor.EncountertoEpisodeOfCare.class);
 	
+	public EncountertoEpisodeOfCare(FhirContext ctx, Environment env)
+	{
+		this.ctx = ctx;
+		this.env = env;
 		
-	public Environment env;
+	}
 	
+	private Environment env;
+	
+	public FhirContext ctx;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		if (exchange.getIn().getHeader("FHIRResource")=="Encounter")
 		{
-			ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+			//ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+			Reader reader = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
+			
 			Encounter encounter = null;
 			if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).equals("application/json"))
 			{
-				JsonParser composer = new JsonParser();
-				encounter = (Encounter) composer.parse(xmlContentBytes);
+				//JsonParser parser = new JsonParser();
+				IParser parser = ctx.newJsonParser();
+				
+				encounter = parser.parseResource(Encounter.class,reader);
 			}
 			else
 			{
-				XmlParser composer = new XmlParser();
-				encounter = (Encounter) composer.parse(xmlContentBytes);
+				// XmlParser parser = new XmlParser();
+				IParser parser = ctx.newXmlParser();
+				encounter = parser.parseResource(Encounter.class,reader);
 			}
 			
 			EpisodeOfCare episode = new EpisodeOfCare();
@@ -85,8 +97,8 @@ public class EncountertoEpisodeOfCare implements Processor {
 						+" Headers: " + exchange.getIn().getHeaders().toString() 
 						+ " Message:" + exchange.getIn().getBody().toString());
 			}
-			
-			String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
+			//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
 			exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 			exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 			// This will only post the resource if it doesn't exist. The resource isn't complete but we need a stug for referential integrity

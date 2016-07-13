@@ -15,7 +15,12 @@ import org.hl7.fhir.dstu3.model.Appointment;
 public class EnrichAppointmentwithAppointment implements AggregationStrategy {
 
 	//private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichAppointmentwithAppointment.class);
-	public FhirContext ctx;
+	public EnrichAppointmentwithAppointment(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private FhirContext ctx;
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {

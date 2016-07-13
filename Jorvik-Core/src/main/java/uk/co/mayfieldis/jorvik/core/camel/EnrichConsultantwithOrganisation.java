@@ -11,6 +11,7 @@ import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.springframework.core.env.Environment;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -18,12 +19,19 @@ import ca.uhn.fhir.model.api.Bundle;
 import ca.uhn.fhir.parser.IParser;
 
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
 
 public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichConsultantwithOrganisation.class);
 	
-	public FhirContext ctx;
+	public EnrichConsultantwithOrganisation(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	
+	private FhirContext ctx;
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 

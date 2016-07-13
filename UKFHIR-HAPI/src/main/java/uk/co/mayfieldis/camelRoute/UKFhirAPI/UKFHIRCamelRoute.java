@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.context.FhirContext;
 import uk.co.mayfieldis.jorvik.UKFHIR.FHIRDocumentReferenceProcess;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
@@ -26,17 +27,17 @@ public class UKFHIRCamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+    	FhirContext ctx = FhirContext.forDstu3();
+    	
     	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
     	TrustFHIRSystems.setValues(env);
     	
-    	FHIRDocumentReferenceProcess fhirDocumentReferenceProcess = new FHIRDocumentReferenceProcess();
-    	fhirDocumentReferenceProcess.env = env;
-    	fhirDocumentReferenceProcess.TrustFHIRSystems = TrustFHIRSystems;
-    	
-    	EnrichDocumentReferencewithPatient enrichDocumentReferencewithPatient = new EnrichDocumentReferencewithPatient();
-    	EnrichDocumentReferencewithPractitioner enrichDocumentReferencewithPractitioner = new EnrichDocumentReferencewithPractitioner();
-    	EnrichDocumentReferencewithEncounter enrichDocumentReferencewithEncounter = new EnrichDocumentReferencewithEncounter();
-    	EnrichDocumentReferencewithDocumentReference enrichDocumentReferencewithDocumentReference = new EnrichDocumentReferencewithDocumentReference();
+    	FHIRDocumentReferenceProcess fhirDocumentReferenceProcess = new FHIRDocumentReferenceProcess(ctx, TrustFHIRSystems);
+    	    	
+    	EnrichDocumentReferencewithPatient enrichDocumentReferencewithPatient = new EnrichDocumentReferencewithPatient(ctx);
+    	EnrichDocumentReferencewithPractitioner enrichDocumentReferencewithPractitioner = new EnrichDocumentReferencewithPractitioner(ctx);
+    	EnrichDocumentReferencewithEncounter enrichDocumentReferencewithEncounter = new EnrichDocumentReferencewithEncounter(ctx);
+    	EnrichDocumentReferencewithDocumentReference enrichDocumentReferencewithDocumentReference = new EnrichDocumentReferencewithDocumentReference(ctx);
     	
 		errorHandler(deadLetterChannel("direct:error")
     		.maximumRedeliveries(2));

@@ -1,24 +1,25 @@
 package uk.co.mayfieldis.jorvik.hl7v2.processor;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.Appointment;
-import org.hl7.fhir.instance.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Appointment;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 public class ADTA05A38toAppointment implements Processor {
 
@@ -26,9 +27,18 @@ public class ADTA05A38toAppointment implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public ADTA05A38toAppointment(FhirContext ctx, Environment env, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+		this.env = env;
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
+	
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
 	
 	public Environment env;
+	
+	public FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -172,7 +182,8 @@ public class ADTA05A38toAppointment implements Processor {
 				type.addCoding()
 					.setSystem(FHIRCodeSystems.URI_NHS_SPECIALTIES)
 					.setCode(terserGet("/.PV1-10-1"));
-				appointment.setType(type);
+				
+				appointment.addServiceType(type);
 			}
 			
 			
@@ -213,10 +224,11 @@ public class ADTA05A38toAppointment implements Processor {
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
 		exchange.getIn().setHeader("FHIRResource", "Appointment");
-		String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment);
+		//String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());
-		exchange.getIn().setBody(Response);
+		exchange.getIn().setBody(Response); 
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		
 	}

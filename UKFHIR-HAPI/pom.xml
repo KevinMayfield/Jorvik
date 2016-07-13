@@ -7,7 +7,7 @@
 
   <artifactId>UKFHIR-HAPI</artifactId>
   <groupId>uk.co.mayfieldis.camelRoute.UKFhirHapi</groupId>
-  <version>2.0.0</version>
+  <version>1.6.0-RELEASE</version>
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
   
   
@@ -31,8 +31,7 @@
 	    <!-- use utf-8 encoding -->
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	    <fhir-version>1.2</fhir-version>
-	    <hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
+	    
 	    <insight-log4j>1.2.0.Beta4</insight-log4j>
     	<bundle.symbolicName>UKFHIRHAPICamelRoute.Bundle</bundle.symbolicName>
     	<bundle.namespace>uk.co.mayfieldis.camelRoute.UKFhirAPI</bundle.namespace>
@@ -43,6 +42,8 @@
 			<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<activemq-version>5.11.1</activemq-version>
+		<Jorvik-Core-Version>1.6.0-RELEASE</Jorvik-Core-Version>
+		<hapi-fhir-version>1.6</hapi-fhir-version>
   	</properties>
 
 	<build>
@@ -188,15 +189,14 @@
 		<dependency>
 			<groupId>uk.co.mayfieldis</groupId>
 			<artifactId>Jorvik-Core</artifactId>
-			<version>1.0.1-RELEASE</version>
+			<version>${Jorvik-Core-Version}</version>
+		</dependency>
+			<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-dstu3</artifactId>
+			<version>${hapi-fhir-version}</version>
 		</dependency>
 
-	 
-   	<dependency>
-		<groupId>me.fhir</groupId>
-		<artifactId>fhir-dstu2</artifactId>
-		<version>${hl7-fhir-me-version}</version>
-	</dependency>
 	
 		<dependency>
             <groupId>org.springframework</groupId>

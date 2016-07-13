@@ -18,7 +18,12 @@ import ca.uhn.fhir.parser.IParser;
 public class EnrichPatientwithPatient implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichPatientwithPatient.class);
-	public FhirContext ctx;
+	public EnrichPatientwithPatient(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private  FhirContext ctx;
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		

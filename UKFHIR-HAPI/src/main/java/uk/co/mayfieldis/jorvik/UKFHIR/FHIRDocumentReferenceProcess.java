@@ -1,33 +1,40 @@
 package uk.co.mayfieldis.jorvik.UKFHIR;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.JsonParser;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.formats.XmlParser;
-
-import org.hl7.fhir.instance.model.DocumentReference;
-import org.hl7.fhir.instance.model.Encounter;
-import org.hl7.fhir.instance.model.Patient;
-import org.hl7.fhir.instance.model.Practitioner;
-import org.hl7.fhir.instance.model.DocumentReference.DocumentReferenceContextComponent;
+import org.hl7.fhir.dstu3.model.DocumentReference;
+import org.hl7.fhir.dstu3.model.DocumentReference.DocumentReferenceContextComponent;
+import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 public class FHIRDocumentReferenceProcess implements Processor {
 
+	public FHIRDocumentReferenceProcess (FhirContext ctx, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+	
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.UKFHIR.FHIRDocumentReferenceProcess.class);
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
 	
-	public Environment env;
+	
+	private FhirContext ctx;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -37,15 +44,17 @@ public class FHIRDocumentReferenceProcess implements Processor {
 			DocumentReference documentReference = null;
 			
 				
-			ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
+			//ByteArrayInputStream xmlContentBytes = new ByteArrayInputStream ((byte[]) enrichment.getIn().getBody(byte[].class));
+			Reader reader = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
 			
 			
 			if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 			{
-				JsonParser composer = new JsonParser();
+				//JsonParser parser = new JsonParser();
+				IParser parser = ctx.newJsonParser();
 				try
 				{
-					documentReference = (DocumentReference) composer.parse(xmlContentBytes);
+					documentReference = parser.parseResource(DocumentReference.class,reader);
 				}
 				catch(Exception ex)
 				{
@@ -54,10 +63,11 @@ public class FHIRDocumentReferenceProcess implements Processor {
 			}
 			else
 			{
-				XmlParser composer = new XmlParser();
+				// XmlParser parser = new XmlParser();
+				IParser parser = ctx.newXmlParser();
 				try
 				{
-					documentReference = (DocumentReference)  composer.parse(xmlContentBytes);
+					documentReference = parser.parseResource(DocumentReference.class,reader);
 				}
 				catch(Exception ex)
 				{
@@ -147,7 +157,8 @@ public class FHIRDocumentReferenceProcess implements Processor {
 				documentReference.getAuthor().clear();
 				
 				// Place amended message into the exchange
-				String Response = ResourceSerialiser.serialise(documentReference, ParserType.XML);
+				String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(documentReference);
+				//String Response = ResourceSerialiser.serialise(documentReference, ParserType.XML);
 				exchange.getIn().setHeader("FHIRResource","/DocumentReference");
 				exchange.getIn().setHeader("FHIRQuery","identifier="+documentReference.getIdentifier().get(0).getSystem()+"|"+documentReference.getIdentifier().get(0).getValue());
 				exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");

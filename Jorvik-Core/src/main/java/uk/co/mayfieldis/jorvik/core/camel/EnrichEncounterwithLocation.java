@@ -19,7 +19,12 @@ import ca.uhn.fhir.parser.IParser;
 public class EnrichEncounterwithLocation implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithLocation.class);
-	public FhirContext ctx;
+	public EnrichEncounterwithLocation(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private FhirContext ctx;
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {
 		

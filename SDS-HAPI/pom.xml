@@ -39,10 +39,10 @@
 		<spring-security-version>4.0.2.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.7.RELEASE</spring-security-oauth2>
 		<hapi-fhir-version>1.6</hapi-fhir-version>
-		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
 		<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<activemq-version>5.11.1</activemq-version>
+		<Jorvik-Core-Version>1.6.0-RELEASE</Jorvik-Core-Version>
   	</properties>
 
 	<build>
@@ -131,7 +131,7 @@
   	<dependency>
 			<groupId>uk.co.mayfieldis</groupId>
 			<artifactId>Jorvik-Core</artifactId>
-			<version>1.6.0-RELEASE</version>
+			<version>${Jorvik-Core-Version}</version>
 	</dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>

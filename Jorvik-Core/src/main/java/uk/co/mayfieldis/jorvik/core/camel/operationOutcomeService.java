@@ -12,7 +12,12 @@ import ca.uhn.fhir.context.FhirContext;
 
 public class operationOutcomeService {
 	
-	public FhirContext ctx;
+	public operationOutcomeService(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private  FhirContext ctx;
 	
 	public operationOutcomeService() {
         

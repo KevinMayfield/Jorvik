@@ -12,9 +12,14 @@ import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
 
 public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public NHSTrustLocationEntitiestoFHIRLocation(FhirContext ctx, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
 	
-	public FhirContext ctx;
+	private FhirContext ctx;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {

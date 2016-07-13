@@ -29,7 +29,12 @@ import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.camel.EnrichResourcewithOrganisation.class);
-	public FhirContext ctx;
+	public EnrichResourcewithOrganisation(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private  FhirContext ctx;
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) 
 	{

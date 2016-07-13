@@ -24,7 +24,11 @@ import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
 public class NHSEntitiestoFHIRResource implements Processor {
 
-	public FhirContext ctx;
+	public NHSEntitiestoFHIRResource(FhirContext ctx)
+	{
+		this.ctx = ctx;
+	}
+	private FhirContext ctx;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {

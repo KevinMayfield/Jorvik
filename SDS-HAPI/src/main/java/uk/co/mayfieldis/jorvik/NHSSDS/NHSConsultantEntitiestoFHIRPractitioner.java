@@ -16,7 +16,11 @@ import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
 public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 
-	public FhirContext ctx;
+	public NHSConsultantEntitiestoFHIRPractitioner(FhirContext ctx)
+	{
+		this.ctx = ctx;
+	}
+	private FhirContext ctx;
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		

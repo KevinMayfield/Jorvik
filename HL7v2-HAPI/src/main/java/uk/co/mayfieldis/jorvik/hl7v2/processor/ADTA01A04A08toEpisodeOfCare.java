@@ -6,21 +6,19 @@ import java.util.Date;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.Period;
-
-import org.hl7.fhir.instance.model.EpisodeOfCare;
-import org.hl7.fhir.instance.model.EpisodeOfCare.EpisodeOfCareStatus;
+import org.hl7.fhir.dstu3.model.EpisodeOfCare;
+import org.hl7.fhir.dstu3.model.EpisodeOfCare.EpisodeOfCareStatus;
+import org.hl7.fhir.dstu3.model.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 public class ADTA01A04A08toEpisodeOfCare implements Processor {
 
@@ -28,9 +26,16 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public ADTA01A04A08toEpisodeOfCare(FhirContext ctx, Environment env)
+	{
+		this.ctx = ctx;
+		this.env = env;
 	
-	public Environment env;
+	}
+	
+	private Environment env;
+	
+	private FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -253,7 +258,8 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 			throw ex;
 		}
 		exchange.getIn().setHeader("FHIRResource", "EpisodeOfCare");
-		String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
+		//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 
 		exchange.getIn().setBody(Response);

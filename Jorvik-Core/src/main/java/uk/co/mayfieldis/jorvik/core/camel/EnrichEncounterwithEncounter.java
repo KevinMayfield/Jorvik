@@ -18,7 +18,12 @@ public class EnrichEncounterwithEncounter implements AggregationStrategy {
 
 //	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.EnrichEncounterwithEncounter.class);
 	
-	public FhirContext ctx;
+	public EnrichEncounterwithEncounter(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private FhirContext ctx;
 	
 	@Override
 	public Exchange aggregate(Exchange exchange, Exchange enrichment) {

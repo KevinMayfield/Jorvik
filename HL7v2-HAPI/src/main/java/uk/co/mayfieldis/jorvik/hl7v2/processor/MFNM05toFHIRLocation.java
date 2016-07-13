@@ -2,16 +2,17 @@ package uk.co.mayfieldis.jorvik.hl7v2.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.hl7.fhir.instance.model.Location;
+import org.springframework.core.env.Environment;
+
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
 
 public class MFNM05toFHIRLocation implements Processor { 
 
@@ -19,7 +20,16 @@ public class MFNM05toFHIRLocation implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public MFNM05toFHIRLocation(FhirContext ctx, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+		
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
+	
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	private FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -110,7 +120,8 @@ public class MFNM05toFHIRLocation implements Processor {
 				exchange.getIn().setHeader("FHIRLocation",terserGet("/.LOC-1-4"));
 			}	
 			
-			String Response = ResourceSerialiser.serialise(location, ParserType.XML);
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location);
+			//String Response = ResourceSerialiser.serialise(location, ParserType.XML);
 			
 			exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 			

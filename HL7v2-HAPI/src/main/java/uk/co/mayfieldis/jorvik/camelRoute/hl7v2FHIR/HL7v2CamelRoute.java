@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
@@ -57,6 +58,10 @@ public class HL7v2CamelRoute extends RouteBuilder {
     public void configure() 
     {
     	NHSTrustFHIRCodeSystems TrustFHIRSystems = new NHSTrustFHIRCodeSystems();
+    	
+    	// only use one context. Expensive to create - possibly look at making this config.
+    	FhirContext ctx = FhirContext.forDstu3();
+    	
     	TrustFHIRSystems.setValues(env);
     	
     	HapiContext hapiContext = new DefaultHapiContext();
@@ -68,62 +73,40 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	
     	//LightWithFHIR lightWithFHIR = new LightWithFHIR(); 
     	//MFNM05toFHIRLocation enrichMFNM05withLocation = new MFNM05toFHIRLocation();
-    	ADTA28A31toPatient adta28a31toPatient = new ADTA28A31toPatient();  
-    	adta28a31toPatient.TrustFHIRSystems = TrustFHIRSystems;
-    	adta28a31toPatient.env = this.env;
+    	ADTA28A31toPatient adta28a31toPatient = new ADTA28A31toPatient(ctx, env);  
+    	ADTA01A04A08toEpisodeOfCare adta01a04a08toEpisodeOfCare = new ADTA01A04A08toEpisodeOfCare(ctx,this.env);
+    	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter(ctx,this.env,TrustFHIRSystems);
+    	ADTA05A38toAppointment adta05a38toAppointment = new ADTA05A38toAppointment(ctx,this.env,TrustFHIRSystems);
     	
-    	ADTA01A04A08toEpisodeOfCare adta01a04a08toEpisodeOfCare = new ADTA01A04A08toEpisodeOfCare();
-    	adta01a04a08toEpisodeOfCare.TrustFHIRSystems = TrustFHIRSystems;
-    	adta01a04a08toEpisodeOfCare.env = this.env;
     	
-    	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter();
-    	adta01a04a08toEncounter.TrustFHIRSystems =TrustFHIRSystems;
-    	adta01a04a08toEncounter.env = this.env;
+    	MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner(ctx,TrustFHIRSystems);
+    	MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation(ctx,TrustFHIRSystems);
     	
-    	ADTA05A38toAppointment adta05a38toAppointment = new ADTA05A38toAppointment();
-    	adta05a38toAppointment.TrustFHIRSystems =TrustFHIRSystems;
-    	adta05a38toAppointment.env = this.env;
+    	EncountertoEpisodeOfCare encountertoEpisodeOfCare = new EncountertoEpisodeOfCare(ctx,this.env);
     	
-    	MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner();
-    	mfnm02PractitionerProcessor.TrustFHIRSystems = TrustFHIRSystems;
-    	
-    	MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation();
-    	mfnm05LocationProcessor.TrustFHIRSystems = TrustFHIRSystems;
-    	
-    	EncountertoEpisodeOfCare encountertoEpisodeOfCare = new EncountertoEpisodeOfCare();
-    	encountertoEpisodeOfCare.env = this.env;
-    	
-    	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation();
-    	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation();
-    	EnrichwithUpdateType enrichUpdateType = new EnrichwithUpdateType();
-    	
-    	EnrichPatientwithOrganisation enrichPatientwithOrganisation = new EnrichPatientwithOrganisation();
-    	EnrichPatientwithPractitioner enrichPatientwithPractitioner = new EnrichPatientwithPractitioner();
-    	EnrichPatientwithPatient enrichPatientwithPatient = new EnrichPatientwithPatient();
-    	
-    	EnrichEncounterwithPatient enrichEncounterwithPatient = new EnrichEncounterwithPatient();
-    	EnrichEncounterwithPractitioner enrichEncounterwithPractitioner = new EnrichEncounterwithPractitioner();
-    	EnrichEncounterwithOrganisation enrichEncounterwithOrganisation = new EnrichEncounterwithOrganisation();
-    	EnrichEncounterwithLocation enrichEncounterwithLocation = new EnrichEncounterwithLocation();
-    	EnrichEncounterwithAppointment enrichEncounterwithAppointment = new EnrichEncounterwithAppointment();
-    	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter();
-    	EnrichEncounterwithEpisodeOfCare enrichEncounterwithEpisode = new EnrichEncounterwithEpisodeOfCare(); 
-    	
-    	EnrichEpisodewithPatient enrichEpisodewithPatient = new EnrichEpisodewithPatient();
-    	EnrichEpisodewithPractitioner enrichEpisodewithPractitioner = new EnrichEpisodewithPractitioner();
-    	EnrichEpisodewithOrganisation enrichEpisodewithOrganisation = new EnrichEpisodewithOrganisation();
-    	EnrichEpisodewithEpisode enrichEpisodewithEpisode = new EnrichEpisodewithEpisode();
-    	
-    	EnrichAppointmentwithPatient enrichAppointmentwithPatient = new EnrichAppointmentwithPatient();
-    	EnrichAppointmentwithPractitioner enrichAppointmentwithPractitioner = new EnrichAppointmentwithPractitioner();
-    	EnrichAppointmentwithLocation enrichAppointmentwithLocation = new EnrichAppointmentwithLocation();
-    	EnrichAppointmentwithAppointment enrichAppointmentwithAppointment = new EnrichAppointmentwithAppointment();
-    	
-    	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation();
-    	
-    	FHIRResourcetoLocation fhirResourcetoLocation = new FHIRResourcetoLocation();
-    	fhirResourcetoLocation.env = this.env;
-    	//httpOutcomeProcessor httpOutcomeProcessor = new httpOutcomeProcessor();
+    	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation(ctx);
+    	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation(ctx);
+    	EnrichwithUpdateType enrichUpdateType = new EnrichwithUpdateType(ctx);
+    	EnrichPatientwithOrganisation enrichPatientwithOrganisation = new EnrichPatientwithOrganisation(ctx);
+    	EnrichPatientwithPractitioner enrichPatientwithPractitioner = new EnrichPatientwithPractitioner(ctx);
+    	EnrichPatientwithPatient enrichPatientwithPatient = new EnrichPatientwithPatient(ctx);
+    	EnrichEncounterwithPatient enrichEncounterwithPatient = new EnrichEncounterwithPatient(ctx);
+    	EnrichEncounterwithPractitioner enrichEncounterwithPractitioner = new EnrichEncounterwithPractitioner(ctx);
+    	EnrichEncounterwithOrganisation enrichEncounterwithOrganisation = new EnrichEncounterwithOrganisation(ctx);
+    	EnrichEncounterwithLocation enrichEncounterwithLocation = new EnrichEncounterwithLocation(ctx);
+    	EnrichEncounterwithAppointment enrichEncounterwithAppointment = new EnrichEncounterwithAppointment(ctx);
+    	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter(ctx);
+    	EnrichEncounterwithEpisodeOfCare enrichEncounterwithEpisode = new EnrichEncounterwithEpisodeOfCare(ctx); 
+    	EnrichEpisodewithPatient enrichEpisodewithPatient = new EnrichEpisodewithPatient(ctx);
+    	EnrichEpisodewithPractitioner enrichEpisodewithPractitioner = new EnrichEpisodewithPractitioner(ctx);
+    	EnrichEpisodewithOrganisation enrichEpisodewithOrganisation = new EnrichEpisodewithOrganisation(ctx);
+    	EnrichEpisodewithEpisode enrichEpisodewithEpisode = new EnrichEpisodewithEpisode(ctx);
+    	EnrichAppointmentwithPatient enrichAppointmentwithPatient = new EnrichAppointmentwithPatient(ctx);
+    	EnrichAppointmentwithPractitioner enrichAppointmentwithPractitioner = new EnrichAppointmentwithPractitioner(ctx);
+    	EnrichAppointmentwithLocation enrichAppointmentwithLocation = new EnrichAppointmentwithLocation(ctx);
+    	EnrichAppointmentwithAppointment enrichAppointmentwithAppointment = new EnrichAppointmentwithAppointment(ctx);
+    	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation(ctx);
+    	FHIRResourcetoLocation fhirResourcetoLocation = new FHIRResourcetoLocation(ctx,this.env);
     	
     	onException(org.apache.
     			camel.CamelAuthorizationException.class)

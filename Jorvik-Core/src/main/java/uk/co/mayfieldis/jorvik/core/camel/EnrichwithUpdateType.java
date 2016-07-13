@@ -21,7 +21,12 @@ import ca.uhn.fhir.context.FhirContext;
 
 public class EnrichwithUpdateType implements AggregationStrategy  {
 
-	public FhirContext ctx;
+	public EnrichwithUpdateType(FhirContext ctx)
+	{
+		this.ctx = ctx;
+		
+	}
+	private  FhirContext ctx;
 	
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.core.camel.EnrichwithUpdateType.class);
 	

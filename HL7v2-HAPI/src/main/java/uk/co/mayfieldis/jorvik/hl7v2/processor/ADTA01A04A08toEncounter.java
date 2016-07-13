@@ -6,20 +6,20 @@ import java.util.Date;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.hl7.fhir.instance.formats.ParserType;
-import org.hl7.fhir.instance.model.Period;
-
-import org.hl7.fhir.instance.model.Encounter;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.ResourceSerialiser;
+
 
 public class ADTA01A04A08toEncounter implements Processor {
 
@@ -27,9 +27,18 @@ public class ADTA01A04A08toEncounter implements Processor {
 	
 	Terser terser = null;
 	
-	public NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	public ADTA01A04A08toEncounter(FhirContext ctx, Environment env, NHSTrustFHIRCodeSystems TrustFHIRSystems)
+	{
+		this.ctx = ctx;
+		this.env = env;
+		this.TrustFHIRSystems = TrustFHIRSystems;
+	}
 	
-	public Environment env;
+	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
+	
+	private Environment env;
+	
+	private FhirContext ctx;
 	
 	private String terserGet(String query)
 	{
@@ -159,10 +168,12 @@ public class ADTA01A04A08toEncounter implements Processor {
 			if (terserGet("/.PV1-2") != null)
 			{
 				exchange.getIn().setHeader("FHIREpisodeType", terserGet("/.PV1-2"));
+				Coding code = new Coding();
 				switch (terserGet("/.PV1-2"))
 				{
 					case "O" : 
-						encounter.setClass_(Encounter.EncounterClass.OUTPATIENT);
+						code.setCode("outpatient");
+						encounter.setClass_(code);
 						if (terserGet("/.PV1-3-2") != null && !terserGet("/.PV1-3-2").isEmpty())
 						{
 							encounter.addType()
@@ -172,11 +183,17 @@ public class ADTA01A04A08toEncounter implements Processor {
 									.setDisplay(terserGet("/.PV1-3-9"));
 						}
 						break;
-					case "I" : encounter.setClass_(Encounter.EncounterClass.INPATIENT);
+					case "I" : 
+						code.setCode("inpatient");
+						encounter.setClass_(code);
 						break;
-					case "E" : encounter.setClass_(Encounter.EncounterClass.EMERGENCY);
+					case "E" : 
+						code.setCode("emergency");
+						encounter.setClass_(code);
 						break;
-					default : encounter.setClass_(Encounter.EncounterClass.OTHER);
+					default : 
+						code.setCode("other");
+						encounter.setClass_(code);
 						break;
 				}
 			}
@@ -226,7 +243,8 @@ public class ADTA01A04A08toEncounter implements Processor {
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
 		exchange.getIn().setHeader("FHIRResource", "Encounter");
-		String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
+		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
+		//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());
 		exchange.getIn().setBody(Response);
