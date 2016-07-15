@@ -101,7 +101,8 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 
 		private Properties jpaProperties() {
 			Properties extraProperties = new Properties();
-			extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQLDialect.class.getName());
+			extraProperties.put("hibernate.dialect",  env.getProperty("hibernate.dialect"));
+			//extraProperties.put("hibernate.dialect", org.hibernate.dialect.SQLServerDialect.class.getName());
 			extraProperties.put("hibernate.format_sql", "true");
 			extraProperties.put("hibernate.show_sql", "false");
 			extraProperties.put("hibernate.hbm2ddl.auto", "update");
