@@ -6,11 +6,12 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
 
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
 
 import org.slf4j.Logger;
@@ -164,11 +165,12 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				IParser parser = ctx.newJsonParser();
 				try
 				{
-					bundle = parser.parseBundle(reader);
+					bundle = parser.parseResource(Bundle.class, reader);
 				}
 				catch(Exception ex)
 				{
-				//	log.error("#9 JSON Parse failed "+ex.getMessage());
+					ex.printStackTrace();
+					throw ex;
 				}
 			}
 			else
@@ -177,15 +179,16 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				IParser parser = ctx.newXmlParser();
 				try
 				{
-					bundle = parser.parseBundle(reader);
+					bundle = parser.parseResource(Bundle.class, reader);
 				}
 				catch(Exception ex)
 				{
-				//	log.error("#10 XML Parse failed "+ex.getMessage());
+					ex.printStackTrace();
+					throw ex;
 				}
 			}
 			
-			if (bundle!=null && bundle.getEntries().size()==0)
+			if (bundle!=null && bundle.getEntry().size()==0)
 			{
 				log.debug("Update Resource - no data found");
 				// No resource found go ahead
@@ -204,9 +207,9 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				}
 			}
 			
-			if (bundle!=null && bundle.getEntries().size()>0)
+			if (bundle!=null && bundle.getEntry().size()>0)
 			{
-				log.debug("Update Resource - Resource found="+bundle.getEntries().size());
+				log.debug("Update Resource - Resource found="+bundle.getEntry().size());
 				// This is bit over complex. It converts incoming data into generic FHIR Resource and the converts them to JSON for comparison
 				
 				//Resource oldResource=bundle.getEntry().get(0).getResource();
@@ -218,16 +221,16 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 				Location newLocation = null;
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 				{
-					oldOrganisation = (Organization) bundle.getEntries().get(0).getResource();
+					oldOrganisation = (Organization) bundle.getEntry().get(0).getResource();
 				}
 				
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 				{
-					oldPractitioner = (Practitioner) bundle.getEntries().get(0).getResource();
+					oldPractitioner = (Practitioner) bundle.getEntry().get(0).getResource();
 				}
 				if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 				{
-					oldLocation = (Location) bundle.getEntries().get(0).getResource();
+					oldLocation = (Location) bundle.getEntry().get(0).getResource();
 				}
 				log.debug("Processed OLD response to resource object");
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -256,7 +259,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					catch(Exception ex)
 					{
 						ex.printStackTrace();
-						//throw ex;
+						throw ex;
 					}
 				}
 				else
@@ -280,9 +283,8 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					}
 					catch(Exception ex)
 					{
-					//	log.error("#12 XML Parse failed 2 "+ex.getMessage());
 						ex.printStackTrace();
-						//throw ex;
+						throw ex;
 					}
 				}
 				log.debug("Processed NEW response to resource object");
@@ -309,7 +311,7 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader("FHIRResource","Organization/"+oldOrganisation.getId());
-						
+						log.info("Existing Organization ID = "+oldOrganisation.getId());
 						newOrganisation.setId(oldOrganisation.getId());
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newOrganisation);
 						//String Response = ResourceSerialiser.serialise(newOrganisation, ParserType.XML);
@@ -319,8 +321,10 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader("FHIRResource","Practitioner/"+oldPractitioner.getId());
+						log.info("Existing Practitioner ID = "+oldPractitioner.getId());
 						
 						newPractitioner.setId(oldPractitioner.getId());
+						
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newPractitioner);
 						//String Response = ResourceSerialiser.serialise(newPractitioner, ParserType.XML);
 						exchange.getIn().setBody(Response);
@@ -328,8 +332,8 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation.getId());
-						
+						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation. getId());
+						log.info("Existing Location ID = "+oldLocation.getId());
 						newLocation.setId(oldLocation.getId());
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newLocation);
 						//String Response = ResourceSerialiser.serialise(newLocation, ParserType.XML);

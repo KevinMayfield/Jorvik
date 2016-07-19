@@ -96,13 +96,13 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 					switch (code)
 					{
 						case "PAS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
 							break;
 						case "NHS":
-							if (exchange.getIn().getHeader("FHIRPatient") !=null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
+							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
 							}
@@ -246,10 +246,10 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 				case "A01":
 				case "A08":
 				case "A03":
-					exchange.getIn().setHeader(Exchange.HTTP_PATH,"POST");
+					exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 					break;
 				default:
-					exchange.getIn().setHeader(Exchange.HTTP_PATH,"PUT");	
+					exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");	
 			}
 		}
 		catch (Exception ex)

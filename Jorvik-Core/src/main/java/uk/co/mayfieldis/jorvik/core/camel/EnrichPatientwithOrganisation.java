@@ -6,12 +6,13 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
 
 public class EnrichPatientwithOrganisation implements AggregationStrategy {
@@ -47,11 +48,12 @@ public class EnrichPatientwithOrganisation implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -60,11 +62,12 @@ public class EnrichPatientwithOrganisation implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -73,11 +76,11 @@ public class EnrichPatientwithOrganisation implements AggregationStrategy {
 				IParser parser = ctx.newXmlParser();
 				try
 				{
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
 						patient = parser.parseResource(Patient.class,readerNew);
 						Reference ref = new Reference();
-						Organization organisation = (Organization) bundle.getEntries().get(0).getResource();
+						Organization organisation = (Organization) bundle.getEntry().get(0).getResource();
 						ref.setReference("Organization/"+organisation.getId());
 						patient.setManagingOrganization(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
@@ -97,7 +100,8 @@ public class EnrichPatientwithOrganisation implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-	//		log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

@@ -6,6 +6,7 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 
 import org.hl7.fhir.dstu3.model.Extension;
@@ -14,7 +15,6 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.hl7.fhir.dstu3.model.Reference;
 
-import ca.uhn.fhir.model.api.Bundle;
 import ca.uhn.fhir.parser.IParser;
 
 import org.slf4j.Logger;
@@ -54,15 +54,16 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 					IParser parser = ctx.newJsonParser();
 					try
 					{
-						Bundle bundle = parser.parseBundle(reader);
-						if (bundle.getEntries().size()>0)
+						Bundle bundle = parser.parseResource(Bundle.class, reader);
+						if (bundle.getEntry().size()>0)
 						{
-							parentOrganisation = (Organization) bundle.getEntries().get(0).getResource();
+							parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
 						}
 					}
 					catch(Exception ex)
 					{
-						
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -71,15 +72,16 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						Bundle bundle = parser.parseBundle(reader);
-						if (bundle.getEntries().size()>0)
+						Bundle bundle = parser.parseResource(Bundle.class, reader);
+						if (bundle.getEntry().size()>0)
 						{
-							parentOrganisation = (Organization) bundle.getEntries().get(0).getResource();
+							parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
 						}
 					}
 					catch(Exception ex)
 					{
-						
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				  
@@ -142,7 +144,6 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 				
 				if (parentOrganisation !=null)
 				{
-					ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
 					
 					//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
 					Reader readerNew = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
@@ -193,8 +194,8 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
-			
-			log.error(ex.getMessage());
+			throw ex;
+		
 		}
 		log.debug("Finish Enrich with Org");
 		return exchange;

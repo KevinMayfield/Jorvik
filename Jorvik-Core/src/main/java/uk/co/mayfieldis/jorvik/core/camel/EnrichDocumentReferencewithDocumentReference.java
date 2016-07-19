@@ -6,13 +6,12 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.DocumentReference;
-import org.springframework.core.env.Environment;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
-import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
 
 
 public class EnrichDocumentReferencewithDocumentReference implements AggregationStrategy {
@@ -50,11 +49,12 @@ public class EnrichDocumentReferencewithDocumentReference implements Aggregation
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -63,11 +63,12 @@ public class EnrichDocumentReferencewithDocumentReference implements Aggregation
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -77,9 +78,9 @@ public class EnrichDocumentReferencewithDocumentReference implements Aggregation
 				try
 				{
 					documentReference =  parser.parseResource(DocumentReference.class,readerNew);
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
-						DocumentReference hapiDocumentReference = (DocumentReference) bundle.getEntries().get(0).getResource();  
+						DocumentReference hapiDocumentReference = (DocumentReference) bundle.getEntry().get(0).getResource();  
 						documentReference.setId(hapiDocumentReference.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader(Exchange.HTTP_PATH,"DocumentReference/"+hapiDocumentReference.getId());
@@ -108,7 +109,8 @@ public class EnrichDocumentReferencewithDocumentReference implements Aggregation
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

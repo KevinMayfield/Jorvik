@@ -41,7 +41,7 @@
 		<commons-dbcp-version>1.4</commons-dbcp-version>
 		<camel-version>2.17.1</camel-version>
 		<hapi-fhir-version>1.6</hapi-fhir-version>
-		<Jorvik-Core-Version>1.6.0-RELEASE</Jorvik-Core-Version>
+		<Jorvik-Core-Version>1.6.2-RELEASE</Jorvik-Core-Version>
 		<insight-log4j>1.2.0.Beta4</insight-log4j>
 		<io.hawt>1.4.61</io.hawt>
 		<hapi-hl7v2-version>2.2</hapi-hl7v2-version>

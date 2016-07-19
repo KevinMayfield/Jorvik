@@ -6,11 +6,11 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 
-import ca.uhn.fhir.model.api.Bundle;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.parser.IParser;
@@ -49,11 +49,12 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -62,11 +63,12 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -75,11 +77,11 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 				IParser parser = ctx.newXmlParser();
 					try
 					{
-						if (bundle.getEntries().size()>0)
+						if (bundle.getEntry().size()>0)
 						{
 							encounter = parser.parseResource(Encounter.class, readerNew);
 							Reference ref = new Reference();
-							Practitioner practitioner = (Practitioner) bundle.getEntries().get(0).getResource(); 
+							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
 							ref.setReference("Practitioner/"+practitioner.getId());
 							encounter.addParticipant().setIndividual(ref);
 							String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
@@ -102,7 +104,8 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

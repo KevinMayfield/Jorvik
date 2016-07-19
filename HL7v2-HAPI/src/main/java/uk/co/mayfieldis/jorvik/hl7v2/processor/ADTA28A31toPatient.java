@@ -10,7 +10,8 @@ import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.dstu3.model.DateType;
+import org.hl7.fhir.dstu3.model.DateTimeType;
+
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.slf4j.Logger;
@@ -355,7 +356,7 @@ public class ADTA28A31toPatient implements Processor {
 	        	try {
 	        		Date dod;
 	        		dod = fmt.parse(terserGet("/.PID-29-1"));
-	        		DateType dt = new DateType();
+	        		DateTimeType dt = new DateTimeType();
 	        		dt.setValue(dod);
 	        		patient.setDeceased(dt);
 	        	} catch (ParseException e1) {
@@ -374,11 +375,11 @@ public class ADTA28A31toPatient implements Processor {
 			}
 			if (terserGet("/.MSH-9-2") != null && terserGet("/.MSH-9-2").equals("A31"))
 			{
-				exchange.getIn().setHeader(Exchange.HTTP_PATH,"PUT");
+				exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 			}
 			else
 			{
-				exchange.getIn().setHeader(Exchange.HTTP_PATH,"POST");
+				exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 			}
 		}
 		catch (Exception ex)

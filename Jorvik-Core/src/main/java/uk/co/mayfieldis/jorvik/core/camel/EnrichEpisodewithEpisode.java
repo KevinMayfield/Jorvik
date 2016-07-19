@@ -6,13 +6,11 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
-
-import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare.EpisodeOfCareStatusHistoryComponent;
 import org.hl7.fhir.dstu3.model.Period;
 
-import ca.uhn.fhir.model.api.Bundle;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
@@ -52,11 +50,12 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -65,11 +64,12 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -79,16 +79,16 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 				try
 				{
 					episode = parser.parseResource(EpisodeOfCare.class, readerNew);
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
-						EpisodeOfCare hapiEpisode = (EpisodeOfCare) bundle.getEntries().get(0).getResource();  
+						EpisodeOfCare hapiEpisode = (EpisodeOfCare) bundle.getEntry().get(0).getResource();  
 						episode.setId(hapiEpisode.getId());
 						// Copy status history over
 						for (int stno=0; stno<hapiEpisode.getStatusHistory().size();stno++)
 						{
 							episode.addStatusHistory(hapiEpisode.getStatusHistory().get(stno));
 						}
-						if (!hapiEpisode.getStatus().equals(episode.getStatus()))
+						if ((hapiEpisode.getStatus() != null) && (episode.getStatus() != null) && !hapiEpisode.getStatus().equals(episode.getStatus()))
 						{
 							EpisodeOfCareStatusHistoryComponent statusHistory = new EpisodeOfCareStatusHistoryComponent();
 							statusHistory.setStatus(hapiEpisode.getStatus());

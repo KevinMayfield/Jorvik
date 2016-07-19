@@ -6,12 +6,13 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
 
 public class EnrichEpisodewithPatient implements AggregationStrategy {
@@ -47,11 +48,12 @@ public class EnrichEpisodewithPatient implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -60,11 +62,12 @@ public class EnrichEpisodewithPatient implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -74,11 +77,11 @@ public class EnrichEpisodewithPatient implements AggregationStrategy {
 				try
 				{
 					episode = parser.parseResource(EpisodeOfCare.class,readerNew);
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
 						
 						Reference ref = new Reference();
-						Patient patient = (Patient) bundle.getEntries().get(0).getResource();
+						Patient patient = (Patient) bundle.getEntry().get(0).getResource();
 						ref.setReference("Patient/"+patient.getId());
 						episode.setPatient(ref);
 						// Have altered resource so process it.
@@ -100,7 +103,8 @@ public class EnrichEpisodewithPatient implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

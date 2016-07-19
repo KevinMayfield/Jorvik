@@ -228,10 +228,10 @@ public class ADTA01A04A08toEncounter implements Processor {
 			{
 				case "A01":
 				case "A04":
-					exchange.getIn().setHeader(Exchange.HTTP_PATH,"POST");
+					exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 					break;
 				default:
-					exchange.getIn().setHeader(Exchange.HTTP_PATH,"PUT");	
+					exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");	
 			}
 		}
 		catch (Exception ex)

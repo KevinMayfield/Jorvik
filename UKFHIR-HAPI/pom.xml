@@ -15,7 +15,7 @@
   <packaging>war</packaging>
   
   	<properties>
-   		<camel-version>2.17.0</camel-version>
+   		<camel-version>2.17.1</camel-version>
 	    <cxf-version>3.0.4</cxf-version>
 	    <hawtio-version>1.4.64</hawtio-version>
 	    <hsqldb-version>1.8.0.10</hsqldb-version>
@@ -42,7 +42,7 @@
 			<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<activemq-version>5.11.1</activemq-version>
-		<Jorvik-Core-Version>1.6.0-RELEASE</Jorvik-Core-Version>
+		<Jorvik-Core-Version>1.6.2-RELEASE</Jorvik-Core-Version>
 		<hapi-fhir-version>1.6</hapi-fhir-version>
   	</properties>
 

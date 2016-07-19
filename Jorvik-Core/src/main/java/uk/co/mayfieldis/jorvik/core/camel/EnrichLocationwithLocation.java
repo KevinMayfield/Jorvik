@@ -6,11 +6,12 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
 
 
@@ -47,11 +48,12 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -60,11 +62,12 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -73,11 +76,11 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 				IParser parser = ctx.newXmlParser();
 				try
 				{
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
 						location = parser.parseResource(Location.class,readerNew);
 						Reference ref = new Reference();
-						Location partOf = (Location) bundle.getEntries().get(0).getResource(); 
+						Location partOf = (Location) bundle.getEntry().get(0).getResource(); 
 						ref.setReference("Location/"+partOf.getId());
 						location.setPartOf(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location);
@@ -98,7 +101,8 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-	//		log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

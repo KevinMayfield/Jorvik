@@ -4,7 +4,7 @@
 	<artifactId>Jorvik-Core</artifactId>
   	<name>Jorvik-Core</name>
 	<groupId>uk.co.mayfieldis</groupId>
-	<version>1.6.0-RELEASE</version>
+	<version>1.6.2-RELEASE</version>
   
   <properties>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -6,10 +6,11 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.context.FhirContext;
 
 import ca.uhn.fhir.parser.IParser;
@@ -54,11 +55,12 @@ public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -67,11 +69,12 @@ public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -81,12 +84,12 @@ public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 				try
 				{
 					
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
 						encounter = parser.parseResource(Encounter.class,readerNew);
 						//Reference ref = new Reference();
 						
-						EpisodeOfCare episode = (EpisodeOfCare) bundle.getEntries().get(0).getResource(); 
+						EpisodeOfCare episode = (EpisodeOfCare) bundle.getEntry().get(0).getResource(); 
 						encounter.addEpisodeOfCare()
 							.setReference("EpisodeOfCare/"+episode.getId());
 						
@@ -107,7 +110,8 @@ public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
  		}
 		
 		return exchange;

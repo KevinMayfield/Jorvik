@@ -64,7 +64,7 @@ public class EncountertoEpisodeOfCare implements Processor {
 				
 				episode.setPatient(encounter.getPatient());
 				episode.setPeriod(episode.getPeriod());
-				log.info("Encounter State = "+encounter.getStatus().toString());
+				log.info("Encounter State = "+encounter.getStatus().toString() + " Episode Id = "+exchange.getIn().getHeader("FHIREpisode").toString());
 				switch (encounter.getStatus().toString())
 				{
 					case "planned":
@@ -92,12 +92,12 @@ public class EncountertoEpisodeOfCare implements Processor {
 			}
 			catch (Exception ex)
 			{
-				log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
-						+" Properties: " + exchange.getProperties().toString()
-						+" Headers: " + exchange.getIn().getHeaders().toString() 
-						+ " Message:" + exchange.getIn().getBody().toString());
+				ex.printStackTrace();
+				throw ex;
 			}
+			
 			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
+			log.info("Episode ("+exchange.getIn().getHeader("FHIREpisode").toString()+") to add if not exist is = "+ Response);
 			//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
 			exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 			exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");

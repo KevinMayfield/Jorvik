@@ -6,10 +6,10 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
-import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Patient;
 
-import ca.uhn.fhir.model.api.Bundle;
+
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -48,11 +48,12 @@ public class EnrichPatientwithPatient implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -61,11 +62,12 @@ public class EnrichPatientwithPatient implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -75,9 +77,9 @@ public class EnrichPatientwithPatient implements AggregationStrategy {
 				try
 				{
 					patient = parser.parseResource(Patient.class,readerNew);
-					if (bundle.getEntries().size()>0)
+					if (bundle.getEntry().size()>0)
 					{
-						Patient hapiPatient = (Patient) bundle.getEntries().get(0).getResource();  
+						Patient hapiPatient = (Patient) bundle.getEntry().get(0).getResource();  
 						patient.setId(hapiPatient.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
 						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Patient/"+hapiPatient.getId());
@@ -105,7 +107,8 @@ public class EnrichPatientwithPatient implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

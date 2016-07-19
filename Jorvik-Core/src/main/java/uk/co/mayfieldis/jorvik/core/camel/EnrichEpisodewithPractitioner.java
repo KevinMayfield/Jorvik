@@ -6,12 +6,13 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
+
 import ca.uhn.fhir.parser.IParser;
 
 
@@ -48,11 +49,12 @@ public class EnrichEpisodewithPractitioner implements AggregationStrategy {
 					
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-	//					log.error("#9 JSON Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				else
@@ -61,11 +63,12 @@ public class EnrichEpisodewithPractitioner implements AggregationStrategy {
 					IParser parser = ctx.newXmlParser();
 					try
 					{
-						bundle = parser.parseBundle(reader);
+						bundle = parser.parseResource(Bundle.class, reader);
 					}
 					catch(Exception ex)
 					{
-		//				log.error("#10 XML Parse failed "+ex.getMessage());
+						ex.printStackTrace();
+						throw ex;
 					}
 				}
 				//ByteArrayInputStream xmlNewContentBytes = new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class));
@@ -74,11 +77,11 @@ public class EnrichEpisodewithPractitioner implements AggregationStrategy {
 				IParser parser = ctx.newXmlParser();
 					try
 					{
-						if (bundle.getEntries().size()>0)
+						if (bundle.getEntry().size()>0)
 						{
 							episode = parser.parseResource(EpisodeOfCare.class,readerNew);
 							Reference ref = new Reference();
-							Practitioner practitioner = (Practitioner) bundle.getEntries().get(0).getResource(); 
+							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
 							ref.setReference("Practitioner/"+practitioner.getId());
 							//EpisodeOfCareTeamComponent team = null;
 							if (episode.getTeam().size() == 0)
@@ -110,7 +113,8 @@ public class EnrichEpisodewithPractitioner implements AggregationStrategy {
 		}
 		catch (Exception ex)
 		{
-		//	log.error(exchange.getExchangeId() + " "  + ex.getMessage() +" " + enrichment.getProperties().toString());
+			ex.printStackTrace();
+			throw ex;
 		}
 		
 		return exchange;

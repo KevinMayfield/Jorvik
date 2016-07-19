@@ -6,16 +6,16 @@ import java.io.Reader;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.springframework.core.env.Environment;
+
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Bundle;
 import ca.uhn.fhir.parser.IParser;
 
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
@@ -53,15 +53,16 @@ public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 				IParser parser = ctx.newJsonParser();
 				try
 				{
-					Bundle bundle = parser.parseBundle(reader);
-					if (bundle.getEntries().size()>0)
+					Bundle bundle = parser.parseResource(Bundle.class, reader);
+					if (bundle!=null && bundle.getEntry().size()>0)
 					{
-						parentOrganisation = (Organization) bundle.getEntries().get(0).getResource();
+						parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
 					}
 				}
 				catch(Exception ex)
 				{
-					
+					ex.printStackTrace();
+					throw ex;
 				}
 			}
 			else
@@ -71,15 +72,16 @@ public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 				
 				try
 				{
-					Bundle bundle = parser.parseBundle(reader);
-					if (bundle.getEntries().size()>0)
+					Bundle bundle = parser.parseResource(Bundle.class, reader);
+					if (bundle!=null && bundle.getEntry().size()>0)
 					{
-						parentOrganisation = (Organization) bundle.getEntries().get(0).getResource();
+						parentOrganisation = (Organization) bundle.getEntry().get(0).getResource();
 					}
 				}
 				catch(Exception ex)
 				{
-					
+					ex.printStackTrace();
+					throw ex;
 				}
 			}
 			
@@ -115,7 +117,7 @@ public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 				catch(Exception ex)
 				{
 					ex.printStackTrace();
-					//throw ex;
+					throw ex;
 				}
 			}
 		}
