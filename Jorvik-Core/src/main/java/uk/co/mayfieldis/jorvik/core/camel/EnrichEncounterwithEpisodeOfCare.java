@@ -91,7 +91,7 @@ public class EnrichEncounterwithEpisodeOfCare implements AggregationStrategy {
 						
 						EpisodeOfCare episode = (EpisodeOfCare) bundle.getEntry().get(0).getResource(); 
 						encounter.addEpisodeOfCare()
-							.setReference("EpisodeOfCare/"+episode.getId());
+							.setReference("EpisodeOfCare/"+episode.getIdElement().getIdPart());
 						
 						//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);

@@ -385,10 +385,7 @@ public class ADTA28A31toPatient implements Processor {
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			log.error("#3 "+ exchange.getExchangeId() + " "  + ex.getMessage() 
-					+" Properties: " + exchange.getProperties().toString()
-					+" Headers: " + exchange.getIn().getHeaders().toString() 
-					+ " Message:" + exchange.getIn().getBody().toString());
+			throw ex;
 		}
 		
 		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);

@@ -83,7 +83,7 @@ public class EnrichDocumentReferencewithPractitioner implements AggregationStrat
 						documentReference = (DocumentReference) parser.parseResource(readerNew);
 						Reference ref = new Reference();
 						Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Practitioner/"+practitioner.getId());
+						ref.setReference("Practitioner/"+practitioner.getIdElement().getIdPart());
 						documentReference.addAuthor(ref);
 						
 						//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);

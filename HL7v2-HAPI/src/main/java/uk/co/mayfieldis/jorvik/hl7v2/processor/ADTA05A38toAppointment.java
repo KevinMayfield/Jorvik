@@ -227,7 +227,7 @@ public class ADTA05A38toAppointment implements Processor {
 		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment);
 		//String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
-		//exchange.getIn().setHeader(Exchange.HTTP_PATH, "/Practitioner/"+patient.getId());
+		
 		exchange.getIn().setBody(Response); 
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		

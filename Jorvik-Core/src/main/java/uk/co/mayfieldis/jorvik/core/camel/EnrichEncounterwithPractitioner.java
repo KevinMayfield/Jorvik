@@ -82,7 +82,7 @@ public class EnrichEncounterwithPractitioner implements AggregationStrategy {
 							encounter = parser.parseResource(Encounter.class, readerNew);
 							Reference ref = new Reference();
 							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-							ref.setReference("Practitioner/"+practitioner.getId());
+							ref.setReference("Practitioner/"+practitioner.getIdElement().getIdPart());
 							encounter.addParticipant().setIndividual(ref);
 							String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
 							//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);

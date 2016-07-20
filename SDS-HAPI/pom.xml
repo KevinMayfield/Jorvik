@@ -42,7 +42,7 @@
 		<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<activemq-version>5.11.1</activemq-version>
-		<Jorvik-Core-Version>1.6.2-RELEASE</Jorvik-Core-Version>
+		<Jorvik-Core-Version>1.6.3</Jorvik-Core-Version>
   	</properties>
 
 	<build>

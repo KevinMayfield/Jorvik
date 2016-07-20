@@ -84,7 +84,7 @@ public class EnrichAppointmentwithLocation implements AggregationStrategy {
 						appointment = parser.parseResource(Appointment.class,readerNew);
 						Reference ref = new Reference();
 						Location location = (Location) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Location/"+location.getId());
+						ref.setReference("Location/"+location.getIdElement().getIdPart());
 						appointment.addParticipant().setActor(ref);
 						
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment);

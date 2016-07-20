@@ -81,7 +81,7 @@ public class EnrichLocationwithLocation implements AggregationStrategy {
 						location = parser.parseResource(Location.class,readerNew);
 						Reference ref = new Reference();
 						Location partOf = (Location) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Location/"+partOf.getId());
+						ref.setReference("Location/"+partOf.getIdElement().getIdPart());
 						location.setPartOf(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location);
 						//String Response = ResourceSerialiser.serialise(location, ParserType.XML);

@@ -85,7 +85,7 @@ public class EnrichDocumentReferencewithEncounter implements AggregationStrategy
 						Encounter hapiEncounter = (Encounter) bundle.getEntry().get(0).getResource();  
 						Reference ref = new Reference();
 						 
-						ref.setReference("Encounter/"+hapiEncounter.getId());
+						ref.setReference("Encounter/"+hapiEncounter.getIdElement().getIdPart());
 						
 						DocumentReferenceContextComponent comp = documentReference.getContext();
 						comp.setEncounter(ref);

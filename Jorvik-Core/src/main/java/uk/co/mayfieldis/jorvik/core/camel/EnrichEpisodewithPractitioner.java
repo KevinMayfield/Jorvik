@@ -82,7 +82,7 @@ public class EnrichEpisodewithPractitioner implements AggregationStrategy {
 							episode = parser.parseResource(EpisodeOfCare.class,readerNew);
 							Reference ref = new Reference();
 							Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-							ref.setReference("Practitioner/"+practitioner.getId());
+							ref.setReference("Practitioner/"+practitioner.getIdElement().getIdPart());
 							//EpisodeOfCareTeamComponent team = null;
 							if (episode.getTeam().size() == 0)
 							{

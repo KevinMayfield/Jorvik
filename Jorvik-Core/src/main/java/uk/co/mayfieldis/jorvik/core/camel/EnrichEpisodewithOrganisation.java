@@ -82,8 +82,8 @@ public class EnrichEpisodewithOrganisation implements AggregationStrategy {
 						episode = parser.parseResource(EpisodeOfCare.class,readerNew);
 						Reference ref = new Reference();
 						Organization organisation = (Organization) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Organization/"+organisation.getId());
-						exchange.getIn().setHeader("FHIROrganisationRef","Organization/"+organisation.getId());
+						ref.setReference("Organization/"+organisation.getIdElement().getIdPart());
+						exchange.getIn().setHeader("FHIROrganisationRef","Organization/"+organisation.getIdElement().getIdPart());
 						episode.setManagingOrganization(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
 						//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);

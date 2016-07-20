@@ -84,7 +84,7 @@ public class EnrichAppointmentwithPatient implements AggregationStrategy {
 						
 						Reference ref = new Reference();
 						Patient patient = (Patient) bundle.getEntry().get(0).getResource();
-						ref.setReference("Patient/"+patient.getId());
+						ref.setReference("Patient/"+patient.getIdElement().getIdPart());
 						appointment.addParticipant()
 							.setActor(ref)
 							.addType()

@@ -80,7 +80,7 @@ public class EnrichPatientwithPractitioner implements AggregationStrategy {
 						patient = parser.parseResource(Patient.class, readerNew);
 						Reference ref = new Reference();
 						Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Practitioner/"+practitioner.getId());
+						ref.setReference("Practitioner/"+practitioner.getIdElement().getIdPart());
 						patient.addCareProvider(ref);
 						
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);

@@ -118,7 +118,7 @@ public class EnrichEpisodewithEpisode implements AggregationStrategy {
 							
 						}
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader(Exchange.HTTP_PATH,"EpisodeOfCare/"+hapiEpisode.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"EpisodeOfCare/"+hapiEpisode.getIdElement().getIdPart());
 						// Have altered resource so process it.
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
 						//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);

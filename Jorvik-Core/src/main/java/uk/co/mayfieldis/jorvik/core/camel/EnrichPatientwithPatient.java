@@ -82,7 +82,7 @@ public class EnrichPatientwithPatient implements AggregationStrategy {
 						Patient hapiPatient = (Patient) bundle.getEntry().get(0).getResource();  
 						patient.setId(hapiPatient.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Patient/"+hapiPatient.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Patient/"+hapiPatient.getIdElement().getIdPart());
 						// Have altered resource so process it.
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
 						//

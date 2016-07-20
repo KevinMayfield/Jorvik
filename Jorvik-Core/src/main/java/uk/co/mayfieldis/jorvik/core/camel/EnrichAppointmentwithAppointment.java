@@ -81,7 +81,7 @@ public class EnrichAppointmentwithAppointment implements AggregationStrategy {
 						Appointment hapiAppointment = (Appointment) bundle.getEntry().get(0).getResource();  
 						appointment.setId(hapiAppointment.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Appointment/"+hapiAppointment.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Appointment/"+hapiAppointment.getIdElement().getIdPart());
 						// Have altered resource so process it.
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment);
 						//String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);

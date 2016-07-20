@@ -87,7 +87,7 @@ public class EnrichEncounterwithEncounter implements AggregationStrategy {
 						Encounter hapiEncounter = (Encounter) bundle.getEntry().get(0).getResource();  
 						encounter.setId(hapiEncounter.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Encounter/"+hapiEncounter.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"Encounter/"+hapiEncounter.getIdElement().getIdPart());
 						// Have altered resource so process it.
 						//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);

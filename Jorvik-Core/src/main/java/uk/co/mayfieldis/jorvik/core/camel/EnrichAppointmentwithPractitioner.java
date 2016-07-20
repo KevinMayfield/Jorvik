@@ -83,7 +83,7 @@ public class EnrichAppointmentwithPractitioner implements AggregationStrategy {
 						appointment = parser.parseResource(Appointment.class, readerNew);
 						Reference ref = new Reference();
 						Practitioner practitioner = (Practitioner) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Practitioner/"+practitioner.getId());
+						ref.setReference("Practitioner/"+practitioner.getIdElement().getIdPart());
 						appointment.addParticipant()
 						.setActor(ref)
 						.addType()

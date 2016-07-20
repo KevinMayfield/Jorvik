@@ -83,7 +83,7 @@ public class EnrichDocumentReferencewithDocumentReference implements Aggregation
 						DocumentReference hapiDocumentReference = (DocumentReference) bundle.getEntry().get(0).getResource();  
 						documentReference.setId(hapiDocumentReference.getId());
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader(Exchange.HTTP_PATH,"DocumentReference/"+hapiDocumentReference.getId());
+						exchange.getIn().setHeader(Exchange.HTTP_PATH,"DocumentReference/"+hapiDocumentReference.getIdElement().getIdPart());
 						exchange.getIn().setHeader(Exchange.HTTP_URI,"");
 						// Have altered resource so process it.
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(documentReference);

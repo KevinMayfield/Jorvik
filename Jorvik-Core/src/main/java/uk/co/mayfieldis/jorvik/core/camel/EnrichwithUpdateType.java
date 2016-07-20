@@ -310,9 +310,9 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Organization"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader("FHIRResource","Organization/"+oldOrganisation.getId());
-						log.info("Existing Organization ID = "+oldOrganisation.getId());
-						newOrganisation.setId(oldOrganisation.getId());
+						exchange.getIn().setHeader("FHIRResource","Organization/"+oldOrganisation.getIdElement().getIdPart());
+						log.info("Existing Organization getID = "+oldOrganisation.getId() + " getIdElement().getIdPart()="+oldOrganisation.getIdElement().getIdPart());
+						newOrganisation.setId(oldOrganisation.getIdElement().getIdPart());
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newOrganisation);
 						//String Response = ResourceSerialiser.serialise(newOrganisation, ParserType.XML);
 						exchange.getIn().setBody(Response);
@@ -320,10 +320,10 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Practitioner"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader("FHIRResource","Practitioner/"+oldPractitioner.getId());
-						log.info("Existing Practitioner ID = "+oldPractitioner.getId());
+						exchange.getIn().setHeader("FHIRResource","Practitioner/"+oldPractitioner.getIdElement().getIdPart());
+						log.info("Existing Practitioner ID = "+oldPractitioner.getIdElement().getIdPart());
 						
-						newPractitioner.setId(oldPractitioner.getId());
+						newPractitioner.setId(oldPractitioner.getIdElement().getIdPart());
 						
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newPractitioner);
 						//String Response = ResourceSerialiser.serialise(newPractitioner, ParserType.XML);
@@ -332,9 +332,9 @@ public class EnrichwithUpdateType implements AggregationStrategy  {
 					if (exchange.getIn().getHeader("FHIRResource").toString().contains("Location"))
 					{
 						exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
-						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation. getId());
-						log.info("Existing Location ID = "+oldLocation.getId());
-						newLocation.setId(oldLocation.getId());
+						exchange.getIn().setHeader("FHIRResource","Location/"+oldLocation.getIdElement().getIdPart());
+						log.info("Existing Location ID = "+oldLocation.getIdElement().getIdPart());
+						newLocation.setId(oldLocation.getIdElement().getIdPart());
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(newLocation);
 						//String Response = ResourceSerialiser.serialise(newLocation, ParserType.XML);
 						exchange.getIn().setBody(Response);

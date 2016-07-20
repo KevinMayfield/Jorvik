@@ -115,7 +115,7 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 					
 	
 						Reference organisation = new Reference();
-						organisation.setReference("Organization/"+parentOrganisation.getId());
+						organisation.setReference("Organization/"+parentOrganisation.getIdElement().getIdPart());
 						practitionerRole.setOrganization(organisation);
 						Extension parentOrg= new Extension();
 						parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
@@ -156,9 +156,9 @@ public class EnrichResourcewithOrganisation implements AggregationStrategy  {
 						Organization organisation = parser.parseResource(Organization.class,readerNew);
 					
 						Reference ccg = new Reference();
-						ccg.setReference("/Organization/"+parentOrganisation.getId());
+						ccg.setReference("/Organization/"+parentOrganisation.getIdElement().getIdPart());
 						organisation.setPartOf(ccg);
-						log.debug("Adding organisation Ref= "+ccg.getReference());
+						log.info("Adding organisation Ref= "+ccg.getReference());
 						Extension parentOrg= new Extension();
 						parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
 						CodeableConcept parentCode = new CodeableConcept();

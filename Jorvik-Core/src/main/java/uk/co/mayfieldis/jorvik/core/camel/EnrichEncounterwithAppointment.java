@@ -82,7 +82,7 @@ public class EnrichEncounterwithAppointment implements AggregationStrategy {
 						encounter = parser.parseResource(Encounter.class,readerNew);
 						Reference ref = new Reference();
 						Appointment appointment = (Appointment) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Appointment/"+appointment.getId());
+						ref.setReference("Appointment/"+appointment.getIdElement().getIdPart());
 						encounter.setAppointment(ref);
 						
 						//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);

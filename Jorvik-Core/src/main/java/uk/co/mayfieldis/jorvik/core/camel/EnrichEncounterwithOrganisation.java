@@ -81,8 +81,8 @@ public class EnrichEncounterwithOrganisation implements AggregationStrategy {
 						encounter = parser.parseResource(Encounter.class,readerNew);
 						Reference ref = new Reference();
 						Organization organisation = (Organization) bundle.getEntry().get(0).getResource(); 
-						ref.setReference("Organization/"+organisation.getId());
-						exchange.getIn().setHeader("FHIROrganisationRef","Organization/"+organisation.getId());
+						ref.setReference("Organization/"+organisation.getIdElement().getIdPart());
+						exchange.getIn().setHeader("FHIROrganisationRef","Organization/"+organisation.getIdElement().getIdPart());
 						encounter.setServiceProvider(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
 						//String Response = ResourceSerialiser.serialise(encounter, ParserType.XML);

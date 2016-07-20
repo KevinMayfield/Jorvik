@@ -19,7 +19,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+
 
 public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 
@@ -99,17 +99,31 @@ public class EnrichConsultantwithOrganisation implements AggregationStrategy  {
 					PractitionerPractitionerRoleComponent practitionerRole = gp.getPractitionerRole().get(0);
 									
 					Reference organisation = new Reference();
-					organisation.setReference("Organization/"+parentOrganisation.getId());
+					organisation.setReference("Organization/"+parentOrganisation.getIdElement().getIdPart());
 					practitionerRole.setOrganization(organisation);
 					Extension parentOrg= new Extension();
 					parentOrg.setUrl(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"/ParentCode");
-					CodeableConcept parentCode = new CodeableConcept();
-					parentCode.addCoding()
-						.setCode(exchange.getIn().getHeader("ParentOrganisationCode").toString())
-						.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
 					
-					parentOrg.setValue(parentCode);
-					practitionerRole.addExtension(parentOrg);
+					if (exchange.getIn().getHeader("ParentOrganisationCode")!=null)
+					{
+						CodeableConcept parentCode = new CodeableConcept();
+						parentCode.addCoding()
+							.setCode(exchange.getIn().getHeader("ParentOrganisationCode").toString())
+							.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+						
+						parentOrg.setValue(parentCode);
+						practitionerRole.addExtension(parentOrg);
+					}
+					if (exchange.getIn().getHeader("FHIROrganisationCode")!=null)
+					{
+						CodeableConcept parentCode = new CodeableConcept();
+						parentCode.addCoding()
+							.setCode(exchange.getIn().getHeader("FHIROrganisationCode").toString())
+							.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+						
+						parentOrg.setValue(parentCode);
+						practitionerRole.addExtension(parentOrg);
+					}
 					String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(gp);
 					//String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
 					exchange.getIn().setBody(Response);

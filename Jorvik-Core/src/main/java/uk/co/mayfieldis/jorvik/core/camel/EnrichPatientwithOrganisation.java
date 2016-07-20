@@ -81,7 +81,7 @@ public class EnrichPatientwithOrganisation implements AggregationStrategy {
 						patient = parser.parseResource(Patient.class,readerNew);
 						Reference ref = new Reference();
 						Organization organisation = (Organization) bundle.getEntry().get(0).getResource();
-						ref.setReference("Organization/"+organisation.getId());
+						ref.setReference("Organization/"+organisation.getIdElement().getIdPart());
 						patient.setManagingOrganization(ref);
 						String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
 						//String Response = ResourceSerialiser.serialise(patient, ParserType.XML);

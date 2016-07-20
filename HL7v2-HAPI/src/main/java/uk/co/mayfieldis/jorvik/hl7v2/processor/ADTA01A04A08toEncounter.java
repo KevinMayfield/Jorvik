@@ -237,10 +237,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			log.error("#3 "+  exchange.getExchangeId() + " " + ex.getMessage() +  " "  + ex.getStackTrace() 
-					+" Properties: " + exchange.getProperties().toString()
-					+" Headers: " + exchange.getIn().getHeaders().toString() 
-					+ " Message:" + exchange.getIn().getBody().toString());
+			throw ex;
 		}
 		exchange.getIn().setHeader("FHIRResource", "Encounter");
 		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter);
