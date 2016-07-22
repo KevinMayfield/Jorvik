@@ -25,7 +25,30 @@ import ca.uhn.fhir.jpa.util.SubscriptionsRequireManualActivationInterceptorDstu3
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+/*
+ * 
+SQL Server 2012 Settings
 
+jdbc.Driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+jdbc.url=jdbc:sqlserver://localhost:1433;databaseName=HAPI_FHIR_STU3_TEST
+jdbc.username=fhirjpa
+jdbc.password=fhirjpa
+hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+hibernate.show_sql=true
+
+MySql
+
+jdbc.Driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/hapifhirstu3
+jdbc.username=fhirjpa
+jdbc.password=fhirjpa
+hibernate.dialect=org.hibernate.dialect.MySQLDialect
+hibernate.show_sql=true
+
+ * 
+ * 
+ * 
+ */
 public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 	@Configuration
 	@EnableTransactionManagement()
@@ -57,18 +80,7 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 		 */
 		@Bean
 		public DataSource dataSource() {
-			
-			/*
-			BasicDataSource retVal = new BasicDataSource();
-			
-			try {
-				retVal.setDriver(new com.mysql.jdbc.Driver());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
-			
+									
 			SimpleDriverDataSource retVal = new SimpleDriverDataSource();
 		    
 		    try {
@@ -104,7 +116,7 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			extraProperties.put("hibernate.dialect",  env.getProperty("hibernate.dialect"));
 			//extraProperties.put("hibernate.dialect", org.hibernate.dialect.SQLServerDialect.class.getName());
 			extraProperties.put("hibernate.format_sql", "true");
-			extraProperties.put("hibernate.show_sql", "false");
+			extraProperties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 			extraProperties.put("hibernate.hbm2ddl.auto", "update");
 			extraProperties.put("hibernate.jdbc.batch_size", "20");
 			extraProperties.put("hibernate.cache.use_query_cache", "false");
@@ -115,7 +127,9 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			// needed to set properties of this directory sudo chmod -R 777 .
 			extraProperties.put("hibernate.search.default.indexBase", "/Development/lucene/indexes");
 			extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
-//			extraProperties.put("hibernate.search.default.worker.execution", "async");
+			//extraProperties.put("hibernate.connection.driver.class",
+			//		env.getProperty("jdbc.Driver"));
+
 			return extraProperties;
 		}
 
