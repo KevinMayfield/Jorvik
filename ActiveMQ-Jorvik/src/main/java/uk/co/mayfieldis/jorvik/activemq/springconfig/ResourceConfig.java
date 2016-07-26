@@ -1,8 +1,16 @@
-package uk.co.mayfieldis.jorvik.UKHL7FHIRAPI.springconfig;
+package uk.co.mayfieldis.jorvik.activemq.springconfig;
 
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import java.util.Collections;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.TransportConnector;
 import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.activemq.hooks.SpringContextHook;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.camel.component.jms.JmsConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +21,70 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@PropertySource("classpath:HAPIHL7FHIR.properties")
+@PropertySource("classpath:ActiveMQ.properties")
 public class ResourceConfig  {
 	
+	 
+	@Autowired
+	protected Environment env;
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
-	 
-	@Autowired
-	protected Environment env;
+	
+	@Bean
+	public BrokerService brokerService() 
+	{
+		BrokerService broker = new BrokerService();
+		
+		broker.setBrokerName("JorvikBroker");
+		broker.setUseJmx(true);
+		//useShutdownHook="false" useJmx="true"
+		try {
+			broker.setShutdownHooks(Collections.<Runnable> singletonList(new SpringContextHook()));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        broker.setPersistent(true);
+        broker.setDataDirectory("activemq-jorvik");
+                
+        TransportConnector vm = new TransportConnector();
+        vm.setName("vm");
+        try {
+			vm.setUri(new URI("vm://JorvikBroker"));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			broker.addConnector(vm);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        TransportConnector tcp = new TransportConnector();
+        tcp.setName("tcp");
+        try {
+			tcp.setUri(new URI("tcp://0.0.0.0:61616"));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+		try {
+			broker.addConnector(tcp);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return broker;
+				
+	}
+
 		
 	@Bean(name ="jmsConnectionFactory" )
 	public ActiveMQConnectionFactory activeMQConnectionFactory()
@@ -65,6 +126,6 @@ public class ResourceConfig  {
 		activeMQComponent.setConfiguration(jmsConfiguration());
 		return activeMQComponent;	
 	}
-	  	  		
+	  		  		
 
 }

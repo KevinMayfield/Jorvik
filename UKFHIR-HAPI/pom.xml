@@ -7,7 +7,7 @@
 
   <artifactId>UKFHIR-HAPI</artifactId>
   <groupId>uk.co.mayfieldis.camelRoute.UKFhirHapi</groupId>
-  <version>1.6.0-RELEASE</version>
+  <version>1.6.1</version>
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
   
   
@@ -15,13 +15,11 @@
   <packaging>war</packaging>
   
   	<properties>
-   		<camel-version>2.17.1</camel-version>
+   		<camel-version>2.17.2</camel-version>
 	    <cxf-version>3.0.4</cxf-version>
-	    <hawtio-version>1.4.64</hawtio-version>
-	    <hsqldb-version>1.8.0.10</hsqldb-version>
 	    <junit-version>4.11</junit-version>
 	    <log4j-version>1.2.17</log4j-version>
-	    <spring-version>4.1.6.RELEASE</spring-version>
+	    
 	    <slf4j-version>1.7.5</slf4j-version>
 	    <xbean-version>3.18</xbean-version>
 	    <bundle-plugin-version>2.3.7</bundle-plugin-version>
@@ -35,14 +33,12 @@
 	    <insight-log4j>1.2.0.Beta4</insight-log4j>
     	<bundle.symbolicName>UKFHIRHAPICamelRoute.Bundle</bundle.symbolicName>
     	<bundle.namespace>uk.co.mayfieldis.camelRoute.UKFhirAPI</bundle.namespace>
-    	<springframework-version>4.2.1.RELEASE</springframework-version>
-		<spring-security-version>4.0.2.RELEASE</spring-security-version>
-		<spring-security-oauth2>2.0.7.RELEASE</spring-security-oauth2>
-		<derby-version>10.12.1.1</derby-version>
-			<hibernate_version>5.0.7.Final</hibernate_version>
-		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
-		<activemq-version>5.11.1</activemq-version>
-		<Jorvik-Core-Version>1.6.2-RELEASE</Jorvik-Core-Version>
+    	
+		<springframework-version>4.3.0.RELEASE</springframework-version>
+		<spring-security-version>4.1.0.RELEASE</spring-security-version>
+		<spring-security-oauth2>2.0.10.RELEASE</spring-security-oauth2>
+		<activemq-version>5.13.4</activemq-version>
+		<Jorvik-Core-Version>1.6.4</Jorvik-Core-Version>
 		<hapi-fhir-version>1.6</hapi-fhir-version>
   	</properties>
 

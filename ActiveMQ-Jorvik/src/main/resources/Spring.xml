@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:broker="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+					http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+					http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.16.0.xsd
+					http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+	 
+	 <context:annotation-config />
+	 <context:property-placeholder location="classpath:ActiveMQ.properties"/>  
+	 <context:component-scan base-package="uk.co.mayfieldis.jorvik.activemq.springconfig"></context:component-scan>
+	 
+	 <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery" lazy-init="false" scope="singleton"
+    	    init-method="start" destroy-method="stop"/>
+	 
+	 <!-- 
+	 <broker id="broker" brokerName="JorvikBroker" useShutdownHook="false" useJmx="true"
+                   persistent="true" dataDirectory="activemq-jorvik"
+                   xmlns="http://activemq.apache.org/schema/core">
+ 
+        <transportConnectors>
+            <transportConnector name="vm" uri="vm://JorvikBroker"/>
+            <transportConnector name="tcp" uri="tcp://0.0.0.0:61616"/>
+        </transportConnectors>
+ 		
+    </broker>
+ 	
+	<bean id="jmsConnectionFactory" 
+	   class="org.apache.activemq.ActiveMQConnectionFactory">
+		   <property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+	 
+	<bean id="pooledConnectionFactory" 
+	   class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+	   <property name="maxConnections" value="8" />
+	   <property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+	 
+	<bean id="jmsConfig" 
+	   class="org.apache.camel.component.jms.JmsConfiguration">
+	   <property name="connectionFactory" ref="pooledConnectionFactory"/>
+	   <property name="concurrentConsumers" value="10"/>
+	</bean>
+	 
+	<bean id="activemq" 
+	    class="org.apache.activemq.camel.component.ActiveMQComponent">
+	    <property name="configuration" ref="jmsConfig"/>
+	 
+	
+	</bean>
+	   
+	-->
+	 
+	
+</beans>
