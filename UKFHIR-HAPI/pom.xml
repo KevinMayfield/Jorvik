@@ -38,7 +38,7 @@
 		<spring-security-version>4.1.0.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.10.RELEASE</spring-security-oauth2>
 		<activemq-version>5.13.4</activemq-version>
-		<Jorvik-Core-Version>1.6.4</Jorvik-Core-Version>
+		<Jorvik-Core-Version>1.6.5</Jorvik-Core-Version>
 		<hapi-fhir-version>1.6</hapi-fhir-version>
   	</properties>
 

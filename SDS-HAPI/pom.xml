@@ -41,7 +41,7 @@
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<io.hawt>1.4.64</io.hawt>
 		<activemq-version>5.13.4</activemq-version>
-		<Jorvik-Core-Version>1.6.4</Jorvik-Core-Version>
+		<Jorvik-Core-Version>1.6.5</Jorvik-Core-Version>
   	</properties>
 
 	<build>
