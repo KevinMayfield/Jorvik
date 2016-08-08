@@ -3,13 +3,19 @@ package uk.co.mayfieldis.jorvik.NHSSDS;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
 
@@ -27,6 +33,14 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 		NHSConsultantEntities entity = (NHSConsultantEntities) exchange.getIn().getBody(NHSConsultantEntities.class);
 		
 		String Id = entity.PractitionerCode; 
+		
+		Organization parentOrg = new Organization();
+		parentOrg.setId(IdDt.newRandomUuid());
+		
+		parentOrg.addIdentifier()
+			.setValue(entity.LocationOrganisationCode)
+			.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+		
 		
 		if ( Id.startsWith("C") && Id.length()>6)
 		{
@@ -65,19 +79,35 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 				.setSystem(FHIRCodeSystems.URI_NHS_SPECIALTIES);
 			practitionerRole
 				.addSpecialty(pracspecialty);
-				
+			practitionerRole.setOrganization(new Reference(parentOrg.getId()));
+			
 			gp.addPractitionerRole(practitionerRole);
+
+			Bundle bundle = new Bundle();
+			
+			bundle.setType(BundleType.TRANSACTION);
+			
+			bundle.addEntry()
+			   .setFullUrl(parentOrg.getId())
+			   .setResource(parentOrg)
+			   .getRequest()
+			      .setUrl("Organization")
+			      .setIfNoneExist("Organization?identifier="+parentOrg.getIdentifier().get(0).getSystem()+"|"+parentOrg.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.POST);
+		
+			bundle.addEntry()
+			   .setResource(gp)
+			   .getRequest()
+			      .setUrl("Practitioner?identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.PUT);
+			
 			// XML as Ensemble doesn't like JSON
-			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(gp);
-			//String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
-			exchange.getIn().setHeader("FHIRResource","/Practitioner");
-			exchange.getIn().setHeader("FHIRQuery","identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue());
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
 			exchange.getIn().setBody(Response);
 		}
-		
-		exchange.getIn().setHeader("FHIROrganisationCode",entity.LocationOrganisationCode);
-		// This is replace by line above
-		//exchange.getIn().setHeader("ParentOrganisationCode",entity.LocationOrganisationCode);
 	}
 
 }

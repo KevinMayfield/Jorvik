@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
@@ -15,9 +18,12 @@ import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
+
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
 
@@ -36,6 +42,21 @@ public class NHSEntitiestoFHIRResource implements Processor {
 		NHSEntities entity = (NHSEntities) exchange.getIn().getBody(NHSEntities.class);
 		
 		String Id = entity.OrganisationCode; 
+		
+		Organization parentOrg = new Organization();
+		parentOrg.setId(IdDt.newRandomUuid());
+		if (entity.ParentOrganisationCode != null && !entity.ParentOrganisationCode.isEmpty())
+		{
+			parentOrg.addIdentifier()
+				.setValue(entity.ParentOrganisationCode)
+				.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+		}
+		else
+		{
+			parentOrg.addIdentifier()
+				.setValue(entity.HighLevelHealthGeography)
+				.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+		}
 		
 		if ( (Id.startsWith("G") || Id.startsWith("C")) && Id.length()>6)
 		{
@@ -172,21 +193,43 @@ public class NHSEntitiestoFHIRResource implements Processor {
 			
 			
 			practitionerRole.setRole(role);
+			practitionerRole.setOrganization(new Reference(parentOrg.getId()));
 			
 			gp.addPractitionerRole(practitionerRole);
+			
+			Bundle bundle = new Bundle();
+			
+			bundle.setType(BundleType.TRANSACTION);
+			
+			bundle.addEntry()
+			   .setFullUrl(parentOrg.getId())
+			   .setResource(parentOrg)
+			   .getRequest()
+			      .setUrl("Organization")
+			      .setIfNoneExist("Organization?identifier="+parentOrg.getIdentifier().get(0).getSystem()+"|"+parentOrg.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.POST);
+		
+			bundle.addEntry()
+			   .setResource(gp)
+			   .getRequest()
+			      .setUrl("Practitioner?identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.PUT);
+			
 			// XML as Ensemble doesn't like JSON
-			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(gp);
-			//String Response = ResourceSerialiser.serialise(gp, ParserType.XML);
-			exchange.getIn().setHeader("FHIRResource","/Practitioner");
-			exchange.getIn().setHeader("FHIRQuery","identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue());
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
 			exchange.getIn().setBody(Response);
 			
 		}
 		else
 		{
+		
 			Organization organisation = new Organization();
 			
-			//organisation.setId(Id);
+			organisation.setPartOf(new Reference(parentOrg.getId()));
+			
 			organisation.addIdentifier()
 				.setValue(Id)
 				.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
@@ -321,24 +364,31 @@ public class NHSEntitiestoFHIRResource implements Processor {
 				activePeriod.setValue(period);
 				organisation.addExtension(activePeriod);
 			}
-			// XML as Ensemble doesn't like JSON
-			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(organisation);
-			//String Response = ResourceSerialiser.serialise(organisation, ParserType.XML);
-			exchange.getIn().setHeader("FHIRResource","/Organization");
-			exchange.getIn().setHeader("FHIRQuery","identifier="+organisation.getIdentifier().get(0).getSystem()+"|"+organisation.getIdentifier().get(0).getValue());
+			
+			Bundle bundle = new Bundle();
+			bundle.setType(BundleType.TRANSACTION);
+			
+			bundle.addEntry()
+			   .setFullUrl(parentOrg.getId())
+			   .setResource(parentOrg)
+			   .getRequest()
+			      .setUrl("Organization")
+			      .setIfNoneExist("Organization?identifier="+parentOrg.getIdentifier().get(0).getSystem()+"|"+parentOrg.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.POST);
+			 
+			bundle.addEntry()
+			   .setResource(organisation)
+			   .getRequest()
+			      .setUrl("Organization?identifier="+organisation.getIdentifier().get(0).getSystem()+"|"+organisation.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.PUT);
+			
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
 			exchange.getIn().setBody(Response);
 			
 	
-		}
-		exchange.getIn().setHeader("NHSEntityId", entity.OrganisationCode);
-		//exchange.getIn().setHeader("FHIROrganisationCode",entity.OrganisationCode);
-		if (entity.ParentOrganisationCode != null && !entity.ParentOrganisationCode.isEmpty())
-		{
-			exchange.getIn().setHeader("FHIROrganisationCode",entity.ParentOrganisationCode);
-		}
-		else
-		{
-			exchange.getIn().setHeader("FHIROrganisationCode",entity.HighLevelHealthGeography);
 		}
 		
 		
