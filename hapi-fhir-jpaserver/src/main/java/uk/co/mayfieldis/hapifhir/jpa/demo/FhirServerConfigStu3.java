@@ -27,6 +27,8 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 /*
  * 
+ * For SQL Server ensure you use the correct jar https://msdn.microsoft.com/en-us/library/ms378422(v=sql.110).aspx
+ * 
 SQL Server 2012 Settings
 
 jdbc.Driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
