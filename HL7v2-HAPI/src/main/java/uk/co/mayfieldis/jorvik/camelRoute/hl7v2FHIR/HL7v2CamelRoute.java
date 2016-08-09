@@ -76,7 +76,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	errorHandler(defaultErrorHandler().maximumRedeliveries(3));
     	
     	from(env.getProperty("NHSITK.Path"))
-    		.routeId("HL7v2 File")
+    		.routeId("HL7v2 File Feed")
     		.unmarshal(hl7)
     		//.process("HL7v2Service")
     		.choice()
@@ -89,7 +89,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.end();
 			
     	from("hl7MinaListener")
-    		.routeId("HL7v2")
+    		.routeId("HL7v2 TCP Feed")
     		.unmarshal(hl7)
     		//.process("HL7v2Service")
     		.choice()
@@ -199,10 +199,11 @@ public class HL7v2CamelRoute extends RouteBuilder {
 
 		// Store resources
 		
+		/*
 		from("activemq:FileFHIR")
 			.routeId("FileStore")
 			.to(env.getProperty("HAPIFHIR.FileStore")+"${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
-	
+		*/
 		
 		
 		from("activemq:HAPIHL7v2")
