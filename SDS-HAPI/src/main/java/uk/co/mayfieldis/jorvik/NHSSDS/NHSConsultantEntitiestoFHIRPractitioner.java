@@ -18,7 +18,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
-
+//8-Aug-2016 KGM Replaced lookup code with FHIR Transactions
 
 public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 
