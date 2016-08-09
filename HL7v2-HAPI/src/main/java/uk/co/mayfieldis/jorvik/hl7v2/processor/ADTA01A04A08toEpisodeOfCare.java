@@ -315,12 +315,14 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 			      .setMethod(HTTPVerb.POST);
 			
 			// Master resource
-			bundle.addEntry()
-			   .setResource(episode)
-			   .getRequest()
-			      .setUrl("EpisodeOfCare?identifier="+episode.getIdentifier().get(0).getSystem()+"|"+episode.getIdentifier().get(0).getValue())
-			      .setMethod(HTTPVerb.PUT);
-			
+			if (episode.getIdentifier().size()>0)
+			{
+				bundle.addEntry()
+				   .setResource(episode)
+				   .getRequest()
+				      .setUrl("EpisodeOfCare?identifier="+episode.getIdentifier().get(0).getSystem()+"|"+episode.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.PUT);
+			}
 			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
 			
 			exchange.getIn().setHeader("FHIRResource","/");
