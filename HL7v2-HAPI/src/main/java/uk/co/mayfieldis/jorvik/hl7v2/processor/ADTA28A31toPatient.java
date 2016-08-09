@@ -7,21 +7,28 @@ import java.util.Date;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-
+import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
+import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 
 
 public class ADTA28A31toPatient implements Processor {
@@ -363,16 +370,54 @@ public class ADTA28A31toPatient implements Processor {
 	        	// TODO Auto-generated catch block
 	        	}
 			}
+			
+			Bundle bundle = new Bundle();
+			
+			bundle.setType(BundleType.TRANSACTION);
+			
 			log.debug("Patient Org");
 			if (terserGet("/.PD1-3-3") != null && !terserGet("/.PD1-3-3").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIROrganisationCode",terserGet("/.PD1-3-3"));
+				//exchange.getIn().setHeader("FHIROrganisationCode",terserGet("/.PD1-3-3"));
+				Organization parentOrg = new Organization();
+				parentOrg.setId(IdDt.newRandomUuid());
+				parentOrg.addIdentifier()
+					.setValue(terserGet("/.PD1-3-3"))
+					.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+				
+				// Create reference in main resource
+				patient.setManagingOrganization(new Reference(parentOrg.getId()));
+				
+				bundle.addEntry()
+				   .setFullUrl(parentOrg.getId())
+				   .setResource(parentOrg)
+				   .getRequest()
+				      .setUrl("Organization")
+				      .setIfNoneExist("Organization?identifier="+parentOrg.getIdentifier().get(0).getSystem()+"|"+parentOrg.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
 			log.debug("Patient GP");
 			if (terserGet("/.PD1-4-1") != null && !terserGet("/.PD1-4-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRGP", terserGet("/.PD1-4-1"));
+				//exchange.getIn().setHeader("FHIRGP", terserGet("/.PD1-4-1"));
+				Practitioner gp = new Practitioner();
+				gp.setId(IdDt.newRandomUuid());
+				gp.addIdentifier()
+					.setValue(terserGet("/.PD1-4-1"))
+					.setSystem(FHIRCodeSystems.URI_NHS_GMP_CODE);
+				
+				// Create reference in main resource
+				patient.addCareProvider(new Reference(gp.getId()));
+				bundle.addEntry()
+				   .setFullUrl(gp.getId())
+				   .setResource(gp)
+				   .getRequest()
+				      .setUrl("Practitioner")
+				      .setIfNoneExist("Practitioner?identifier="+gp.getIdentifier().get(0).getSystem()+"|"+gp.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
+			
+			/*
 			if (terserGet("/.MSH-9-2") != null && terserGet("/.MSH-9-2").equals("A31"))
 			{
 				exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
@@ -381,6 +426,19 @@ public class ADTA28A31toPatient implements Processor {
 			{
 				exchange.getIn().setHeader(Exchange.HTTP_METHOD,"POST");
 			}
+			*/
+			bundle.addEntry()
+			   .setResource(patient)
+			   .getRequest()
+			      .setUrl("Patient?identifier="+exchange.getIn().getHeader("FHIRPatient"))
+			      .setMethod(HTTPVerb.PUT);
+			
+			
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+			exchange.getIn().setBody(Response);
 		}
 		catch (Exception ex)
 		{
@@ -388,11 +446,10 @@ public class ADTA28A31toPatient implements Processor {
 			throw ex;
 		}
 		
-		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
-		//String Response = ResourceSerialiser.serialise(patient, ParserType.XML);
+		
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
 		
-		exchange.getIn().setBody(Response);
+		
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		
 	}

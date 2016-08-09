@@ -11,41 +11,13 @@ import org.springframework.stereotype.Component;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
-import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithAppointment;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithLocation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithPatient;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichAppointmentwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichConsultantwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithAppointment;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithEncounter;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithEpisodeOfCare;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithLocation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithPatient;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEncounterwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithEpisode;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithOrganisation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithPatient;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichEpisodewithPractitioner;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithLocation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichLocationwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithOrganisation;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithPatient;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichPatientwithPractitioner;
-import uk.co.mayfieldis.jorvik.core.camel.EnrichwithUpdateType;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEncounter;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA01A04A08toEpisodeOfCare;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA05A38toAppointment;
 import uk.co.mayfieldis.jorvik.hl7v2.processor.ADTA28A31toPatient;
-import uk.co.mayfieldis.jorvik.hl7v2.processor.EncountertoEpisodeOfCare;
-import uk.co.mayfieldis.jorvik.hl7v2.processor.FHIRResourcetoLocation;
-import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM02toFHIRPractitioner;
-import uk.co.mayfieldis.jorvik.hl7v2.processor.MFNM05toFHIRLocation;
 
 import static org.apache.camel.component.hl7.HL7.ack;
-import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 
 @Component
@@ -78,36 +50,9 @@ public class HL7v2CamelRoute extends RouteBuilder {
     	ADTA01A04A08toEpisodeOfCare adta01a04a08toEpisodeOfCare = new ADTA01A04A08toEpisodeOfCare(ctx,this.env);
     	ADTA01A04A08toEncounter adta01a04a08toEncounter = new ADTA01A04A08toEncounter(ctx,this.env,TrustFHIRSystems);
     	ADTA05A38toAppointment adta05a38toAppointment = new ADTA05A38toAppointment(ctx,this.env,TrustFHIRSystems);
+    	//MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner(ctx,TrustFHIRSystems);
+    	//MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation(ctx,TrustFHIRSystems);
     	
-    	
-    	MFNM02toFHIRPractitioner mfnm02PractitionerProcessor = new MFNM02toFHIRPractitioner(ctx,TrustFHIRSystems);
-    	MFNM05toFHIRLocation mfnm05LocationProcessor = new MFNM05toFHIRLocation(ctx,TrustFHIRSystems);
-    	
-    	EncountertoEpisodeOfCare encountertoEpisodeOfCare = new EncountertoEpisodeOfCare(ctx,this.env);
-    	
-    	EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation(ctx);
-    	EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation(ctx);
-    	EnrichwithUpdateType enrichUpdateType = new EnrichwithUpdateType(ctx);
-    	EnrichPatientwithOrganisation enrichPatientwithOrganisation = new EnrichPatientwithOrganisation(ctx);
-    	EnrichPatientwithPractitioner enrichPatientwithPractitioner = new EnrichPatientwithPractitioner(ctx);
-    	EnrichPatientwithPatient enrichPatientwithPatient = new EnrichPatientwithPatient(ctx);
-    	EnrichEncounterwithPatient enrichEncounterwithPatient = new EnrichEncounterwithPatient(ctx);
-    	EnrichEncounterwithPractitioner enrichEncounterwithPractitioner = new EnrichEncounterwithPractitioner(ctx);
-    	EnrichEncounterwithOrganisation enrichEncounterwithOrganisation = new EnrichEncounterwithOrganisation(ctx);
-    	EnrichEncounterwithLocation enrichEncounterwithLocation = new EnrichEncounterwithLocation(ctx);
-    	EnrichEncounterwithAppointment enrichEncounterwithAppointment = new EnrichEncounterwithAppointment(ctx);
-    	EnrichEncounterwithEncounter enrichEncounterwithEncounter = new EnrichEncounterwithEncounter(ctx);
-    	EnrichEncounterwithEpisodeOfCare enrichEncounterwithEpisode = new EnrichEncounterwithEpisodeOfCare(ctx); 
-    	EnrichEpisodewithPatient enrichEpisodewithPatient = new EnrichEpisodewithPatient(ctx);
-    	EnrichEpisodewithPractitioner enrichEpisodewithPractitioner = new EnrichEpisodewithPractitioner(ctx);
-    	EnrichEpisodewithOrganisation enrichEpisodewithOrganisation = new EnrichEpisodewithOrganisation(ctx);
-    	EnrichEpisodewithEpisode enrichEpisodewithEpisode = new EnrichEpisodewithEpisode(ctx);
-    	EnrichAppointmentwithPatient enrichAppointmentwithPatient = new EnrichAppointmentwithPatient(ctx);
-    	EnrichAppointmentwithPractitioner enrichAppointmentwithPractitioner = new EnrichAppointmentwithPractitioner(ctx);
-    	EnrichAppointmentwithLocation enrichAppointmentwithLocation = new EnrichAppointmentwithLocation(ctx);
-    	EnrichAppointmentwithAppointment enrichAppointmentwithAppointment = new EnrichAppointmentwithAppointment(ctx);
-    	EnrichConsultantwithOrganisation consultantEnrichwithOrganisation = new EnrichConsultantwithOrganisation(ctx);
-    	FHIRResourcetoLocation fhirResourcetoLocation = new FHIRResourcetoLocation(ctx,this.env);
     	
     	onException(org.apache.
     			camel.CamelAuthorizationException.class)
@@ -156,20 +101,12 @@ public class HL7v2CamelRoute extends RouteBuilder {
 					.end()
 			.end()
     		.transform(ack());
-    	/*
-    	 * 
-    	 * //.when(header("CamelHL7MessageType").isEqualTo("ORM")).to("vm:ORM")
-				//.when(header("CamelHL7MessageType").isEqualTo("ORU")).to("vm:ORU")
-    	 * 
-    	from("vm:ORM")
-    		.routeId("ORM")
-    		.log("ORM");
-
-    	from("vm:ORU")
-			.routeId("ORU")
-			.log("ORU");
-		*/
     	
+    	from("vm:MFN")
+			.routeId("MFN")
+			.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true");
+    	
+    	/*
     	from("vm:MFN")
     		.routeId("MFN")
     		.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true")
@@ -196,7 +133,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			.end()
 	    	.enrich("vm:lookupResource",enrichUpdateType)
 			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
-	    	
+	    */
     	from("vm:ADT")
     		.routeId("ADT")
     		.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true")
@@ -223,15 +160,6 @@ public class HL7v2CamelRoute extends RouteBuilder {
 		from("activemq:ADT_A28A31")
 			.routeId("ADT_A28A31 Demographics")
 			.process(adta28a31toPatient)
-			.choice()
-				.when(header("FHIROrganisationCode").isNotNull())
-					.enrich("vm:lookupOrganisation",enrichPatientwithOrganisation)
-			.end()
-			.choice()
-				.when(header("FHIRGP").isNotNull())
-					.enrich("vm:lookupGP",enrichPatientwithPractitioner)
-			.end()
-			.enrich("vm:lookupPatient",enrichPatientwithPatient)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
 		
@@ -246,50 +174,12 @@ public class HL7v2CamelRoute extends RouteBuilder {
 			//Only process if episode Id is supplied
 			.choice()
 				.when(header("FHIREpisode").isNotNull())
-					.to("direct:sub_Episode");
-		
-		from("direct:sub_Episode")
-			.routeId("ADT_sub_Episode")
-			.enrich("vm:lookupPatient",enrichEpisodewithPatient)
-			.choice()
-				.when(header("FHIRPractitioner").isNotNull())
-					.enrich("vm:lookupConsultant",enrichEpisodewithPractitioner)
-			.end()
-			.choice()
-				.when(header("FHIROrganisationCode").isNotNull())
-					.enrich("vm:lookupOrganisation",enrichEpisodewithOrganisation)
-			.end()
-			.enrich("vm:lookupEpisode",enrichEpisodewithEpisode)
-			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
-			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
+					.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
 		
     	// Encounters and Episodes
 		from("activemq:ADT_A01A04A08Encounter")
 			.routeId("ADT_A01A04A08 Encounters")
 			.process(adta01a04a08toEncounter)
-			.enrich("vm:lookupPatient",enrichEncounterwithPatient)
-			.choice()
-				.when(header("FHIRPractitioner").isNotNull())
-					.enrich("vm:lookupConsultant",enrichEncounterwithPractitioner)
-			.end()
-			.choice()
-				.when(header("FHIROrganisationCode").isNotNull())
-					.enrich("vm:lookupOrganisation",enrichEncounterwithOrganisation)
-			.end()
-			.choice()
-				.when(header("FHIRLocation").isNotNull())
-					.enrich("vm:lookupLocation",enrichEncounterwithLocation)
-			.end()
-			.choice()
-			.when(header("FHIRAppointment").isNotNull())
-				.enrich("vm:lookupAppointment",enrichEncounterwithAppointment)
-			.end()
-			// Episode lookup comes towards the end as it will use previous to simplfy the create/post lookup
-			.choice()
-				.when(header("FHIREpisode").isNotNull())
-					.enrich("vm:lookupEpisodeAndAdd",enrichEncounterwithEpisode)
-			.end()
-			.enrich("vm:lookupEncounter",enrichEncounterwithEncounter)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
 		
@@ -304,129 +194,18 @@ public class HL7v2CamelRoute extends RouteBuilder {
 		from("activemq:ADT_A05A38Appointment")
 			.routeId("ADT_A05A38 Appointments")
 			.process(adta05a38toAppointment)
-			.enrich("vm:lookupPatient",enrichAppointmentwithPatient)
-			.choice()
-				.when(header("FHIRPractitioner").isNotNull())
-					.enrich("vm:lookupConsultant",enrichAppointmentwithPractitioner)
-			.end()
-			.choice()
-				.when(header("FHIRLocation").isNotNull())
-					.enrich("vm:lookupLocation",enrichAppointmentwithLocation)
-			.end()
-			.enrich("vm:lookupAppointment",enrichAppointmentwithAppointment)
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route?showAll=true&multiline=true")
 			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
- 
-    	from("vm:lookupLocation")
-    		.routeId("Loookup FHIR Location")
-    		// Only add check up Location when Org provided
-    		.process(fhirResourcetoLocation)
-			.choice()
-    			.when(header("FHIROrganisationRef").isNotNull())
-    				.to("vm:HAPIFHIR")
-    		.end()
-    		.setBody(simple(""))
-	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Location",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgLocation()+"|${header.FHIRLocation}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	    	
-    	from("vm:lookupOrganisation")
-	    	.routeId("Lookup FHIR Organisation")
-	    	.setBody(simple(""))
-	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Organization",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE+"|${header.FHIROrganisationCode}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	from("vm:lookupGP")
-    		.routeId("Lookup FHIR Practitioner (GP)")
-	    	.setBody(simple(""))
-	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Practitioner",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+FHIRCodeSystems.URI_NHS_GMP_CODE+"|${header.FHIRGP}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	from("vm:lookupConsultant")
-			.routeId("Lookup FHIR Practitioner (Consultant)")
-	    	.setBody(simple(""))
-	    	//.log("GET /Practitioner?identifier="+FHIRCodeSystems.URI_OID_NHS_PERSONNEL_IDENTIFIERS+"|${header.FHIRPractitioner}")
-	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Practitioner",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+FHIRCodeSystems.URI_OID_NHS_PERSONNEL_IDENTIFIERS+"|${header.FHIRPractitioner}",String.class))
-	    	.to("vm:HAPIFHIR");
-	    	
-    	from("vm:lookupPatient")
-			.routeId("Lookup FHIR Patient")
-			.setBody(simple(""))
-			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Patient",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier=${header.FHIRPatient}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	from("vm:lookupEncounter")
-			.routeId("Lookup FHIR Encounter")
-			.setBody(simple(""))
-			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Encounter",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgActivityId()+"|${header.FHIREncounter}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	from("vm:lookupEpisodeAndAdd")
-			.routeId("Lookup FHIR Episode plus Add")
-			// this line of code ensures Episode is present
-			.process(encountertoEpisodeOfCare)
-			.to("vm:HAPIFHIR")
-			.setBody(simple(""))
-			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/EpisodeOfCare",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+env.getProperty("ORG.TrustEpisodeOfCare")+"|${header.FHIREpisode}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	from("vm:lookupEpisode")
-			.routeId("Lookup FHIR Episode")
-			.setBody(simple(""))
-			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/EpisodeOfCare",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+env.getProperty("ORG.TrustEpisodeOfCare")+"|${header.FHIREpisode}",String.class))
-	    	.to("vm:HAPIFHIR");
-		    
-    	from("vm:lookupAppointment")
-			.routeId("Lookup FHIR Appointment")
-			.setBody(simple(""))
-			.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("/Appointment",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("identifier="+TrustFHIRSystems.geturiNHSOrgAppointmentId()+"|${header.FHIRAppointment}",String.class))
-	    	.to("vm:HAPIFHIR");
-    	
-    	 from("vm:lookupResource")
-	    	.routeId("Lookup FHIR Resources")
-	    	.setBody(simple(""))
-	    	.setHeader(Exchange.HTTP_METHOD, simple("GET", String.class))
-	    	.setHeader(Exchange.HTTP_PATH, simple("${header.FHIRResource}",String.class))
-	    	.setHeader(Exchange.HTTP_QUERY,simple("${header.FHIRQuery}",String.class))
-	    	.to("vm:HAPIFHIR");
-	    
-    	from("activemq:FileFHIR")
+
+		// Store resources
+		
+		from("activemq:FileFHIR")
 			.routeId("FileStore")
 			.to(env.getProperty("HAPIFHIR.FileStore")+"${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
+	
 		
-    	from("vm:HAPIFHIR")
-			.routeId("HAPI FHIR")
-			.to("log:uk.co.mayfieldis.hl7v2.hapi.vmHAPIFHIR?showAll=true&multiline=true")
-			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
-			.choice()
-				.when(simple("${in.header.CamelHttpResponseCode} == 500"))
-					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=ERROR")
-					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 500")
-			.end()
-			.choice()
-				.when(simple("${in.header.CamelHttpResponseCode} == 400"))
-					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=WARN")
-					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 400")
-			.end();
-    	
-    	from("activemq:HAPIHL7v2")
+		
+		from("activemq:HAPIHL7v2")
 			.routeId("HAPI FHIR MQ")
 			.onException(org.apache.camel.http.common.HttpOperationFailedException.class).maximumRedeliveries(0).end()
 			.to(env.getProperty("HAPIFHIR.ServerNoExceptions"))
@@ -440,6 +219,9 @@ public class HL7v2CamelRoute extends RouteBuilder {
 					.to("log:uk.co.mayfieldis.hl7v2.hapi.vm.HAPIFHIR?showAll=true&multiline=true&level=WARN")
 					.throwException(org.apache.camel.http.common.HttpOperationFailedException.class,"Error Code 400")
 			.end();
-    	
+	
+		
+	
+    	    	
     }
 }

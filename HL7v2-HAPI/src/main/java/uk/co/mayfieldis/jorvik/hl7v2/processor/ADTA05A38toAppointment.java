@@ -9,12 +9,22 @@ import java.util.Date;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.hl7.fhir.dstu3.model.Appointment;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Location;
+import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
@@ -68,7 +78,12 @@ public class ADTA05A38toAppointment implements Processor {
 		Message message = exchange.getIn().getBody(Message.class);
 		
 		Appointment appointment= new Appointment();
+		Patient patient = new Patient();
+		patient.setId(IdDt.newRandomUuid());
+		Identifier patientid = new Identifier();
+		Bundle bundle = new Bundle();
 		
+		bundle.setType(BundleType.TRANSACTION);
 		// Use Terser as code is more readable
 		terser = new Terser(message);
 		
@@ -101,22 +116,33 @@ public class ADTA05A38toAppointment implements Processor {
 							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+								patientid
+									.setValue(value)
+									.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							}
 							break;
 						case "NHS":
 							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+								patientid
+									.setValue(value)
+									.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							}
 							break;
 						default:
 							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							patientid
+								.setValue(value)
+								.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							break;
 					}
 				}
 			}
 			// Names PID.PatientName
 			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			patient.addIdentifier(patientid);
+			
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
 				appointment.addIdentifier()
@@ -189,13 +215,25 @@ public class ADTA05A38toAppointment implements Processor {
 			
 			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ','-'));
+				//exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ','-'));
+				Location parentLoc = new Location();
+				parentLoc.setId(IdDt.newRandomUuid());
+				parentLoc.addIdentifier()
+					.setValue(terserGet("/.PV1-3-1").replace(' ', '-'))
+					.setSystem(TrustFHIRSystems.geturiNHSOrgLocation());
+				
+				// Create reference in main resource
+				appointment.addParticipant().setActor(new Reference(parentLoc.getId()));
+				
+				bundle.addEntry()
+				   .setFullUrl(parentLoc.getId())
+				   .setResource(parentLoc)
+				   .getRequest()
+				      .setUrl("Location")
+				      .setIfNoneExist("Location?identifier="+parentLoc.getIdentifier().get(0).getSystem()+"|"+parentLoc.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
 			
-			if (terserGet("/.PV1-3-4") != null && !terserGet("/.PV1-3-4").isEmpty())
-			{
-				exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-4"));
-			}
 			
 			if (terserGet("/.PV1-19-1") != null && !terserGet("/.PV1-19-1").isEmpty())
 			{
@@ -203,16 +241,60 @@ public class ADTA05A38toAppointment implements Processor {
 				exchange.getIn().setHeader("FHIREncounter", terserGet("/.PV1-19-1"));
 			}
 			
-			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
-			{
-				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
-			}
+			
 			
 			if (terserGet("/.PV1-9-1") != null && !terserGet("/.PV1-9-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-9-1"));
+				//exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-9-1"));
+				Practitioner consultant = new Practitioner();
+				consultant.setId(IdDt.newRandomUuid());
+				consultant.addIdentifier()
+					.setValue(terserGet("/.PV1-9-1"))
+					.setSystem(FHIRCodeSystems.URI_OID_NHS_PERSONNEL_IDENTIFIERS);
+				
+				appointment.addParticipant()
+					.setActor(new Reference(consultant.getId()))
+					.addType()
+						.addCoding()
+							.setCode("CON")
+							.setSystem("http://hl7.org/fhir/v3/ParticipationType");
+				
+				bundle.addEntry()
+				   .setFullUrl(consultant.getId())
+				   .setResource(consultant)
+				   .getRequest()
+				      .setUrl("Practitioner")
+				      .setIfNoneExist("Practitioner?identifier="+consultant.getIdentifier().get(0).getSystem()+"|"+consultant.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
 			
+			
+			appointment.addParticipant()
+				.setActor(new Reference(patient.getId()))
+				.addType()
+					.addCoding()
+						.setCode("ATND")
+						.setSystem("http://hl7.org/fhir/v3/ParticipationType");
+			bundle.addEntry()
+			   .setFullUrl(patient.getId())
+			   .setResource(patient)
+			   .getRequest()
+			      .setUrl("Patient")
+			      .setIfNoneExist("Patient?identifier="+patient.getIdentifier().get(0).getSystem()+"|"+patient.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.POST);
+			
+			// Master resource
+			bundle.addEntry()
+			   .setResource(appointment)
+			   .getRequest()
+			      .setUrl("Appointment?identifier="+appointment.getIdentifier().get(0).getSystem()+"|"+appointment.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.PUT);
+			
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+			exchange.getIn().setBody(Response);
 			
 		}
 		catch (Exception ex)
@@ -224,11 +306,8 @@ public class ADTA05A38toAppointment implements Processor {
 					+ " Message:" + exchange.getIn().getBody().toString());
 		}
 		exchange.getIn().setHeader("FHIRResource", "Appointment");
-		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment);
-		//String Response = ResourceSerialiser.serialise(appointment, ParserType.XML);
+	
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
-		
-		exchange.getIn().setBody(Response); 
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		
 	}

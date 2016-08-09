@@ -6,14 +6,24 @@ import java.util.Date;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
+import org.hl7.fhir.dstu3.model.Identifier;
+
+import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare.EpisodeOfCareStatus;
 import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Bundle.BundleType;
+import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
@@ -30,12 +40,14 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 	{
 		this.ctx = ctx;
 		this.env = env;
-	
+		//this.TrustFHIRSystems = TrustFHIRSystems;
 	}
 	
 	private Environment env;
 	
 	private FhirContext ctx;
+	
+	//private NHSTrustFHIRCodeSystems TrustFHIRSystems;
 	
 	private String terserGet(String query)
 	{
@@ -65,7 +77,12 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 		Message message = exchange.getIn().getBody(Message.class);
 		
 		EpisodeOfCare episode = new EpisodeOfCare();
+		Patient patient = new Patient();
+		patient.setId(IdDt.newRandomUuid());
+		Identifier patientid = new Identifier();
+		Bundle bundle = new Bundle();
 		
+		bundle.setType(BundleType.TRANSACTION);
 		// Use Terser as code is more readable
 		terser = new Terser(message);
 		
@@ -99,21 +116,32 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+								patientid
+									.setValue(value)
+									.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							}
 							break;
 						case "NHS":
 							if (exchange.getIn().getHeader("FHIRPatient") ==null || exchange.getIn().getHeader("FHIRPatient").toString().isEmpty())
 							{
 								exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+								patientid
+									.setValue(value)
+									.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							}
 							break;
 						default:
 							exchange.getIn().setHeader("FHIRPatient",env.getProperty("ORG.PatientIdentifier"+code)+"|"+value);
+							patientid
+								.setValue(value)
+								.setSystem(env.getProperty("ORG.PatientIdentifier"+code));
 							break;
 					}
 				}
 			}
 			log.debug("FHIRPatient  = "+exchange.getIn().getHeader("FHIRPatient").toString());
+			patient.addIdentifier(patientid);
+			
 			// Names PID.PatientName
 			log.debug("Activity ID");
 			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
@@ -121,6 +149,7 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 				episode.addIdentifier()
 					.setSystem(env.getProperty("ORG.TrustEpisodeOfCare"))
 					.setValue(terserGet("/.PV1-50-1"));
+				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
 			}
 			// StartDate
 			episode.setStatus(EpisodeOfCareStatus.ACTIVE);
@@ -220,27 +249,85 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 			}
 			
 			log.debug("Get Reference Material");
-						
+			/*			
 			if (terserGet("/.PV1-50-1") != null && !terserGet("/.PV1-50-1").isEmpty())
 			{
 				exchange.getIn().setHeader("FHIREpisode", terserGet("/.PV1-50-1"));
 			}
+			*/
 			if (terserGet("/.PV1-3-4") != null && !terserGet("/.PV1-3-4").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-4"));
+				//exchange.getIn().setHeader("FHIROrganisationCode", terserGet("/.PV1-3-4"));
+				Organization parentOrg = new Organization();
+				parentOrg.setId(IdDt.newRandomUuid());
+				parentOrg.addIdentifier()
+					.setValue(terserGet("/.PV1-3-4"))
+					.setSystem(FHIRCodeSystems.URI_NHS_OCS_ORGANISATION_CODE);
+				
+				// Create reference in main resource
+				
+				episode.setManagingOrganization(new Reference(parentOrg.getId()));
+				bundle.addEntry()
+				   .setFullUrl(parentOrg.getId())
+				   .setResource(parentOrg)
+				   .getRequest()
+				      .setUrl("Organization")
+				      .setIfNoneExist("Organization?identifier="+parentOrg.getIdentifier().get(0).getSystem()+"|"+parentOrg.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
 			
-			if (terserGet("/.PV1-7-1") != null && !terserGet("/.PV1-7-1").isEmpty())
+			if (terserGet("/.PV1-9-1") != null && !terserGet("/.PV1-9-1").isEmpty())
 			{
-				exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-7-1"));
+				//exchange.getIn().setHeader("FHIRPractitioner", terserGet("/.PV1-7-1"));
+				Practitioner consultant = new Practitioner();
+				consultant.setId(IdDt.newRandomUuid());
+				consultant.addIdentifier()
+					.setValue(terserGet("/.PV1-7-1"))
+					.setSystem(FHIRCodeSystems.URI_OID_NHS_PERSONNEL_IDENTIFIERS);
+				
+				// Create reference in main resource
+				
+				if (episode.getTeam().size() == 0)
+				{
+					episode.addTeam(new Reference(consultant.getId()));
+				}
+				else
+				{
+					episode.getTeam().set(0,new Reference(consultant.getId()));
+				}
+				
+				bundle.addEntry()
+				   .setFullUrl(consultant.getId())
+				   .setResource(consultant)
+				   .getRequest()
+				      .setUrl("Practitioner")
+				      .setIfNoneExist("Practitioner?identifier="+consultant.getIdentifier().get(0).getSystem()+"|"+consultant.getIdentifier().get(0).getValue())
+				      .setMethod(HTTPVerb.POST);
 			}
+			episode.setPatient(new Reference(patient.getId()));
 			
-			if (terserGet("/.PV1-3-1") != null && !terserGet("/.PV1-3-1").isEmpty())
-			{
-				exchange.getIn().setHeader("FHIRLocation", terserGet("/.PV1-3-1").replace(' ', '-'));
-			}
+			bundle.addEntry()
+			   .setFullUrl(patient.getId())
+			   .setResource(patient)
+			   .getRequest()
+			      .setUrl("Patient")
+			      .setIfNoneExist("Patient?identifier="+patient.getIdentifier().get(0).getSystem()+"|"+patient.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.POST);
 			
+			// Master resource
+			bundle.addEntry()
+			   .setResource(episode)
+			   .getRequest()
+			      .setUrl("EpisodeOfCare?identifier="+episode.getIdentifier().get(0).getSystem()+"|"+episode.getIdentifier().get(0).getValue())
+			      .setMethod(HTTPVerb.PUT);
 			
+			String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+			
+			exchange.getIn().setHeader("FHIRResource","/");
+			exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+			exchange.getIn().setBody(Response);
+			
+			/*
 			switch (terserGet("/.MSH-9-2"))
 			{
 				case "A01":
@@ -251,6 +338,7 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 				default:
 					exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");	
 			}
+			*/
 		}
 		catch (Exception ex)
 		{
@@ -258,11 +346,8 @@ public class ADTA01A04A08toEpisodeOfCare implements Processor {
 			throw ex;
 		}
 		exchange.getIn().setHeader("FHIRResource", "EpisodeOfCare");
-		String Response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(episode);
-		//String Response = ResourceSerialiser.serialise(episode, ParserType.XML);
 		exchange.getIn().setHeader(Exchange.HTTP_QUERY,"");
-
-		exchange.getIn().setBody(Response);
+	
 		exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/xml+fhir");
 		
 	}

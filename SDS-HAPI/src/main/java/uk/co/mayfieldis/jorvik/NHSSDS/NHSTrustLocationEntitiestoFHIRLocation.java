@@ -82,7 +82,7 @@ public class NHSTrustLocationEntitiestoFHIRLocation implements Processor {
 		
 		if (entity.PartOf != null && !entity.PartOf.isEmpty())
 		{
-			exchange.getIn().setHeader("FHIRLocation",entity.PartOf);
+			//exchange.getIn().setHeader("FHIRLocation",entity.PartOf);
 			
 			Location parentLoc = new Location();
 			parentLoc.setId(IdDt.newRandomUuid());
