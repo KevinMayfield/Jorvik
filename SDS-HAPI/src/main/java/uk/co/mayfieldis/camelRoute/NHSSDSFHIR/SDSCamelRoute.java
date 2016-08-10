@@ -91,16 +91,16 @@ public class SDSCamelRoute extends RouteBuilder {
     	    	.log("File ${header.CamelFileName}")
     	    	.choice()
     	    		.when(header(Exchange.FILE_NAME).isEqualTo("econcur.csv"))
-    	    			.to("vm:ConsultantProcessing")
+    	    			.to("activemq:SDSConsultantProcessing")
     	    		.when(header(Exchange.FILE_NAME).contains("location"))
-    	    			.to("vm:LocationProcessing")	
+    	    			.to("activemq:SDSLocationProcessing")	
     	    		.otherwise()
-    					.to("vm:SDSProcessing")
+    					.to("activemq:SDSProcessing")
     	    		.end();
     	    
     	    // Convert CSV files to FHIR Resources
     	    
-    	    from("vm:ConsultantProcessing")
+    	    from("activemq:SDSConsultantProcessing")
 	    		.routeId("Process Consultant File")
 	    		.log("Processing Consultant File")
 	    		.unmarshal()
@@ -110,7 +110,7 @@ public class SDSCamelRoute extends RouteBuilder {
 	    		.wireTap("activemq:ProcessedSDSResources")
 	    		.end();
     	    
-    	    from("vm:SDSProcessing")
+    	    from("activemq:SDSProcessing")
     	    	.routeId("Prcess SDS/ODS File")
     	    	.log("Processing SDS/ODS File")
 	    	    .unmarshal()
@@ -121,7 +121,7 @@ public class SDSCamelRoute extends RouteBuilder {
 				.end();
     	    
     	    
-    	    from("vm:LocationProcessing")
+    	    from("activemq:SDSLocationProcessing")
 	    		.routeId("Process Location File")
 	    		.log("Processing Location File")
 	    		.unmarshal()
@@ -149,7 +149,7 @@ public class SDSCamelRoute extends RouteBuilder {
 				.routeId("Update FHIR JPA Server")
 				.to(env.getProperty("HAPIFHIR.Server"));
     	    
-		    from("vm:FileFHIR")
+		    from("activemq:FileFHIR")
 				.routeId("FileStore")
 				.to(env.getProperty("HAPIFHIR.FileStore")+"${date:now:yyyyMMdd hhmm.ss} ${header.CamelHL7MessageControl}.xml");
     	    

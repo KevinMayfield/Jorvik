@@ -81,10 +81,10 @@ public class HL7v2CamelRoute extends RouteBuilder {
     		//.process("HL7v2Service")
     		.choice()
 				.when(header("CamelHL7MessageType").isEqualTo("ADT"))
-					.wireTap("vm:ADT")
+					.wireTap("activemq:ADT")
 					.end()
 				.when(header("CamelHL7MessageType").isEqualTo("MFN"))
-					.wireTap("vm:MFN")
+					.wireTap("activemq:MFN")
 					.end()
 			.end();
 			
@@ -94,15 +94,15 @@ public class HL7v2CamelRoute extends RouteBuilder {
     		//.process("HL7v2Service")
     		.choice()
 				.when(header("CamelHL7MessageType").isEqualTo("ADT"))
-					.wireTap("vm:ADT")
+					.wireTap("activemq:ADT")
 					.end()
 				.when(header("CamelHL7MessageType").isEqualTo("MFN"))
-					.wireTap("vm:MFN")
+					.wireTap("activemq:MFN")
 					.end()
 			.end()
     		.transform(ack());
     	
-    	from("vm:MFN")
+    	from("activemq:MFN")
 			.routeId("MFN")
 			.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true");
     	
@@ -134,7 +134,7 @@ public class HL7v2CamelRoute extends RouteBuilder {
 	    	.enrich("vm:lookupResource",enrichUpdateType)
 			.to(ExchangePattern.InOnly,"activemq:HAPIHL7v2");
 	    */
-    	from("vm:ADT")
+    	from("activemq:ADT")
     		.routeId("ADT")
     		.to("log:uk.co.mayfieldis.hl7v2.hapi.route.HL7v2CamelRoute?showAll=true&multiline=true")
     		.choice()
