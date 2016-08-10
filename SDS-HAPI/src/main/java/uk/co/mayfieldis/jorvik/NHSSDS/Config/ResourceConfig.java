@@ -54,7 +54,7 @@ public class ResourceConfig  {
 	{
 		JmsConfiguration jmsConfig = new JmsConfiguration();
 		jmsConfig.setConnectionFactory(pooledConnectionFactory());
-		jmsConfig.setConcurrentConsumers(10);
+		jmsConfig.setConcurrentConsumers(5);
 		return jmsConfig;
 	}
 			  
