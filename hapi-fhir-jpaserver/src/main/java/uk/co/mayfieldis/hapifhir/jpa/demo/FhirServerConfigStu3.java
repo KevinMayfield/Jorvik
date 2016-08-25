@@ -71,6 +71,12 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			retVal.setSubscriptionPollDelay(5000);
 			retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
 			retVal.setAllowMultipleDelete(true);
+			// Allow external references
+			retVal.setAllowInlineMatchUrlReferences(true);
+			
+			// If you are allowing external references, it is recommended to
+		    // also tell the server which references actually will be local
+			retVal.getTreatBaseUrlsAsLocal().add("http://fhir.leedsth.nhs.uk");
 			return retVal;
 		}
 
