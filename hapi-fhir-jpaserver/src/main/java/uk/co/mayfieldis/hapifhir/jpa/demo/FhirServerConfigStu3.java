@@ -72,6 +72,7 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
 			retVal.setAllowMultipleDelete(true);
 			// Allow external references
+			retVal.setAllowExternalReferences(true); 
 			retVal.setAllowInlineMatchUrlReferences(true);
 			
 			// If you are allowing external references, it is recommended to

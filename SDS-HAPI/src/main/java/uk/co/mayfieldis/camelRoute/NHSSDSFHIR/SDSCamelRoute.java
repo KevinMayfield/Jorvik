@@ -18,6 +18,7 @@ import uk.co.mayfieldis.jorvik.NHSSDS.NHSEntitiestoFHIRResource;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSTrustLocationEntities;
 import uk.co.mayfieldis.jorvik.NHSSDS.NHSTrustLocationEntitiestoFHIRLocation;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+import uk.nhs.riding.west.fhir.vocabularies.VocabularyToFHIRValueSet;
 
 //import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 //import uk.co.mayfieldis.jorvik.core.camel.EnrichConsultantwithOrganisation;
@@ -49,6 +50,7 @@ public class SDSCamelRoute extends RouteBuilder {
     	NHSConsultantEntitiestoFHIRPractitioner consultanttoFHIRPractitioner = new NHSConsultantEntitiestoFHIRPractitioner(ctx);
     	NHSTrustLocationEntitiestoFHIRLocation trustLocationEntitiestoFHIRLocation = new NHSTrustLocationEntitiestoFHIRLocation(ctx, TrustFHIRSystems);
     	NHSEntitiestoFHIRResource nhsEntitiestoFHIRResource = new NHSEntitiestoFHIRResource(ctx);
+    	VocabularyToFHIRValueSet vocabToFHIRValueSet = new VocabularyToFHIRValueSet(ctx); 
     	
     	//EnrichLocationwithLocation enrichLocationwithLocation = new EnrichLocationwithLocation(ctx);
     	//EnrichLocationwithOrganisation enrichLocationwithOrganisation = new EnrichLocationwithOrganisation(ctx);
@@ -69,13 +71,14 @@ public class SDSCamelRoute extends RouteBuilder {
     	    
     	    
     	    // File handling and scheduling section
-    	    
+    	    /*
     	    from("scheduler://egpcur?delay=24h")
     	    	.routeId("Retrieve NHS GP and Practice Amendments Zip")
     	    	.setHeader(Exchange.HTTP_METHOD, constant("GET"))
     	    	.to(env.getProperty("NHSSDS.Amendments"))
     	    	.to(env.getProperty("NHSSDS.ZipOut")+"${date:now:yyyyMMdd}-egpcur.zip");
-    	  	
+    	  	*/
+    	    
     	    from(env.getProperty("NHSSDS.Zip"))
 	    		.routeId("Unzip NHS Reference Files")
 	    		.unmarshal(zipFile)
@@ -85,6 +88,19 @@ public class SDSCamelRoute extends RouteBuilder {
 	    				.to(env.getProperty("NHSSDS.ExtractOut"))
 	    			.end()
 	    		.end();
+    	    
+    	    from(env.getProperty("NHSSDS.vocab.SNOMED"))
+	    		.routeId("vocab SNOMED")
+	    		.process(vocabToFHIRValueSet)
+	    		.choice()
+	    			.when(header("ActiveStatus").isEqualTo("active"))
+	    				//.to(env.getProperty("NHSSDS.vocab.active"))
+	    				.to("activemq:HAPIFHIR")
+	    			.when(header("ActiveStatus").isEqualTo("NotUK"))
+	    				.to(env.getProperty("NHSSDS.vocab.notuk"))
+	    			.otherwise()
+	    				.to(env.getProperty("NHSSDS.vocab.superseded"));
+	    		
     	    
     	    from(env.getProperty("NHSSDS.Extract"))
     	    	.routeId("Split CSV File")
