@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>hl7v2-hapi</artifactId>
 	<groupId>uk.co.mayfieldis.hl7v2.hapi</groupId>
-	<version>1.6.2</version>
+	<version>2.0.0</version>
 	<packaging>war</packaging>
 	<name>hl7v2-hapi</name>
 	<description>HAPI hl7v2</description>
@@ -39,8 +39,8 @@
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
 		<camel-version>2.17.2</camel-version>
-		<hapi-fhir-version>1.6</hapi-fhir-version>
-		<Jorvik-Core-Version>1.6.5</Jorvik-Core-Version>
+		<hapi-fhir-version>2.0</hapi-fhir-version>
+		<Jorvik-Core-Version>2.0.0</Jorvik-Core-Version>
 		<insight-log4j>1.2.0.Beta4</insight-log4j>
 		<hapi-hl7v2-version>2.2</hapi-hl7v2-version>
 		<activemq-version>5.13.4</activemq-version>

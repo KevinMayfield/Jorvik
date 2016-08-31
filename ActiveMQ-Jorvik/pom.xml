@@ -64,11 +64,7 @@
 	
 	
 	<dependencies>
-		<dependency>
-			<groupId>uk.co.mayfieldis</groupId>
-			<artifactId>Jorvik-Core</artifactId>
-			<version>${Jorvik-Core-Version}</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-spring</artifactId>

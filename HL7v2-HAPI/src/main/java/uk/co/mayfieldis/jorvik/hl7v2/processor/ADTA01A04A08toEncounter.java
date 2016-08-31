@@ -159,7 +159,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 					.setValue(terserGet("/.PV1-19-1"));
 			}
 			// StartDate
-			encounter.setStatus(Encounter.EncounterState.ARRIVED);
+			encounter.setStatus(Encounter.EncounterStatus.ARRIVED);
 			Period period = new Period();
 			if (terserGet("/.PV1-44-1") != null && !terserGet("/.PV1-44-1").isEmpty())
 			{
@@ -169,7 +169,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 	        		Date date;
 	        		date = fmt.parse(terserGet("/.PV1-44-1"));
 	        		period.setStart(date);
-	        		encounter.setStatus(Encounter.EncounterState.INPROGRESS);
+	        		encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}
@@ -182,7 +182,7 @@ public class ADTA01A04A08toEncounter implements Processor {
 	        		Date date;
 	        		date = fmt.parse(terserGet("/.PV1-45-1"));
 	        		period.setEnd(date);
-	        		encounter.setStatus(Encounter.EncounterState.FINISHED);
+	        		encounter.setStatus(Encounter.EncounterStatus.FINISHED);
 	        	} catch (ParseException e1) {
 	        	// TODO Auto-generated catch block
 	        	}

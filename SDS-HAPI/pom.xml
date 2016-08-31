@@ -7,7 +7,7 @@
 
   <artifactId>SDS-HAPI</artifactId>
   <groupId>uk.co.mayfieldis.esb</groupId>
-  <version>1.6.1</version>
+  <version>2.0.0</version>
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
   
   
@@ -36,12 +36,12 @@
     	<springframework-version>4.3.0.RELEASE</springframework-version>
 		<spring-security-version>4.1.0.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.10.RELEASE</spring-security-oauth2>
-		<hapi-fhir-version>1.6</hapi-fhir-version>
+		<hapi-fhir-version>2.0</hapi-fhir-version>
 		<hibernate_version>5.0.7.Final</hibernate_version>
 		<hibernate_validator_version>5.2.2.Final</hibernate_validator_version>
 		<io.hawt>1.4.64</io.hawt>
 		<activemq-version>5.13.4</activemq-version>
-		<Jorvik-Core-Version>1.6.5</Jorvik-Core-Version>
+		<Jorvik-Core-Version>2.0.0</Jorvik-Core-Version>
   	</properties>
 
 	<build>

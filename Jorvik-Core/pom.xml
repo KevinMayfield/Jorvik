@@ -4,7 +4,7 @@
 	<artifactId>Jorvik-Core</artifactId>
   	<name>Jorvik-Core</name>
 	<groupId>uk.co.mayfieldis</groupId>
-	<version>1.6.5</version>
+	<version>2.0.0</version>
   
   <properties>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +20,7 @@
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
 		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
-		<hapi-fhir-version>1.6</hapi-fhir-version>
+		<hapi-fhir-version>2.0</hapi-fhir-version>
 		<springframework-version>4.3.0.RELEASE</springframework-version>
 	</properties>
 	

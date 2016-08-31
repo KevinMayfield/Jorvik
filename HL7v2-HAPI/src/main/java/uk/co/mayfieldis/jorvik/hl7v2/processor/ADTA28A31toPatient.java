@@ -407,7 +407,7 @@ public class ADTA28A31toPatient implements Processor {
 					.setSystem(FHIRCodeSystems.URI_NHS_GMP_CODE);
 				
 				// Create reference in main resource
-				patient.addCareProvider(new Reference(gp.getId()));
+				patient.addGeneralPractitioner(new Reference(gp.getId()));
 				bundle.addEntry()
 				   .setFullUrl(gp.getId())
 				   .setResource(gp)

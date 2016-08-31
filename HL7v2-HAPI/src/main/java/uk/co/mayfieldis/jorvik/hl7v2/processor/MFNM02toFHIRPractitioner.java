@@ -93,7 +93,7 @@ public class MFNM02toFHIRPractitioner implements Processor {
 		}
 		if (terserGet("/.PRA-5-1") != null && !terserGet("/.PRA-5-1").isEmpty())
 		{
-			practitioner.addPractitionerRole()
+			practitioner.addRole()
 			.addSpecialty()
 				.addCoding()
 					.setCode(terserGet("/.PRA-5-1"))

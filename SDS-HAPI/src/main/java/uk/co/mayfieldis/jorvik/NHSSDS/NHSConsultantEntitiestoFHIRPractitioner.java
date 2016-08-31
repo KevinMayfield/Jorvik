@@ -8,11 +8,11 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
-import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
+
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -64,14 +64,14 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 			}
 			gp.addName(name);
 			
-			PractitionerPractitionerRoleComponent practitionerRole = new PractitionerPractitionerRoleComponent();
+			PractitionerRoleComponent practitionerRole = new PractitionerRoleComponent();
 			
 			CodeableConcept role= new CodeableConcept();
 			role.addCoding()
-					.setCode(PractitionerRole.DOCTOR.toString())
+					.setCode("doctor")
 					.setSystem("http://hl7.org/fhir/practitioner-role");
 			
-			practitionerRole.setRole(role);
+			practitionerRole.setCode(role);
 									
 			CodeableConcept pracspecialty= new CodeableConcept();
 			pracspecialty.addCoding()
@@ -81,7 +81,7 @@ public class NHSConsultantEntitiestoFHIRPractitioner implements Processor {
 				.addSpecialty(pracspecialty);
 			practitionerRole.setOrganization(new Reference(parentOrg.getId()));
 			
-			gp.addPractitionerRole(practitionerRole);
+			gp.addRole(practitionerRole);
 
 			Bundle bundle = new Bundle();
 			
