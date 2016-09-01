@@ -73,8 +73,15 @@ public class VocabularyToFHIRValueSet implements Processor {
 			}
 			else
 			{
+				/* Idea behind this section was to ignore vocabularies with international OID's 
+				 * However many UK vocabs use international OID's. So processing regardless.
+				 * This only applies to v2 vocabularies.
+				 */
+				vocabName = "NHSITK-v2-"+vocabName;
+				/*
 				vocabName = "NotUK-"+vocabName;
 				exchange.getIn().setHeader("ActiveStatus", "NotUK" );
+				*/
 			}
 		}
 		else if (NumberUtils.isNumber(vocab.getId())) 
