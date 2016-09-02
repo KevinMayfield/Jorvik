@@ -18,7 +18,6 @@ import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
-import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.hl7.fhir.dstu3.model.Reference;
 
 
@@ -129,7 +128,9 @@ public class NHSEntitiestoFHIRResource implements Processor {
 					.setUse(ContactPointUse.WORK);
 			}
 			
-			PractitionerRoleComponent practitionerRole = new PractitionerRoleComponent(); 
+			//PractitionerRoleComponent practitionerRole = new PractitionerRoleComponent();
+			
+			PractitionerRoleComponent practitionerRole = gp.addRole();
 									
 			CodeableConcept pracspecialty= new CodeableConcept();
 			pracspecialty.addCoding()
@@ -196,7 +197,7 @@ public class NHSEntitiestoFHIRResource implements Processor {
 			practitionerRole.setCode(role);
 			practitionerRole.setOrganization(new Reference(parentOrg.getId()));
 			
-			gp.addRole(practitionerRole);
+			
 			
 			Bundle bundle = new Bundle();
 			
