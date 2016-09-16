@@ -33,13 +33,14 @@ public class FHIRDocumentReferenceProcess implements Processor {
 	
 		this.TrustFHIRSystems = TrustFHIRSystems;
 	}
+	private FhirContext ctx;
 	
 	private static final Logger log = LoggerFactory.getLogger(uk.co.mayfieldis.jorvik.UKFHIR.FHIRDocumentReferenceProcess.class);
 	
 	private NHSTrustFHIRCodeSystems TrustFHIRSystems;
 	
 	
-	private FhirContext ctx;
+	
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {

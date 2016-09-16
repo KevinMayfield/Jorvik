@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>hapi-fhir-jpaserver</artifactId>
+	<artifactId>hapi-fhir-jpaserverDstu2</artifactId>
 	<packaging>war</packaging>
 	<groupId>uk.co.mayfieldis</groupId>
 	<version>2.0</version>
-	<name>HAPI FHIR JPA Server - UK Example</name>
+	<name>HAPI FHIR JPA Server - RLS Dev</name>
 
  
 	<repositories>
@@ -48,7 +48,7 @@
 		
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-structures-dstu3</artifactId>
+			<artifactId>hapi-fhir-structures-dstu2</artifactId>
 			<version>${hapi-fhir-version}</version>
 		</dependency>
 
@@ -206,7 +206,7 @@
 	<build>
 
 		<!-- Tells Maven to name the generated WAR file as hapi-fhir-jpaserver-example.war -->
-		<finalName>hapi-fhir-jpaserver</finalName>
+		<finalName>hapi-fhir-jpaserverDstu2</finalName>
 
 		<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn jetty:run" from the command line. -->
 		<pluginManagement>
