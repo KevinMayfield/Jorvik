@@ -27,7 +27,15 @@
 <h3>
 <a id="patterns" class="anchor" href="#patterns" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Patterns</h3>
 
-<p>Jorvik doesn't contain any examples of an open source Trust Integration Engine (TIE) (also known as Orchestration Engine [SDP:OrchestrationEngine(224)]</p>
+<p>Jorvik doesn't contain any examples of an open source Trust Integration Engine (TIE) (also known as Orchestration Engine [SDP:OrchestrationEngine(224)]). That may sound odd to those familiar with HL7 v2 messaging but we're find we use HL7 FHIR where HL7 had no (developer friendly) solution. I've been heavily influenced by Martin Fowlers Signature Series patterns of books and will refer to them frequently using similar pattern identification. They are:</p>
+
+<ul>
+<li>Service Design Pattern [SDP]</li>
+<li>Enterprise Integration Pattern [EIP]</li>
+<li>Patterns of Enterprise Application Architecture [PEAA]</li>
+</ul>
+
+<p>The core patterns we've used is the Canonical Data Model <a href="described%20on%20page%20355%20of%20Enterprise%20Integration%20Patterns">EIP:CanoncialDataModel(355)</a>. Our main data model is HL7 v2 and is used heavily by our TIE Engine for messaging between systems [SDP:MessageAPI(27)] and is used heavily for a number of [EIP] patterns (read the book!). </p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/KevinMayfield/Jorvik">Jorvik</a> is maintained by <a href="https://github.com/KevinMayfield">KevinMayfield</a>.</span>
