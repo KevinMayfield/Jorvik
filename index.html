@@ -38,7 +38,7 @@
 <a href="http://martinfowler.com/eaaCatalog/">Patterns of Enterprise Application Architecture</a> [PEAA]</li>
 </ul>
 
-<p>The core patterns we've used is the Canonical Data Model [EIP:CanoncialDataModel(355)] - described on page 355 of Enterprise Integration Patterns. Our main data model continues to be HL7 v2 which is used heavily by our TIE Engine for messaging between systems [SDP:MessageAPI(27)] and behind a large number of our integration patterns [EIP]. 
+<p>The core patterns we've used is the Canonical Data Model [EIP:CanoncialDataModel(355)] - described on page 355 of Enterprise Integration Patterns. Our main data model continues to be HL7 v2 which is used heavily by our TIE Engine for messaging between systems [SDP:MessageAPI(27)] and is delivering our integration patterns [EIP]. 
 It works very well for sending information to remote systems but is not ideal for retrieving data. This is primarily where FHIR comes in, it can provide a simple RESTful interface to JSON/XML resource - it's ideal model for a Resource API [SDP:ResoureAPI(29)]. FHIR (mostly) converts nicely to v2 and vice versa, so our models used are:</p>
 
 <ul>
