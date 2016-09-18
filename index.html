@@ -31,7 +31,8 @@
 
 <ul>
 <li>Service Design Pattern [SDP]</li>
-<li>Enterprise Integration Pattern [EIP]</li>
+<li>
+<a href="http://www.enterpriseintegrationpatterns.com/patterns/messaging/">Enterprise Integration Patterns</a> [EIP]</li>
 <li>Patterns of Enterprise Application Architecture [PEAA]</li>
 </ul>
 
@@ -48,7 +49,7 @@ It works very well for sending information to remote systems but is not ideal fo
 <h3>
 <a id="facades" class="anchor" href="#facades" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Facades</h3>
 
-<p>Our main uses for FHIR is building facades onto Message Gateways [EIP:MessagingGateway(468)] as a ResourceAPI. An example of this can be found here <a href="https://github.com/nhs-ciao/ciao-pds-fhir">https://github.com/nhs-ciao/ciao-pds-fhir</a> This hides the complexity of the SMSP interactions behind a simple FHIR Patient interface (note: this is an example and another example should hopefully come out of GP Connect)</p>
+<p>Our main uses for FHIR is building facades onto Message Gateways [EIP:MessagingGateway(468)] as a ResourceAPI. An example of this can be found here <a href="https://github.com/nhs-ciao/ciao-pds-fhir">CIAO</a> This hides the complexity of the SMSP interactions behind a simple FHIR Patient interface (note: this is an example and another example should hopefully come out of GP Connect)</p>
 
 <p>Other facades include RemoteFacade [PEAA:RemoteFacade(388)] which we used to reduce network access and load on our TIE engine. This was done by moving out part of the processing (interactions with EDMS servers) to a application server (Apache Tomcat) which provided a FHIR ResourceAPI to our EDMS. This was used by the TIE <strong>and Web Developers</strong>. Corollary: the ability to provide a simple interface to web developers is very useful and would suggest any API work in the TIE is aimed at web developers (not integration developers).  </p>
 
@@ -57,14 +58,14 @@ It works very well for sending information to remote systems but is not ideal fo
 <h3>
 <a id="esb--enterprise-architecture" class="anchor" href="#esb--enterprise-architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ESB / Enterprise Architecture</h3>
 
-<p>This is currently a work in progress but it's likely we will be using FHIR, Apache Camel and HAPI FHIR JPAServer in this role alongside our TIE. A sketch of the infrastructure would look:</p>
+<p>This is currently a work in progress but it's likely we will be using FHIR, <a href="http://camel.apache.org/">Apache Camel</a> and <a href="http://hapifhir.io/">HAPI FHIR JPAServer</a> in this role alongside our TIE. A sketch of the infrastructure would look:</p>
 
 <ul>
 <li>Service Descriptor [SDP:ServiceDescriptor(175)] - Description of the REST interfaces using Apache Camel + Swagger</li>
-<li>Service Interceptor [SDP:ServiceInterceptor(195)] - Ideally OAuth2 using an OAuth server but using Apache Camel + Spring Security on top of our TIE REST interfaces or basic Apache Camel</li>
+<li>Service Interceptor [SDP:ServiceInterceptor(195)] - Ideally OAuth2 using an OAuth server but using Apache Camel + <a href="http://projects.spring.io/spring-security/">Spring Security</a> on top of our TIE REST interfaces or basic Apache Camel</li>
 <li>Service Registry [SDP:ServiceRegistry(220)] - HAPI FHIR Server as Patient MPI, Document Index and/or Terminology Server (See hapi-fhir-jpaserver in Jorvik) </li>
 <li>Enterprise Service Bus [SDP:EnterpriseServiceBus(221)] - Using our existing TIE </li>
-<li>Orchestration Engine [SDP:OrchestrationEngine(224)] - Using our existing TIE but probably supported with BPMN2 engine (e.g. Activiti).</li>
+<li>Orchestration Engine [SDP:OrchestrationEngine(224)] - Using our existing TIE but probably supported with BPMN2 engine (e.g. <a href="http://activiti.org/">Activiti</a> ).</li>
 </ul>
 
       <footer class="site-footer">
