@@ -36,12 +36,22 @@
 </ul>
 
 <p>The core patterns we've used is the Canonical Data Model <a href="described%20on%20page%20355%20of%20Enterprise%20Integration%20Patterns">EIP:CanoncialDataModel(355)</a>. Our main data model continues to be HL7 v2 which is used heavily by our TIE Engine for messaging between systems [SDP:MessageAPI(27)] and behind a large number of our integration patterns [EIP]. 
-It works very well for sending information to remote systems but is not suitable for retrieving data. This is primarily where FHIR comes in, it can provide a simple RESTful interface to JSON/XML resource - it's ideal model for a Resource API [SDP:ResoureAPI(29)]. FHIR (mostly) converts nicely to v2 and vice versa, so our models used are:</p>
+It works very well for sending information to remote systems but is not ideal for retrieving data. This is primarily where FHIR comes in, it can provide a simple RESTful interface to JSON/XML resource - it's ideal model for a Resource API [SDP:ResoureAPI(29)]. FHIR (mostly) converts nicely to v2 and vice versa, so our models used are:</p>
 
 <ul>
 <li>HL7v2 for MessagingAPI(27)</li>
 <li>HL7 FHIR for ResourceAPI(29)</li>
 </ul>
+
+<p>Note: Although we use HL7v3 within the trust these are for interfacing with national systems and it is not used internally.</p>
+
+<h3>
+<a id="facades" class="anchor" href="#facades" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Facades</h3>
+
+<p>Our main uses for FHIR is building facades onto Message Gateways [EIP:MessagingGateway(468)] as a ResourceAPI. An example of this can be found here <a href="https://github.com/nhs-ciao/ciao-pds-fhir">https://github.com/nhs-ciao/ciao-pds-fhir</a> This hides the complexity of the SMSP interactions behind a simple FHIR Patient interface (note: this is an example and another example should hopefully come out of GP Connect)</p>
+
+<p>Other facades include RemoteFacade [PEAA:RemoteFacade(388)] which we used to reduce network access and load on our TIE engine. This was done by moving out part of the processing (interactions with EDMS servers) to a application server (Apache Tomcat) which provided a FHIR ResourceAPI to our EDMS. This was used by the TIE <strong>and Web Developers</strong>
+Both the <strong>HL7v2-HAPI</strong> and <strong>UKFHIR-HAPI</strong> provide examples of this pattern, in both cases the feeds originate from the TIE one HL7v2 and the other a document bundle which are used to populate a HAPI FHIR Server.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/KevinMayfield/Jorvik">Jorvik</a> is maintained by <a href="https://github.com/KevinMayfield">KevinMayfield</a>.</span>
