@@ -50,8 +50,22 @@ It works very well for sending information to remote systems but is not ideal fo
 
 <p>Our main uses for FHIR is building facades onto Message Gateways [EIP:MessagingGateway(468)] as a ResourceAPI. An example of this can be found here <a href="https://github.com/nhs-ciao/ciao-pds-fhir">https://github.com/nhs-ciao/ciao-pds-fhir</a> This hides the complexity of the SMSP interactions behind a simple FHIR Patient interface (note: this is an example and another example should hopefully come out of GP Connect)</p>
 
-<p>Other facades include RemoteFacade [PEAA:RemoteFacade(388)] which we used to reduce network access and load on our TIE engine. This was done by moving out part of the processing (interactions with EDMS servers) to a application server (Apache Tomcat) which provided a FHIR ResourceAPI to our EDMS. This was used by the TIE <strong>and Web Developers</strong>
-Both the <strong>HL7v2-HAPI</strong> and <strong>UKFHIR-HAPI</strong> provide examples of this pattern, in both cases the feeds originate from the TIE one HL7v2 and the other a document bundle which are used to populate a HAPI FHIR Server.</p>
+<p>Other facades include RemoteFacade [PEAA:RemoteFacade(388)] which we used to reduce network access and load on our TIE engine. This was done by moving out part of the processing (interactions with EDMS servers) to a application server (Apache Tomcat) which provided a FHIR ResourceAPI to our EDMS. This was used by the TIE <strong>and Web Developers</strong>. Corollary: the ability to provide a simple interface to web developers is very useful and would suggest any API work in the TIE is aimed at web developers (not integration developers).  </p>
+
+<p>The <strong>HL7v2-HAPI</strong> and <strong>UKFHIR-HAPI</strong> in Jorvik provide examples of this pattern, in both cases the feeds originate from the TIE, one HL7v2 and the other a document bundle which are used to populate a HAPI FHIR Server.</p>
+
+<h3>
+<a id="esb--enterprise-architecture" class="anchor" href="#esb--enterprise-architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ESB / Enterprise Architecture</h3>
+
+<p>This is currently a work in progress but it's likely we will be using FHIR, Apache Camel and HAPI FHIR JPAServer in this role alongside our TIE. A sketch of the infrastructure would look:</p>
+
+<ul>
+<li>Service Descriptor [SDP:ServiceDescriptor(175)] - Description of the REST interfaces using Apache Camel + Swagger</li>
+<li>Service Interceptor [SDP:ServiceInterceptor(195)] - Ideally OAuth2 using an OAuth server but using Apache Camel + Spring Security on top of our TIE REST interfaces or basic Apache Camel</li>
+<li>Service Registry [SDP:ServiceRegistry(220)] - HAPI FHIR Server as Patient MPI, Document Index and/or Terminology Server (See hapi-fhir-jpaserver in Jorvik) </li>
+<li>Enterprise Service Bus [SDP:EnterpriseServiceBus(221)] - Using our existing TIE </li>
+<li>Orchestration Engine [SDP:OrchestrationEngine(224)] - Using our existing TIE but probably supported with BPMN2 engine (e.g. Activiti).</li>
+</ul>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/KevinMayfield/Jorvik">Jorvik</a> is maintained by <a href="https://github.com/KevinMayfield">KevinMayfield</a>.</span>
