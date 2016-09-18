@@ -63,11 +63,16 @@ It works very well for sending information to remote systems but is not ideal fo
 <p>This is currently a work in progress but it's likely we will be using FHIR, <a href="http://camel.apache.org/">Apache Camel</a> and <a href="http://hapifhir.io/">HAPI FHIR JPAServer</a> in this role alongside our TIE. A sketch of the infrastructure would look:</p>
 
 <ul>
-<li>Service Descriptor [SDP:ServiceDescriptor(175)] - Description of the REST interfaces using Apache Camel + Swagger</li>
-<li>Service Interceptor [SDP:ServiceInterceptor(195)] - Ideally OAuth2 using an OAuth server but using Apache Camel + <a href="http://projects.spring.io/spring-security/">Spring Security</a> on top of our TIE REST interfaces or basic Apache Camel</li>
-<li>Service Registry [SDP:ServiceRegistry(220)] - HAPI FHIR Server as Patient MPI, Document Index and/or Terminology Server (See hapi-fhir-jpaserver in Jorvik) </li>
-<li>Enterprise Service Bus [SDP:EnterpriseServiceBus(221)] - Using our existing TIE </li>
-<li>Orchestration Engine [SDP:OrchestrationEngine(224)] - Using our existing TIE but probably supported with BPMN2 engine (e.g. <a href="http://activiti.org/">Activiti</a> ).</li>
+<li>
+<strong>Service Descriptor</strong> [SDP:ServiceDescriptor(175)] - Description of the REST interfaces using Apache Camel + Swagger</li>
+<li>
+<strong>Service Interceptor</strong> [SDP:ServiceInterceptor(195)] - To add a consistent security layer across systems, ideally OAuth2 using an OAuth server but using Apache Camel + <a href="http://projects.spring.io/spring-security/">Spring Security</a> on top of our TIE REST interfaces or basic Apache Camel</li>
+<li>
+<strong>Service Registry</strong> [SDP:ServiceRegistry(220)] - HAPI FHIR Server as Patient MPI, Document Index and/or Terminology Server (See hapi-fhir-jpaserver in Jorvik) </li>
+<li>
+<strong>Enterprise Service Bus</strong> [SDP:EnterpriseServiceBus(221)] - Using our existing TIE </li>
+<li>
+<strong>Orchestration Engine</strong> [SDP:OrchestrationEngine(224)] - Using our existing TIE but probably supported with BPMN2 engine (e.g. <a href="http://activiti.org/">Activiti</a> ).</li>
 </ul>
 
       <footer class="site-footer">
