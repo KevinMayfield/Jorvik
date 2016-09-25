@@ -38,9 +38,9 @@
 		<slf4j-version>1.7.12</slf4j-version>
 		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
 		<commons-dbcp-version>1.4</commons-dbcp-version>
-		<camel-version>2.17.2</camel-version>
+		<camel-version>2.17.3</camel-version>
 		<hapi-fhir-version>2.0</hapi-fhir-version>
-		<Jorvik-Core-Version>2.0.0</Jorvik-Core-Version>
+		<Jorvik-Core-Version>2.17.3</Jorvik-Core-Version>
 		<insight-log4j>1.2.0.Beta4</insight-log4j>
 		<hapi-hl7v2-version>2.2</hapi-hl7v2-version>
 		<activemq-version>5.13.4</activemq-version>
