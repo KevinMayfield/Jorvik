@@ -18,6 +18,8 @@ import org.hl7.fhir.dstu3.model.Bundle.HTTPVerb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.xml.bind.v2.runtime.Location;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.parser.IParser;
@@ -92,6 +94,8 @@ public class FHIRDocumentReferenceProcess implements Processor {
 				
 				documentReference.setId("");
 				
+				 
+				 
 				for (int f=0;f<documentReference.getContained().size();f++)
 				{
 					String resourceName = documentReference.getContained().get(f).getResourceType().toString();

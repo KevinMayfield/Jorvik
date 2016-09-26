@@ -134,7 +134,7 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 			extraProperties.put("hibernate.cache.use_minimal_puts", "false");
 			extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
 			// needed to set properties of this directory sudo chmod -R 777 .
-			extraProperties.put("hibernate.search.default.indexBase", "/Development/lucene/indexes");
+			extraProperties.put("hibernate.search.default.indexBase", "/Development/lucene/stu3/indexes");
 			extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
 			//extraProperties.put("hibernate.connection.driver.class",
 			//		env.getProperty("jdbc.Driver"));

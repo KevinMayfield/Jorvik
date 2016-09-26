@@ -34,7 +34,7 @@
     	<bundle.symbolicName>UKFHIRHAPICamelRoute.Bundle</bundle.symbolicName>
     	<bundle.namespace>uk.co.mayfieldis.camelRoute.UKFhirAPI</bundle.namespace>
     	
-		<springframework-version>4.3.0.RELEASE</springframework-version>
+		<springframework-version>4.3.1.RELEASE</springframework-version>
 		<spring-security-version>4.1.0.RELEASE</spring-security-version>
 		<spring-security-oauth2>2.0.10.RELEASE</spring-security-oauth2>
 		<activemq-version>5.13.4</activemq-version>

@@ -21,7 +21,7 @@
 		<commons-dbcp-version>1.4</commons-dbcp-version>
 		<hl7-fhir-me-version>1.0.1.7108</hl7-fhir-me-version>
 		<hapi-fhir-version>2.0</hapi-fhir-version>
-		<springframework-version>4.3.0.RELEASE</springframework-version>
+		<springframework-version>4.3.1.RELEASE</springframework-version>
 	</properties>
 	
 	<dependencyManagement>
