@@ -7,9 +7,14 @@ import org.springframework.core.env.Environment;
 //Added Gp and Practice  19/1/2016 
 public class NHSTrustFHIRCodeSystems {
 	
-	 private String URI_PATIENT_HOSPITAL_NUMBER;
+	 public NHSTrustFHIRCodeSystems(Environment env)
+	 {
+		 setValues(env);
+	 }
 	 
-	 private String URI_PATIENT_OTHER_NUMBER;
+	 private String URI_PATIENT_PRIMARY_IDENTIFIER;
+	 
+	 private String URI_PATIENT_SECONDARY_IDENTIFIER;
 	 
 	 private String URI_NHSOrg_PAS_CONSULTANT_CODE;
 	 
@@ -57,15 +62,15 @@ public class NHSTrustFHIRCodeSystems {
 	 
 	 private String uriNHSOrgAppointmentId;
 	 
-	 public Environment env;
+	 private Environment env;
 	 
 	 public void setValues(Environment env)
 	 {
 		 this.env=env;
 		 
-		 this.URI_PATIENT_HOSPITAL_NUMBER = env.getProperty("ORG.URIPATIENTHOSPITALNUMBER");
+		 this.URI_PATIENT_PRIMARY_IDENTIFIER = env.getProperty("ORG.URIPATIENTPRIMARYIDENTIFIER");
 		 
-		 this.URI_PATIENT_OTHER_NUMBER = env.getProperty("ORG.URIPATIENTOTHERNUMBER");
+		 this.URI_PATIENT_SECONDARY_IDENTIFIER = env.getProperty("ORG.URIPATIENTSECONDARYIDENTIFIER");
 		 
 		 this.URI_NHSOrg_PAS_CONSULTANT_CODE = env.getProperty("ORG.URINHSOrgPASCONSULTANTCODE");
 		 
@@ -115,14 +120,14 @@ public class NHSTrustFHIRCodeSystems {
 		 
 	 }
 	 
-	 public String getURI_PATIENT_HOSPITAL_NUMBER()
+	 public String getURI_PATIENT_PRIMARY_IDENTIFIER()
 	 {
-		 return this.URI_PATIENT_HOSPITAL_NUMBER;
+		 return this.URI_PATIENT_PRIMARY_IDENTIFIER;
 	 }
 	 
-	 public String getURI_PATIENT_OTHER_NUMBER()
+	 public String getURI_PATIENT_SECONDARY_IDENTIFIER()
 	 {
-		 return this.URI_PATIENT_OTHER_NUMBER;
+		 return this.URI_PATIENT_SECONDARY_IDENTIFIER;
 	 }
 	 
 	 public String getURI_NHSOrg_PAS_CONSULTANT_CODE()

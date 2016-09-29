@@ -1,8 +1,11 @@
 package uk.co.mayfieldis.jorvik.core.FHIRConstants;
 
 public class FHIRCodeSystems {
+	
+	// Updated to use identifiers as per http://data.developer.nhs.uk/fhir/candidaterelease-170816-getrecord/Profile.GetRecordQueryResponse-HTMLView/Profile.GetRecordQueryResponse-HTMLView.html
+	// 29/9/2016
 			    
-	    public final static String URI_NHS_NUMBER_ENGLAND = "urn:fhir.nhs.uk:id/NHSNumber";
+	    public final static String URI_NHS_NUMBER_ENGLAND = "http://fhir.nhs.net/Id/nhs-number";
 	    
 	    public final static String URI_NHS_NUMBER_SCOTLAND = "http://fhir.nhs.scot.uk/Patient/NHSNumber";
 	    
@@ -18,7 +21,7 @@ public class FHIRCodeSystems {
 	    
 	    public final static String URI_NHS_GMP_CODE = "urn:fhir.nhs.uk/id/GeneralPractitionerPPDCode";
 	    
-	    public final static String URI_NHS_OCS_ORGANISATION_CODE = "urn:fhir.nhs.uk/id/ODSOrganisationCode";
+	    public final static String URI_NHS_OCS_ORGANISATION_CODE = "http://fhir.nhs.net/Id/ods-organization-code";
 	
 	    public final static String URI_NHS_ORGANISATION_TYPE = "http://fhir.datadictionary.nhs.uk/data_dictionary/organisation_type";
 	    
