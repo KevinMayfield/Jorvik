@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
@@ -20,6 +22,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.FHIRCodeSystems;
 import uk.co.mayfieldis.jorvik.core.FHIRConstants.NHSTrustFHIRCodeSystems;
+
 
 
 public class DaoDocumentReference {
@@ -319,7 +322,8 @@ public class DaoDocumentReference {
 					case "DOC":
 						mimeType ="application/msword";
 						break;
-					
+					case "htm":
+					case "HTM":
 					case "html":
 					case "HTML":
 						mimeType ="text/html";
@@ -443,8 +447,9 @@ public class DaoDocumentReference {
 					.setValue(docRef.getActivityID());
 			}
 			Attachment docAttachment = new Attachment();
-			
-			docAttachment.setContentType(GetMimeType("html"));
+			// 30/9/2016 KGM
+			docAttachment.setContentType(GetMimeType(FilenameUtils.getExtension(docRef.getFileName())));
+			//docAttachment.setContentType(GetMimeType("html"));
 			docAttachment.setUrl(binaryLocation+"Binary/"+docRef.getFileName());
 			docRefFHIR.addContent()
 				.setAttachment(docAttachment);
@@ -505,8 +510,8 @@ public class DaoDocumentReference {
 						.setDisplay("Clinical letter");
 			}
 			Attachment docAttachment = new Attachment();
-			
-			docAttachment.setContentType(GetMimeType("doc"));
+			// 30/9/2016 KGM
+			docAttachment.setContentType(GetMimeType(FilenameUtils.getExtension(docRef.getFileName())));
 			docAttachment.setUrl(binaryLocation+"Binary/"+docRef.getFileName());
 			docRefFHIR.addContent()
 				.setAttachment(docAttachment);
