@@ -1,15 +1,18 @@
-<ion-view view-title="GP Connect" hide-back-button="true">
-  <ion-content>
-    <div class="list">
-      <a href="#/patientdetails" class="item item-icon-left">
-        <i class="icon ion-android-list"></i> Patient Details
-      </a>
-      <a href="#/summary" class="item item-icon-left">
-        <i class="icon ion-ios-medical"></i> GP Summary Record
-      </a>
-      <a href="#/appointments" class="item item-icon-left">
-        <i class="icon ion-ios-calendar"></i> GP Appointments
-      </a>
+<ion-view view-title="GP Connect {{PatientName}}" hide-back-button="true">
+    <ion-content>
+        <div class='list'>
+            <div class='item item-input-inset'>
+                <label class='item-input-inset'>
+                <input type='search' ng-model="model.term" placeholder='Enter NHS Number'>
+                    
+                </label>
+                <button class='button button-small button-positive' ng-click='search()'>Submit</button>
+                
+            </div>
+        
+            <div class='item' ng-repeat="patient in results.entry" ng-click="select(patient.resource.identifier[0].value,patient.resource.name[0].text)" ui-sref='details(NHSNumber : patient.resource.identifier[0].value)'>
+            {{patient.resource.identifier[0].value}} <b>{{patient.resource.name[0].text}}</b>
+        </div>
     </div>
-  </ion-content>
+    </ion-content>
 </ion-view>

@@ -1,12 +1,11 @@
-<ion-view view-title="GP Appointments">
+<ion-view view-title="GP Appointments {{PatientName}}">
   <ion-content>
-   
- 
-    <div class="list" collection-repeat="appointment in appointments.entry"
-       item-height="50">
-       <div class="item">{{appointment.resource.status}}</div>
-       <div class="item">{{appointment.resource.type.text}}</div>
-       <div class="item">{{appointment.resource.start}}</div>
+   <div class="list card" collection-repeat="appointment in appointments.entry"
+       item-height="100">
+       <div class="item">
+           <h2>{{appointment.resource.start | fhirDtasDate | date: 'dd-MMM-yyyy HH:mm'}}</h2>
+           <p>{{appointment.resource.type.text}} - {{appointment.resource.status}}</div>
+       
     </div>
   </ion-content>
 </ion-view>

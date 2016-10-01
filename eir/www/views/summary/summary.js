@@ -1,17 +1,25 @@
 angular.module('App')
-.controller('SummaryController', function ($scope,AppService, $http, $ionicLoading) {
+.controller('SummaryController', function ($scope,AppService, $http, $ionicLoading, localStorageService) {
   $ionicLoading.show();
+  $scope.NHSNumber = "";
+  $scope.PatientName = "";
+    if (localStorageService.get("NHSNumber")) {
+              $scope.NHSNumber = localStorageService.get("NHSNumber");
+          } else {
+              $scope.NHSNumber = "9000000084";
+          }
+  if (localStorageService.get("PatientName")) {
+              $scope.PatientName = localStorageService.get("PatientName");
+          } else {
+              $scope.PatientName = "";
+          }
+    
   var SummaryUrl = '';
   var SummaryMethod = 'POST';
-  if (AppService.baseURL.length > 1)
-  {
-      SummaryUrl = AppService.baseURL + '/fhir/Patient/$gpc.getcarerecord';
-  }
-  else
-  {
-      SummaryUrl = 'careRecord/'+AppService.NHSNumber+'.json';
-      SummaryMethod = 'GET';
-  }
+  
+      
+  SummaryUrl = AppService.baseURL + '/fhir/Patient/$gpc.getcarerecord';
+  
   $http({
 			method : SummaryMethod,
 			url : SummaryUrl,
@@ -25,14 +33,14 @@ angular.module('App')
                             'Content-Type' : 'application/json'
                         }
                        ,
-                        body : {
+                        data : {
                             'resourceType' : 'Parameters',
                             'parameter' : [
                                 {
                                     'name' : 'patientNHSNumber',
                                     'valueIdentifier' : 
                                     { 
-                                        'value' : AppService.NHSNumber 
+                                        'value' : $scope.NHSNumber 
                                     }
                                 },
                                 {

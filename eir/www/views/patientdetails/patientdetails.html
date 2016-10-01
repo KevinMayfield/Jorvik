@@ -1,14 +1,14 @@
-<ion-view view-title="Patient Details">
+<ion-view view-title="Patient Details - {{PatientName}}">
   <ion-content>
     <div class="list">
-         <div class="item">Name: {{patient.name[0].text}}</div>
-      <div class="item">Gender : {{patient.gender}}</div>
-      <div class="item">Date of Birth: {{patient.birthDate}}</div>
-      <div class="item">Telephone: {{patient.telecom[0].use}} {{patient.telecom[0].value}} </div>
+        <div class="item">Name: <b>{{patient.name[0].text}}</b></div>
+      <div class="item">Gender : <b>{{patient.gender}}</b></div>
+      <div class="item">Date of Birth: <b>{{patient.birthDate}}</b></div>
+      <div class="item">Telephone: <b>{{patient.telecom[0].use}} {{patient.telecom[0].value}}</b> </div>
       
-      <div class="item">Address: {{patient.address[0].text}}</div>
-      <div class="item">NHS Number: {{patient.identifier[0].value}}</div>
-      <div class="item">GP: {{patient.careProvider[0].display}}</div>
+      <div class="item">Address: <b>{{patient.address[0].text}}</b></div>
+      <div class="item">NHS Number: <b>{{patient.identifier[0].value}}</b></div>
+      <div class="item">GP: <b>{{patient.careProvider[0].display}}</b></div>
     </div>
   </ion-content>
 </ion-view>
