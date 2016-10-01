@@ -1,0 +1,12 @@
+<ion-view view-title="GP Appointments">
+  <ion-content>
+   
+ 
+    <div class="list" collection-repeat="appointment in appointments.entry"
+       item-height="50">
+       <div class="item">{{appointment.resource.status}}</div>
+       <div class="item">{{appointment.resource.type.text}}</div>
+       <div class="item">{{appointment.resource.start}}</div>
+    </div>
+  </ion-content>
+</ion-view>

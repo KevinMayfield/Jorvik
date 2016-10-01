@@ -1,0 +1,10 @@
+{
+  "name": "eir",
+  "app_id": "",
+  "proxies": [
+{
+"path": "/fhir",
+"proxyUrl": "http://ec2-54-194-109-184.eu-west-1.compute.amazonaws.com/fhir"
+}
+]
+}

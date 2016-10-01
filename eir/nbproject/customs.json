@@ -1,0 +1,8 @@
+{
+    "elements": {
+        "ion-nav-view": {},
+        "ion-nav-back-button": {},
+        "ion-nav-bar": {}
+    },
+    "attributes": {}
+}

@@ -1,0 +1,197 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "entry": [
+    {
+      "fullUrl": "Patient/8",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "8",
+        "meta": {
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/nhs-number",
+            "value": "9000000084"
+          }
+        ],
+        "name": [
+          {
+            "use": "usual",
+            "text": "Blair Wells",
+            "family": [
+              "Wells"
+            ],
+            "given": [
+              "Blair"
+            ],
+            "prefix": [
+              "Mrs"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(01141) 56013",
+            "use": "home"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1969-01-31",
+        "address": [
+          {
+            "use": "home",
+            "type": "physical",
+            "text": "783-2544 Cursus, Ave, Lerwick, Shetland, H2 6HJ"
+          }
+        ],
+        "careProvider": [
+          {
+            "reference": "Practitioner/1",
+            "display": "Miss Nichole Gilbert"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1",
+        "meta": {
+          "versionId": "1469448000000",
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/sds-user-id",
+            "value": "G13579135"
+          },
+          {
+            "system": "http://fhir.nhs.net/Id/sds-role-profile-id",
+            "value": "PT1234"
+          }
+        ],
+        "name": {
+          "use": "usual",
+          "family": [
+            "Gilbert"
+          ],
+          "given": [
+            "Nichole"
+          ],
+          "prefix": [
+            "Miss"
+          ]
+        },
+        "gender": "female",
+        "practitionerRole": [
+          {
+            "managingOrganization": {
+              "reference": "Organization/2"
+            },
+            "role": {
+              "coding": [
+                {
+                  "system": "http://fhir.nhs.net/ValueSet/sds-job-role-name-1-0",
+                  "code": "R0050",
+                  "display": "Consultant"
+                }
+              ]
+            }
+          }
+        ],
+        "communication": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.nhs.net/ValueSet/human-language-1-0",
+                "code": "en",
+                "display": "English"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/2",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2",
+        "meta": {
+          "versionId": "1469448000000",
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/ods-organization-code",
+            "value": "R1A14"
+          },
+          {
+            "system": "http://fhir.nhs.net/Id/ods-site-code",
+            "value": "Z33433"
+          }
+        ],
+        "name": "Test GP Care Trust"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Composition",
+        "date": "2016-10-01T12:15:09+00:00",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "425173008",
+              "display": "record extract (record artifact)"
+            }
+          ],
+          "text": "record extract (record artifact)"
+        },
+        "class": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "700232004",
+              "display": "general medical service (qualifier value)"
+            }
+          ],
+          "text": "general medical service (qualifier value)"
+        },
+        "title": "Patient Care Record",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/8"
+        },
+        "author": [
+          {
+            "reference": "Practitioner/1"
+          }
+        ],
+        "section": [
+          {
+            "title": "Summary",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://fhir.nhs.net/ValueSet/gpconnect-record-section-1-0",
+                  "code": "SUM",
+                  "display": "Summary"
+                }
+              ],
+              "text": "EMIS"
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div><h2><span>Current Problems</span></h2><div><table><tbody><tr><td>14-Jan-2013</td><td><em>Adverse reaction to aspirin</em></td></tr><tr><td>14-Jan-2013</td><td><em>Lasting power of attorney personal welfare</em></td></tr><tr><td>14-Jan-2013</td><td><em>Blindness and low vision</em></td></tr><tr><td>14-Dec-2012</td><td><em>Blood pH abnormal</em></td></tr><tr><td>08-Jan-2004</td><td><em>Pure hypercholesterolaemia</em></td></tr><tr><td>08-Jan-2004</td><td><em>Chronic obstructive pulmonary disease</em></td></tr><tr><td>Not Known</td><td><em>Asthma</em></td></tr></tbody></table></div></div><div><h2><span>Current Medication</span></h2><div><div>Acute Medication</div><table><tr><td>Co-codamol</td><td>15mg/500mg tablets</td></tr></table><div>Repeat Medication</div><table><tr><td>Salbutamol</td><td>100micrograms/dose inhaler CFC free</td></tr><tr><td>Atorvastatin</td><td>10mg tablets</td></tr><tr><td>Atorvastatin</td><td>10mg tablets</td></tr></table></div></div><div><h2><span>Allergies and Adverse Reactions</span></h2><div><table><tbody><tr><td>14-Jan-2013</td><td><em>Dog allergy</em></td></tr><tr><td>14-Jan-2013</td><td><em>Adverse reaction to aspirin</em></td></tr></tbody></table></div></div><div><h2><span>Recent Tests</span></h2><div><table><tbody><tr><td>23-Jan-2013</td><td><span /></td><td><em>Urine blood test = +</em></td><td>-</td><td>-</td></tr><tr><td>14-Dec-2012</td><td><span /></td><td><em>Sputum inspection</em> : nice</td><td>-</td><td>-</td></tr><tr><td>14-Dec-2012</td><td><span /></td><td><em>Blood pH abnormal</em> : slightly acidic</td><td>-</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>FEV1/FVC percent</em></td><td> 85.000 %</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>Spirometry</em></td><td>-</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>Phlegm examination</em> : BT taken</td><td>-</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>Peak exp. flow rate: PEFR/PFR</em></td><td> 440.000 l/minute</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>Forced expired volume in 1 second</em></td><td> 3.500 litres</td><td>-</td></tr><tr><td>19-Jan-2006</td><td><span /></td><td><em>Forced vital capacity - FVC</em></td><td> 410.000 litres</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Basophil count</em></td><td> 0.020 10*9/L</td><td>0.000 - 0.10010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Eosinophil count</em></td><td> 0.250 10*9/L</td><td>0.000 - 0.40010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Monocyte count</em></td><td> 0.670 10*9/L</td><td>0.200 - 0.80010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Lymphocyte count</em></td><td> 2.720 10*9/L</td><td>1.500 - 4.00010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Neutrophil count</em></td><td> 4.120 10*9/L</td><td>2.000 - 7.50010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Platelet count</em></td><td> 188.000 10*9/L</td><td>150.000 - 400.00010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Red blood cell distribution width</em></td><td> 14.000 %</td><td>11.000 - 15.000%</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Mean corpusc. haemoglobin(MCH)</em></td><td> 27.000 pg</td><td>27.000 - 32.000pg</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Mean corpuscular volume (MCV)</em></td><td> 82.000 fL</td><td>80.000 - 97.000fL</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Haematocrit</em></td><td> 0.437 1/1</td><td>0.400 - 0.5401/1</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Haemoglobin estimation</em></td><td> 144.000 g/L</td><td>130.000 - 180.000g/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Red blood cell (RBC) count</em></td><td> 5.350 10*12/L</td><td>4.500 - 6.50010*12/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Total white cell count</em></td><td> 7.800 10*9/L</td><td>4.000 - 11.00010*9/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Plasma fasting glucose level</em></td><td> 4.400 mmol/L</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum creatinine</em></td><td> 78.000 umol/L</td><td>60.000 - 120.000umol/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum urea level</em></td><td> 3.700 mmol/L</td><td>2.700 - 7.500mmol/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum potassium</em></td><td> 3.900 mmol/L</td><td>3.500 - 5.000mmol/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum sodium</em></td><td> 137.000 mmol/L</td><td>132.000 - 144.000mmol/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>ALT/SGPT serum level</em></td><td> 29.000 iu/L</td><td>5.000 - 45.000iu/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum alkaline phosphatase</em></td><td> 62.000 iu/L</td><td>25.000 - 110.000iu/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum total bilirubin level</em></td><td> 11.000 umol/L</td><td>1.000 - 20.000umol/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum globulin</em></td><td> 26.000 g/L</td><td>21.000 - 38.000g/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum albumin</em></td><td> 44.000 g/L</td><td>33.000 - 49.000g/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum total protein</em></td><td> 70.000 g/L</td><td>60.000 - 80.000g/L</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum LDL cholesterol level</em></td><td> 1.900 mmol/L</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.400 mmol/L</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum triglycerides</em></td><td> 0.600 mmol/L</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 3.600 mmol/L</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>GFR calculated abbreviated MDRD</em> : Food regurgitation discomfort</td><td>-</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.400 mmol/l</td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Total cholesterol:HDL ratio</em></td><td> 2.520 </td><td>-</td></tr><tr><td>17-Jul-2005</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 3.600 mmol/l</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Basophil count</em></td><td> 0.020 10*9/L</td><td>0.000 - 0.10010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Eosinophil count</em></td><td> 0.150 10*9/L</td><td>0.000 - 0.40010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Monocyte count</em></td><td> 0.650 10*9/L</td><td>0.200 - 0.80010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Lymphocyte count</em></td><td> 2.760 10*9/L</td><td>1.500 - 4.00010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Neutrophil count</em></td><td> 2.800 10*9/L</td><td>2.000 - 7.50010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Platelet count</em></td><td> 177.000 10*9/L</td><td>150.000 - 400.00010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Red blood cell distribution width</em></td><td> 14.000 %</td><td>11.000 - 15.000%</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Mean corpusc. haemoglobin(MCH)</em></td><td> 27.000 pg</td><td>27.000 - 32.000pg</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Mean corpuscular volume (MCV)</em></td><td> 83.000 fL</td><td>80.000 - 97.000fL</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Haematocrit</em></td><td> 0.426 1/1</td><td>0.400 - 0.5401/1</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Haemoglobin estimation</em></td><td> 141.000 g/L</td><td>130.000 - 180.000g/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Red blood cell (RBC) count</em></td><td> 5.140 10*12/L</td><td>4.500 - 6.50010*12/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Total white cell count</em></td><td> 6.400 10*9/L</td><td>4.000 - 11.00010*9/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum creatinine</em></td><td> 82.000 umol/L</td><td>60.000 - 120.000umol/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum urea level</em></td><td> 4.100 mmol/L</td><td>2.700 - 7.500mmol/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum potassium</em></td><td> 4.000 mmol/L</td><td>3.500 - 5.000mmol/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum sodium</em></td><td> 138.000 mmol/L</td><td>132.000 - 144.000mmol/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>ALT/SGPT serum level</em></td><td> 36.000 iu/L</td><td>5.000 - 45.000iu/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum alkaline phosphatase</em></td><td> 57.000 iu/L</td><td>25.000 - 110.000iu/L</td></tr><tr><td>22-Oct-2004</td><td><span>!</span></td><td><em>Serum total bilirubin level</em></td><td> 24.000 umol/L</td><td>1.000 - 20.000umol/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum globulin</em></td><td> 28.000 g/L</td><td>21.000 - 38.000g/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum albumin</em></td><td> 43.000 g/L</td><td>33.000 - 49.000g/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum total protein</em></td><td> 71.000 g/L</td><td>60.000 - 80.000g/L</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum LDL cholesterol level</em></td><td> 1.500 mmol/L</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.300 mmol/L</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum triglycerides</em></td><td> 0.900 mmol/L</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 3.200 mmol/L</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.400 mmol/l</td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Total cholesterol:HDL ratio</em></td><td> 2.420 </td><td>-</td></tr><tr><td>22-Oct-2004</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 3.400 mmol/l</td><td>-</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum creatinine</em></td><td> 81.000 umol/L</td><td>60.000 - 120.000umol/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum urea level</em></td><td> 4.100 mmol/L</td><td>2.700 - 7.500mmol/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum potassium</em></td><td> 4.300 mmol/L</td><td>3.500 - 5.000mmol/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum sodium</em></td><td> 139.000 mmol/L</td><td>132.000 - 144.000mmol/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>ALT/SGPT serum level</em></td><td> 44.000 iu/L</td><td>5.000 - 45.000iu/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum alkaline phosphatase</em></td><td> 65.000 iu/L</td><td>25.000 - 110.000iu/L</td></tr><tr><td>18-Mar-2004</td><td><span>!</span></td><td><em>Serum total bilirubin level</em></td><td> 24.000 umol/L</td><td>1.000 - 20.000umol/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum globulin</em></td><td> 24.000 g/L</td><td>21.000 - 38.000g/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum albumin</em></td><td> 45.000 g/L</td><td>33.000 - 49.000g/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum total protein</em></td><td> 69.000 g/L</td><td>60.000 - 80.000g/L</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum LDL cholesterol level</em></td><td> 1.600 mmol/L</td><td>-</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.400 mmol/L</td><td>-</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum triglycerides</em></td><td> 0.800 mmol/L</td><td>-</td></tr><tr><td>18-Mar-2004</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 3.400 mmol/L</td><td>-</td></tr><tr><td>08-Jan-2004</td><td><span /></td><td><em>FEV1/FVC percent</em></td><td> 76.000 %</td><td>-</td></tr><tr><td>08-Jan-2004</td><td><span /></td><td><em>Peak exp. flow rate: PEFR/PFR</em></td><td> 175.000 l/min</td><td>-</td></tr><tr><td>08-Jan-2004</td><td><span /></td><td><em>Forced expired volume in 1 second</em></td><td> 1.700 litres</td><td>-</td></tr><tr><td>08-Jan-2004</td><td><span /></td><td><em>Forced vital capacity - FVC</em></td><td> 225.000 litres</td><td>-</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum creatinine</em></td><td> 84.000 umol/L</td><td>60.000 - 120.000umol/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum urea level</em></td><td> 3.600 mmol/L</td><td>2.700 - 7.500mmol/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum potassium</em></td><td> 4.300 mmol/L</td><td>3.500 - 5.000mmol/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum sodium</em></td><td> 140.000 mmol/L</td><td>132.000 - 144.000mmol/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>ALT/SGPT serum level</em></td><td> 31.000 iu/L</td><td>5.000 - 45.000iu/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum alkaline phosphatase</em></td><td> 68.000 iu/L</td><td>25.000 - 110.000iu/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum total bilirubin level</em></td><td> 16.000 umol/L</td><td>1.000 - 20.000umol/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum globulin</em></td><td> 27.000 g/L</td><td>21.000 - 38.000g/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum albumin</em></td><td> 48.000 g/L</td><td>33.000 - 49.000g/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum total protein</em></td><td> 75.000 g/L</td><td>60.000 - 80.000g/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum LDL cholesterol level</em></td><td> 3.600 mmol/L</td><td>-</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.600 mmol/L</td><td>-</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum triglycerides</em></td><td> 0.900 mmol/L</td><td>-</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 5.600 mmol/L</td><td>-</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Basophil count</em></td><td> 0.030 10*9/L</td><td>0.000 - 0.10010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Eosinophil count</em></td><td> 0.140 10*9/L</td><td>0.000 - 0.40010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Monocyte count</em></td><td> 0.560 10*9/L</td><td>0.200 - 0.80010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Lymphocyte count</em></td><td> 2.710 10*9/L</td><td>1.500 - 4.00010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Neutrophil count</em></td><td> 2.570 10*9/L</td><td>2.000 - 7.50010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Platelet count</em></td><td> 237.000 10*9/L</td><td>150.000 - 400.00010*9/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Red blood cell distribution width</em></td><td> 15.000 %</td><td>11.000 - 15.000%</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Mean corpusc. haemoglobin(MCH)</em></td><td> 27.000 pg</td><td>27.000 - 32.000pg</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Mean corpuscular volume (MCV)</em></td><td> 85.000 fL</td><td>80.000 - 97.000fL</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Haematocrit</em></td><td> 0.456 1/1</td><td>0.400 - 0.5401/1</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Haemoglobin estimation</em></td><td> 145.000 g/L</td><td>130.000 - 180.000g/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Red blood cell (RBC) count</em></td><td> 5.390 10*12/L</td><td>4.500 - 6.50010*12/L</td></tr><tr><td>12-Dec-2003</td><td><span /></td><td><em>Total white cell count</em></td><td> 6.000 10*9/L</td><td>4.000 - 11.00010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span>!</span></td><td><em>Erythrocyte sedimentation rate</em></td><td> 15.000 mm/h</td><td>1.000 - 5.000mm/h</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Basophil count</em></td><td> 0.060 10*9/L</td><td>0.000 - 0.10010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Eosinophil count</em></td><td> 0.120 10*9/L</td><td>0.000 - 0.40010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Monocyte count</em></td><td> 0.480 10*9/L</td><td>0.200 - 0.80010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Lymphocyte count</em></td><td> 2.610 10*9/L</td><td>1.500 - 4.00010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Neutrophil count</em></td><td> 2.510 10*9/L</td><td>2.000 - 7.50010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Platelet count</em></td><td> 205.000 10*9/L</td><td>150.000 - 400.00010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Red blood cell distribution width</em></td><td> 14.000 %</td><td>11.000 - 15.000%</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Mean corpusc. haemoglobin(MCH)</em></td><td> 28.000 pg</td><td>27.000 - 32.000pg</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Mean corpuscular volume (MCV)</em></td><td> 87.000 fL</td><td>80.000 - 97.000fL</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Haematocrit</em></td><td> 0.457 1/1</td><td>0.400 - 0.5401/1</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Haemoglobin estimation</em></td><td> 148.000 g/L</td><td>130.000 - 180.000g/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Red blood cell (RBC) count</em></td><td> 5.260 10*12/L</td><td>4.500 - 6.50010*12/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Total white cell count</em></td><td> 5.800 10*9/L</td><td>4.000 - 11.00010*9/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum creatinine</em></td><td> 81.000 umol/L</td><td>60.000 - 120.000umol/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum urea level</em></td><td> 3.400 mmol/L</td><td>2.700 - 7.500mmol/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum potassium</em></td><td> 4.500 mmol/L</td><td>3.500 - 5.000mmol/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum sodium</em></td><td> 138.000 mmol/L</td><td>132.000 - 144.000mmol/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>ALT/SGPT serum level</em></td><td> 33.000 iu/L</td><td>5.000 - 45.000iu/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum alkaline phosphatase</em></td><td> 84.000 iu/L</td><td>25.000 - 110.000iu/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum total bilirubin level</em></td><td> 10.000 umol/L</td><td>1.000 - 20.000umol/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum globulin</em></td><td> 28.000 g/L</td><td>21.000 - 38.000g/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum albumin</em></td><td> 45.000 g/L</td><td>33.000 - 49.000g/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum total protein</em></td><td> 73.000 g/L</td><td>60.000 - 80.000g/L</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Plasma fasting glucose level</em></td><td> 4.800 mmol/L</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum LDL cholesterol level</em></td><td> 3.100 mmol/L</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum HDL cholesterol level</em></td><td> 1.400 mmol/L</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum triglycerides</em></td><td> 0.700 mmol/L</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Serum cholesterol</em></td><td> 4.800 mmol/L</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Urine glucose test negative</em></td><td>-</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Urine protein test negative</em></td><td>-</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>FEV1/FVC percent</em></td><td> 71.000 %</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Peak exp. flow rate: PEFR/PFR</em></td><td> 463.000 l/minute</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Forced expired volume in 1 second</em></td><td> 3.120 litres</td><td>-</td></tr><tr><td>21-Mar-2003</td><td><span /></td><td><em>Forced vital capacity - FVC</em></td><td> 3.120 litres</td><td>-</td></tr><tr><td>14-Mar-2003</td><td><span /></td><td><em>Standard chest X-ray normal</em></td><td>-</td><td>-</td></tr></tbody></table></div></div></div>"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
