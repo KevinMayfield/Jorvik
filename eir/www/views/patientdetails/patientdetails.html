@@ -1,14 +1,28 @@
 <ion-view view-title="Patient Details - {{PatientName}}">
   <ion-content>
     <div class="list">
-        <div class="item">Name: <b>{{patient.name[0].text}}</b></div>
-      <div class="item">Gender : <b>{{patient.gender}}</b></div>
-      <div class="item">Date of Birth: <b>{{patient.birthDate}}</b></div>
-      <div class="item">Telephone: <b>{{patient.telecom[0].use}} {{patient.telecom[0].value}}</b> </div>
-      
-      <div class="item">Address: <b>{{patient.address[0].text}}</b></div>
-      <div class="item">NHS Number: <b>{{patient.identifier[0].value}}</b></div>
-      <div class="item">GP: <b>{{patient.careProvider[0].display}}</b></div>
+        
+        <div class="row">
+            <div class="col">Name:</div><div class="col">  <b>{{patient.name[0].text}}</b></div>
+      </div>
+        <div class="row">
+            <div class="col">Gender :</div><div class="col">  <b>{{patient.gender}}</b></div>
+      </div>
+        <div class="row">
+            <div class="col">Date of Birth: </div><div class="col"> <b>{{patient.birthDate}}</b></div>
+      </div>
+        <div class="row">
+            <div class="col">Telephone: </div><div class="col"> <b>{{patient.telecom[0].use}} {{patient.telecom[0].value}}</b> </div>
+      </div>
+        <div class="row">
+            <div class="col">Address: </div><div class="col"> <b>{{patient.address[0].text}}</b></div>
+        </div>
+        <div class="row">
+            <div class="col">NHS Number: </div><div class="col"> <b>{{patient.identifier[0].value}}</b></div>
+        </div>
+        <div class="row">
+            <div class="col">GP:</div><div class="col"> <b>{{patient.careProvider[0].display}}</b></div>
+        </div>
     </div>
   </ion-content>
 </ion-view>

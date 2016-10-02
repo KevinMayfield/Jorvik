@@ -15,12 +15,26 @@ angular.module('App', ['ionic','LocalStorageModule'])
                 abstract : true,
                 templateUrl: 'views/tabs/tabs.html'
             })
+            .state('login', {
+                url: '/login',
+                controller: 'LoginController',
+                templateUrl: 'views/login/login.html'
+            })
             .state('tabs.details', {
                 url: '/details',
                 views: {
                     'details-tab' : {
                         controller: 'PatientDetailsController',
                         templateUrl: 'views/patientdetails/patientdetails.html'
+                    }
+                }
+            })
+            .state('tabs.documents', {
+                url: '/documents',
+                views: {
+                    'documents-tab' : {
+                        controller: 'DocumentsController',
+                        templateUrl: 'views/documents/documents.html'
                     }
                 }
             })
@@ -51,14 +65,23 @@ angular.module('App', ['ionic','LocalStorageModule'])
                     }
                 }
             });
-        $urlRouterProvider.otherwise('/tabs/home');
+        $urlRouterProvider.otherwise('/login');
         //sessionService.persist('NHSNumber', 'data')
     })
-    
-    //http://ec2-54-194-109-184.eu-west-1.compute.amazonaws.com
+    //
+    //
             .factory('AppService', function() {
+                
+                /*
                 return {
        baseURL : '',
+       basehapiURL : 'hapi',
+       NHSNumber :'9000000084'
+  };*/
+  
+   return {
+       baseURL : 'http://ec2-54-194-109-184.eu-west-1.compute.amazonaws.com',
+       basehapiURL : 'http://fhirtest.uhn.ca/baseDstu2',
        NHSNumber :'9000000084'
   };
 })

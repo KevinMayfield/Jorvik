@@ -1,5 +1,5 @@
 angular.module('App')
-.controller('HomeController', function ($scope, $http, AppService, localStorageService) {
+.controller('HomeController', function ($scope, $http, $state, localStorageService) {
     $scope.model = {term: ''};
     $scope.NHSNumber = "";
     $scope.PatientName = "";
@@ -20,7 +20,8 @@ angular.module('App')
         $scope.PatientName = PatientName;
         $scope.NHSNumber = NHSNumber;
         localStorageService.set("NHSNumber",NHSNumber);
-        $scope.$apply();
+        
+        $state.go('tabs.details');
     }
     $scope.search = function()
     {
@@ -32,8 +33,8 @@ angular.module('App')
                      "id" : 4,
                     "identifier": [
                         {
-                          "system": "http://fhir.nhs.net/Id/nhs-number",
-                          "value": "9000000033"
+                          'system': 'http://fhir.nhs.net/Id/nhs-number',
+                          'value': '9000000033'
                         }
                     ],
                     "name": [
@@ -109,6 +110,6 @@ angular.module('App')
             }
         ]
             };
-    }
+    };
 });
 

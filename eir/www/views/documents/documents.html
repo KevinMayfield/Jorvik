@@ -1,0 +1,17 @@
+<ion-view view-title="NRLS Documents {{PatientName}}">
+  <ion-content>
+    
+    
+   <div class="list card" ng-repeat="document in documents.entry"
+       item-height="50">
+       <div class="row">
+            <div class="col">{{document.resource.created | fhirDtasDate | date: 'dd-MMM-yyyy HH:mm'}}</div>
+            <div class="col"> {{document.resource.type.coding[0].display}} </div>
+             <div class="col"> {{document.resource.class.coding[0].display}} </div>
+      </div>
+        <div class="col">Setting: {{document.resource.context.practiceSetting.coding[0].display}} </div>
+        <div class="col">Type: {{document.resource.context.facilityType.coding[0].display}} </div>
+      </div>
+      
+  </ion-content>
+</ion-view>

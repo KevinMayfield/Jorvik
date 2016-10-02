@@ -1,0 +1,197 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "entry": [
+    {
+      "fullUrl": "Patient/5",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "5",
+        "meta": {
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/nhs-number",
+            "value": "9000000041"
+          }
+        ],
+        "name": [
+          {
+            "use": "usual",
+            "text": "Brad Case",
+            "family": [
+              "Case"
+            ],
+            "given": [
+              "Brad"
+            ],
+            "prefix": [
+              "Mr"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "0964 934 2028",
+            "use": "home"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1958-05-14",
+        "address": [
+          {
+            "use": "home",
+            "type": "physical",
+            "text": "Ap #229-5050 Egestas Avenue, St. Albans, Hertfordshire, B9 8YO"
+          }
+        ],
+        "careProvider": [
+          {
+            "reference": "Practitioner/1",
+            "display": "Miss Nichole Gilbert"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1",
+        "meta": {
+          "versionId": "1469448000000",
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/sds-user-id",
+            "value": "G13579135"
+          },
+          {
+            "system": "http://fhir.nhs.net/Id/sds-role-profile-id",
+            "value": "PT1234"
+          }
+        ],
+        "name": {
+          "use": "usual",
+          "family": [
+            "Gilbert"
+          ],
+          "given": [
+            "Nichole"
+          ],
+          "prefix": [
+            "Miss"
+          ]
+        },
+        "gender": "female",
+        "practitionerRole": [
+          {
+            "managingOrganization": {
+              "reference": "Organization/2"
+            },
+            "role": {
+              "coding": [
+                {
+                  "system": "http://fhir.nhs.net/ValueSet/sds-job-role-name-1-0",
+                  "code": "R0050",
+                  "display": "Consultant"
+                }
+              ]
+            }
+          }
+        ],
+        "communication": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.nhs.net/ValueSet/human-language-1-0",
+                "code": "en",
+                "display": "English"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/2",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2",
+        "meta": {
+          "versionId": "1469448000000",
+          "lastUpdated": "2016-07-25T12:00:00.000+00:00"
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.nhs.net/Id/ods-organization-code",
+            "value": "R1A14"
+          },
+          {
+            "system": "http://fhir.nhs.net/Id/ods-site-code",
+            "value": "Z33433"
+          }
+        ],
+        "name": "Test GP Care Trust"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Composition",
+        "date": "2016-10-02T08:48:08+00:00",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "425173008",
+              "display": "record extract (record artifact)"
+            }
+          ],
+          "text": "record extract (record artifact)"
+        },
+        "class": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "700232004",
+              "display": "general medical service (qualifier value)"
+            }
+          ],
+          "text": "general medical service (qualifier value)"
+        },
+        "title": "Patient Care Record",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/5"
+        },
+        "author": [
+          {
+            "reference": "Practitioner/1"
+          }
+        ],
+        "section": [
+          {
+            "title": "Summary",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://fhir.nhs.net/ValueSet/gpconnect-record-section-1-0",
+                  "code": "SUM",
+                  "display": "Summary"
+                }
+              ],
+              "text": "INPS"
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div><h2>Active Problems &amp; Significant items</h2>\t\t<table><thead><tr><th>Eventdate</th><th>Notes</th></tr></thead><tbody><tr><td>29-Oct-2010</td><td>Arterial embolus and thrombosis</td></tr><tr><td>29-Oct-2010</td><td>Preproliferative diabetic retinopathy</td></tr><tr><td>25-Nov-2009</td><td>Gout</td></tr><tr><td>21-Apr-2006</td><td>Fracture of radius NOS</td></tr><tr><td>2006</td><td>Constrictive cardiomyopathy</td></tr><tr><td>26-Aug-2005</td><td>Background diabetic retinopathy</td></tr><tr><td>16-Nov-1999</td><td>Type 2 diabetes mellitus</td></tr><tr><td>24-Aug-1999</td><td>Knee osteoarthritis NOS</td></tr><tr><td>14-Aug-1995</td><td>Essential hypertension</td></tr></tbody></table><h2>Current Medications</h2>\t\t<table><tbody><tr><td>12-Feb-2016</td><td>Repeat Warfarin 3mg tablets Until: 29-Oct-2011 Last issued: 03-Oct-2011 Issued: 6 maximum 6 allowed Supply ( 60 ) tablet(s) AS DIRECTED</td></tr><tr><td>29-Mar-2016</td><td>Repeat Co-codamol 8mg/500mg tablets Until: 29-Oct-2011 Last issued: 08-Aug-2011 Issued: 6 maximum 6 allowed Supply ( 200 ) tablet(s) TAKE 1 OR 2 4 TIMES/DAY WHEN REQUIRED</td></tr></tbody></table><h2>Current Allergies and Sensitivities</h2>\t\t<table><tbody><tr><td>08-Jan-2013</td><td>H/O: penicillin allergy   Certain Mild Allergy  to  Amoxicillin 250mg capsules  causing  C/O: a rash</td></tr><tr><td>08-Jan-2013</td><td>Likely Moderate Allergy H/O: cat allergy</td></tr></tbody></table><h2>Current Recalls</h2>\t\t\t\t<table><tbody><tr><td>08-Jan-2013</td><td>Recall on 08-Jan-2013 for Hypertension annual review with Dr A Sapphire Status: Outstanding</td></tr></tbody></table><h2>Last 3 Encounters</h2><table><tbody><tr><td><div class='encounters'><table><tbody><tr><th colspan='6'>Clinic</th></tr><tr><td>20-Apr-2016</td><td>BP 120 / 80 at 15:20:00 taken Sitting Cuff: Standard O/E - blood pressure reading</td><td>Dr Bob Ash</td></tr><tr><td>20-Apr-2016</td><td>Issue 1 Amobarbital 50mg / Secobarbital sodium 50mg capsules Supply ( 21 ) capsule Three times a day</td><td>Dr Bob Ash</td></tr><tr><td>20-Apr-2016</td><td>Repeat Cocaine powder Until: 15-Sep-2014 Last issued: 21-Oct-2008 Issued: 1 maximum 2 allowed Supply ( 2 ) gram(s) 3</td><td>Dr Bob Ash</td></tr></tbody></table><table><tbody><tr><th colspan='6'>Surgery Consultation</th></tr><tr><td>02-Jun-2013</td><td>BP 120 / 72 at: 02-Jun-2013 09:56:00 taken Sitting from Left Cuff: Standard O/E - blood pressure reading</td><td>Dr Bob Ash</td></tr><tr><td>02-Jun-2013</td><td>O/E - pulse rate 79 beats/min</td><td>Dr Bob Ash</td></tr></tbody></table><table><tbody><tr><th colspan='6'>Surgery Consultation</th></tr><tr><td>02-Sep-2010</td><td>Mechanical low back pain</td><td>Dr Bob Ash</td></tr></tbody></table></div></td></tr></tbody></table><h2>Recent Investigations (last 3 months) </h2><table><thead><tr><th>Date</th><th>Report</th></tr></thead><tbody><tr><td>21-May-2016</td><td>Score:   12   Negative Method:  3RT  for:  Asthma</td></tr><tr><td>19-May-2016</td><td>ECG normal Dr Janet Outside Practice</td></tr><tr><td>19-May-2016</td><td>Thyroid hormone tests = 0</td></tr><tr><td>19-May-2016</td><td>Prostate specific antigen = 0.6</td></tr></tbody></table></div></div>"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

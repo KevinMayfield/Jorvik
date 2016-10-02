@@ -10,7 +10,7 @@
                 
             </div>
         
-            <div class='item' ng-repeat="patient in results.entry" ng-click="select(patient.resource.identifier[0].value,patient.resource.name[0].text)" ui-sref='details(NHSNumber : patient.resource.identifier[0].value)'>
+            <div class='item' ng-repeat="patient in results.entry" ng-click="select(patient.resource.identifier[0].value,patient.resource.name[0].text)" ui-sref='tabs.details'>
             {{patient.resource.identifier[0].value}} <b>{{patient.resource.name[0].text}}</b>
         </div>
     </div>
