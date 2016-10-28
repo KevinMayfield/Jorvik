@@ -90,7 +90,7 @@ implements IPatientDAO {
 		try
 		{
 			Session session = getSessionFactory().openSession();
-			PatientEntity entityPatient = (PatientEntity)session.get(PatientEntity.class,Integer.parseInt(theId.toString()));
+			PatientEntity entityPatient = (PatientEntity)session.get(PatientEntity.class,Integer.parseInt(theId.getId().toString()));
 			session.close();
 			patient = new Patient();
 			patient.addIdentifier();
