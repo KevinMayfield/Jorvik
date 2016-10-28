@@ -3,9 +3,7 @@ package uk.nhs.jorvik.provider;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
-
 
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Identifier.IdentifierUse;
@@ -13,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -32,8 +28,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import uk.nhs.jorvik.dao.PatientDAO;
 
-@Repository
-@Transactional
+
 public class PatientResourceProvider extends BaseJPAResourceProvider<Patient> implements IResourceProvider {
 
 		

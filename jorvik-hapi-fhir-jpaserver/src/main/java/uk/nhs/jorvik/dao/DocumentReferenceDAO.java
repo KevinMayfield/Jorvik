@@ -1,13 +1,12 @@
 package uk.nhs.jorvik.dao;
 
-import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.DocumentReference;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseMetaType;
-import org.hl7.fhir.instance.model.api.IBaseResource;
+
 import org.hl7.fhir.instance.model.api.IIdType;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.method.RequestDetails;
 
@@ -45,6 +44,12 @@ implements IDocumentReferenceDAO {
 
 	@Override
 	public MethodOutcome create(DocumentReference theResource) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MethodOutcome read(IdType theId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

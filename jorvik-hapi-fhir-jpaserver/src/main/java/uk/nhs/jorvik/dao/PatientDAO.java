@@ -4,6 +4,7 @@ package uk.nhs.jorvik.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseMetaType;
@@ -85,17 +86,28 @@ implements IPatientDAO {
 	@Override
 	public MethodOutcome read(IdType theId) {
 		log.info("called create "+ theId.toString());
-		PatientEntity entityPatient = null;
+		Patient patient = null;
 		try
 		{
 			Session session = getSessionFactory().openSession();
-			entityPatient = (PatientEntity)session.get(PatientEntity.class,theId);
+			PatientEntity entityPatient = (PatientEntity)session.get(PatientEntity.class,Integer.parseInt(theId.toString()));
 			session.close();
-			
+			patient = new Patient();
+			patient.addIdentifier();
+	        patient.getIdentifier().get(0).setSystem(new String("urn:hapitest:mrns"));
+	        patient.getIdentifier().get(0).setValue("00002");
+	        patient.addName().addFamily(entityPatient.getFamilyName());
+	        patient.getName().get(0).addGiven(entityPatient.getGivenName());
+	        patient.setGender(AdministrativeGender.FEMALE);
+	        
+	        MethodOutcome method = new MethodOutcome();
+			method.setResource(patient);
+			return method;
 		}
 		catch (Exception ex)
 		{
 			log.error(ex.getMessage());
+			log.error(ex.getStackTrace().toString());
 		}
 		finally
 		{
@@ -104,7 +116,7 @@ implements IPatientDAO {
 		
 		
 		MethodOutcome method = new MethodOutcome();
-		method.setResource(entityPatient);
+		method.setResource(patient);
 		return method;
 	}
 
