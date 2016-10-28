@@ -20,16 +20,7 @@ public abstract class BaseDAO<T extends IBaseResource> implements IBaseDAO<T> {
 	
 	protected final Class<T> entityClass;
 	
-	@Autowired
-	protected SessionFactory sessionFactory;
-		
-	protected SessionFactory getSessionFactory()
-	{
-		return sessionFactory;
-	}
-	protected Session currentSession() {
-		return sessionFactory.getCurrentSession();
-	}
+	
 	
 	protected BaseDAO(Class<T> entityClass) {
 		this.entityClass = entityClass;

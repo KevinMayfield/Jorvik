@@ -2,6 +2,9 @@ package uk.nhs.jorvik.dao;
 
 
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
@@ -31,9 +34,9 @@ implements IPatientDAO {
 	    super(Patient.class);
 	}
 	
-	public PatientDAO(SessionFactory sessionFactory) {
+	public PatientDAO(EntityManagerFactory entityManagerFactory) {
 		super(Patient.class);
-		this.sessionFactory = sessionFactory;
+		this.emf = entityManagerFactory;
 	}
 
 	
@@ -64,9 +67,9 @@ implements IPatientDAO {
 		entityPatient.setGivenName(thePatient.getName().get(0).getGivenAsSingleString());
 		try
 		{
-			Session session = getSessionFactory().openSession();
-			session.persist(entityPatient);
-			session.close();
+			EntityManager em = emf.createEntityManager();
+			em.persist(entityPatient);
+			em.close();
 			
 			//emf.createEntityManager().persist(entityPatient);
 		}
@@ -89,9 +92,13 @@ implements IPatientDAO {
 		Patient patient = null;
 		try
 		{
-			Session session = getSessionFactory().openSession();
-			PatientEntity entityPatient = (PatientEntity)session.get(PatientEntity.class,Integer.parseInt(theId.getId().toString()));
-			session.close();
+		
+			EntityManager em = emf.createEntityManager();
+			PatientEntity entityPatient = new PatientEntity();
+			entityPatient.setFamilyName("Blair");
+			entityPatient.setGivenName("Tony");
+			// TODO PatientEntity entityPatient = (PatientEntity)em. get(PatientEntity.class,Integer.parseInt(theId.getId().toString()));
+			em.close();
 			patient = new Patient();
 			patient.addIdentifier();
 	        patient.getIdentifier().get(0).setSystem(new String("urn:hapitest:mrns"));
