@@ -1,7 +1,5 @@
 package uk.nhs.jorvik.entity;
 
-
-import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
