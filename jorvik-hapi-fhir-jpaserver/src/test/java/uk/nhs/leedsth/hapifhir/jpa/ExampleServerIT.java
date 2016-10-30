@@ -33,7 +33,7 @@ public class ExampleServerIT {
 
 	@Test
 	public void testCreateAndRead() throws IOException {
-		String methodName = "testCreateResourceConditional";
+	
 
 		
         Patient patient = new Patient();
@@ -48,7 +48,7 @@ public class ExampleServerIT {
 		IIdType id = ourClient.create().resource(patient).execute().getId();
 		
 		Patient pt2 = ourClient.read().resource(Patient.class).withId(id.getIdPart()).execute();
-		assertEquals(methodName, pt2.getName().get(0).getFamily().get(0).getValue());
+		assertEquals("Test", pt2.getName().get(0).getFamily().get(0).getValue());
 	}
 
 	@AfterClass
