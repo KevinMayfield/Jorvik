@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.junit.AfterClass;
@@ -34,11 +35,19 @@ public class ExampleServerIT {
 	public void testCreateAndRead() throws IOException {
 		String methodName = "testCreateResourceConditional";
 
-		Patient pt = new Patient();
-		pt.addName().addFamily(methodName);
-		IIdType id = ourClient.create().resource(pt).execute().getId();
+		
+        Patient patient = new Patient();
+        patient.addIdentifier();
+        patient.getIdentifier().get(0).setSystem(new String("http://jorvik.fhir.nhs.uk/Patient"));
+        patient.getIdentifier().get(0).setValue("00002");
+        patient.addName().addFamily("Test");
+        patient.getName().get(0).addGiven("PatientOne");
+        patient.setGender(AdministrativeGender.FEMALE);
 
-		Patient pt2 = ourClient.read().resource(Patient.class).withId(id).execute();
+
+		IIdType id = ourClient.create().resource(patient).execute().getId();
+		
+		Patient pt2 = ourClient.read().resource(Patient.class).withId(id.getIdPart()).execute();
 		assertEquals(methodName, pt2.getName().get(0).getFamily().get(0).getValue());
 	}
 
@@ -52,10 +61,14 @@ public class ExampleServerIT {
 		/*
 		 * This runs under maven, and I'm not sure how else to figure out the target directory from code..
 		 */
-		String path = ExampleServerIT.class.getClassLoader().getResource(".keep_hapi-fhir-jpaserver-example").getPath();
+		/*
+		String path = ExampleServerIT.class.getClassLoader().getResource("jorvik-hapi-fhir-stu3.war").getPath();
 		path = new File(path).getParent();
 		path = new File(path).getParent();
 		path = new File(path).getParent();
+		*/
+		String path = "/Development/GitHub/Jorvik/jorvik-hapi-fhir-jpaserver";
+		
 
 		ourLog.info("Project base path is: {}", path);
 

@@ -1,9 +1,10 @@
 package uk.nhs.jorvik.dao;
 
-import ca.uhn.fhir.rest.api.MethodOutcome;
+
 import ca.uhn.fhir.rest.method.RequestDetails;
 
 import org.hl7.fhir.dstu3.model.IdType;
+
 import org.hl7.fhir.instance.model.api.IBaseMetaType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -19,9 +20,9 @@ public interface IBaseDAO<T extends IBaseResource>  {
    <MT extends IBaseMetaType> MT metaGetOperation(Class<MT> theType, RequestDetails theRequestDetails);
    <MT extends IBaseMetaType> MT metaGetOperation(Class<MT> theType, IIdType theId, RequestDetails theRequestDetails);
 
-   MethodOutcome create(T theResource);
+   T create(T theResource);
 
-   MethodOutcome read(IdType theId);
+   T read(IdType theId);
    
   // Class<T> getResourceType();
 

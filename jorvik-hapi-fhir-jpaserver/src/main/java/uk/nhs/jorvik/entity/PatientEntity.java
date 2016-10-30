@@ -1,21 +1,18 @@
 package uk.nhs.jorvik.entity;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
 
-import org.hl7.fhir.instance.model.api.IBaseMetaType;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IIdType;
-
-import ca.uhn.fhir.context.FhirVersionEnum;
-
 @Entity
 @Table(name="PATIENT")
 public class PatientEntity extends BaseResource {
 	
-	private static final long serialVersionUID = 1L;
+	
 
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,51 +36,32 @@ public class PatientEntity extends BaseResource {
 		public void setGivenName(String givenName)
 		{  this.givenName = givenName; }
 		public String getGivenName()  {  return this.givenName;  }
-		@Override
-		public IIdType getIdElement() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public IBaseMetaType getMeta() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public FhirVersionEnum getStructureFhirVersionEnum() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public IBaseResource setId(String arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public IBaseResource setId(IIdType arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public List<String> getFormatCommentsPost() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public List<String> getFormatCommentsPre() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public boolean hasFormatComment() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		@Override
-		public boolean isEmpty() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		  
+		
+		@Column(name = "gender")
+		private String gender;
+		public void setGender(String gender)
+		{  this.gender = gender; }
+		public String getGender()  {  return this.gender;  }
+		
+		@OneToMany(mappedBy="patientId", targetEntity=PatientIdentifier.class)
+		//@OrderColumn (name = "IDENTIFIER_POSITION", nullable =false)
+	    private Collection<PatientIdentifier> identifiers;
+		public void setIdentifiers(List<PatientIdentifier> identifiers) {
+	        this.identifiers = identifiers;
+	    }
+		public Collection<PatientIdentifier> getIdentifiers( ) {
+			if (identifiers == null) {
+		        identifiers = new ArrayList<PatientIdentifier>();
+		    }
+	        return this.identifiers;
+	    }
+		public Collection<PatientIdentifier> addIdentifier(PatientIdentifier pi) { 
+			identifiers.add(pi);
+			return identifiers; }
+		public Collection<PatientIdentifier> removeIdentifier(PatientIdentifier identifier) { identifiers.remove(identifiers); return identifiers; }
+		
+		
+		
+		
 	
 }

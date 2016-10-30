@@ -1,8 +1,7 @@
 package uk.nhs.leedsth.hapifhir;
 
 import java.sql.Driver;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -21,12 +20,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import uk.nhs.jorvik.provider.DocumentReferenceResourceProvider;
-import uk.nhs.jorvik.provider.PatientResourceProvider;
+
 
 /*
  * 
@@ -122,25 +119,7 @@ hibernate.show_sql=true
 			retVal.setJpaProperties(jpaProperties());
 			return retVal;
 		}
-		/*
-		@Bean
-		public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
-			LocalSessionFactoryBean sfb = new LocalSessionFactoryBean();
-			sfb.setDataSource(dataSource());
-			sfb.setPackagesToScan("uk.nhs.jorvik.entity");
-			//sfb.setMappingResources(new String[] { "Spitter.hbm.xml" });
-			sfb.setHibernateProperties(jpaProperties());
-			return sfb;
-		}
-		*/
-		@Bean(name="myResourceProvidersDstu3")
-		public List<IResourceProvider> resourceProviders()
-		{
-			List<IResourceProvider> retVal = new ArrayList<IResourceProvider>();
-			retVal.add(new PatientResourceProvider());
-			retVal.add(new DocumentReferenceResourceProvider());
-			return retVal;
-		}
+	
 		
 		
 		private Properties jpaProperties() {

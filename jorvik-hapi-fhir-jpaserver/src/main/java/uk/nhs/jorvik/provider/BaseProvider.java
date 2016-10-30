@@ -12,19 +12,13 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.MDC;
 
-public class BaseJPAProvider {
+public class BaseProvider {
 	
-	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(BaseJPAProvider.class);
+	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(BaseProvider.class);
 	public static final String REMOTE_ADDR = "req.remoteAddr";
 	public static final String REMOTE_UA = "req.userAgent";
 	
-	private FhirContext myContext;
-	public FhirContext getContext() {
-		return myContext;
-	}
-	public void setContext(FhirContext theContext) {
-		myContext = theContext;
-	}
+	
 	
 	public void endRequest(HttpServletRequest theRequest) {
 		MDC.remove(REMOTE_ADDR);

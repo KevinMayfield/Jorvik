@@ -9,18 +9,16 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
 
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 
 
 @MappedSuperclass
-public abstract class BaseResource implements IBaseResource {
+public abstract class BaseResource  {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	
 	
 	@Column(name = "RES_DELETED_AT", nullable = true)

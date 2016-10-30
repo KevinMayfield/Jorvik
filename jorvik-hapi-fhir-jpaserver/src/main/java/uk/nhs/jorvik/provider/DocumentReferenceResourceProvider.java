@@ -6,9 +6,8 @@ import java.util.List;
 import org.hl7.fhir.dstu3.model.DocumentReference;
 
 
-import org.springframework.stereotype.Component;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.instance.model.api.IBaseResource;
+
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -16,10 +15,10 @@ import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import uk.nhs.jorvik.dao.IDocumentReferenceDAO;
 
-@Component
-public class DocumentReferenceResourceProvider extends BaseJPAResourceProvider<DocumentReference> implements IResourceProvider {
+
+
+public class DocumentReferenceResourceProvider extends BaseProvider implements IResourceProvider {
 
 	@Override
 	public Class<DocumentReference> getResourceType() {

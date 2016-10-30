@@ -1,5 +1,6 @@
 package uk.nhs.leedsth.hapifhir;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -13,13 +14,15 @@ import ca.uhn.fhir.narrative.INarrativeGenerator;
 import ca.uhn.fhir.rest.server.EncodingEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-
+import uk.nhs.jorvik.provider.DocumentReferenceResourceProvider;
+import uk.nhs.jorvik.provider.PatientResourceProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -28,19 +31,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class JorvikServlet extends RestfulServer {
 	
 	private static final long serialVersionUID = 1L;
-
-	// Need to add in features from https://github.com/jamesagnew/hapi-fhir/blob/master/hapi-fhir-jpaserver-example/src/main/java/ca/uhn/fhir/jpa/demo/JpaServerDemo.java
-	
-	//private DataSource dataSource;
-	/*
-	public DaoConfig daoConfig;
-	
-	@Autowired
-	public void setDaoConfig( DaoConfig daoConfig ) {
-		this.daoConfig = daoConfig;
-		//this.jdbcTemplate = new JdbcTemplate(dataSource);
-	 }
-	*/
 	
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
@@ -73,45 +63,13 @@ public class JorvikServlet extends RestfulServer {
 		
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 		
+		List<IResourceProvider> providers = new ArrayList<IResourceProvider>();
+		providers.add(new PatientResourceProvider());			
+		providers.add(new DocumentReferenceResourceProvider());
+			
 		
-		String resourceProviderBeanName = "";
-		if (fhirVersion == FhirVersionEnum.DSTU3) {
-			resourceProviderBeanName = "myResourceProvidersDstu3";
-		} else {
-			throw new IllegalStateException();
-		}
-		List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
-		setResourceProviders(beans);
+		setResourceProviders(providers);
 		
-		if (beans==null)
-		{
-			log.info("HEINZ 57 Error");
-		}
-		else
-		{
-			log.info("HEINZ 57 = "+beans.toString());
-		}
-		if (sessionFactory != null)
-		{
-			log.info("session");
-		}
-		else
-		{
-			log.info("session NULL");
-			sessionFactory = myAppCtx.getBean(SessionFactory.class);
-			if (sessionFactory != null)
-			{
-				log.info("session 2nd Attempt");
-			}
-		}
-		if (entityManagerFactory != null)
-		{
-			log.info("entityManagerFactory");
-		}
-		else
-		{
-			log.info("entityManagerFactory NULL");
-		}
 		
 		
 		/*
@@ -131,6 +89,7 @@ public class JorvikServlet extends RestfulServer {
 		
 		ctx.setNarrativeGenerator(narrativeGen);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
+		
 		/*
 		 * This server interceptor causes the server to return nicely
 		 * formatter and coloured responses instead of plain JSON/XML if

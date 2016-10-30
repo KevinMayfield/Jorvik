@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Identifier.IdentifierUse;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,8 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import uk.nhs.jorvik.dao.PatientDAO;
 
 
-public class PatientResourceProvider extends BaseJPAResourceProvider<Patient> implements IResourceProvider {
+
+public class PatientResourceProvider extends BaseProvider implements IResourceProvider {
 
 		
 	@Override
@@ -51,7 +53,12 @@ public class PatientResourceProvider extends BaseJPAResourceProvider<Patient> im
 	public MethodOutcome createPatient(HttpServletRequest theRequest,@ResourceParam Patient thePatient) {
 		
 		log.info("Called createPatient");
+		MethodOutcome method = new MethodOutcome();
+		method.setCreated(true);
+		OperationOutcome opOutcome = new OperationOutcome();
 		
+		method.setOperationOutcome(opOutcome);
+		Patient theNewPatient = null;
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 		
 		if (sessionFactory != null)
@@ -70,22 +77,26 @@ public class PatientResourceProvider extends BaseJPAResourceProvider<Patient> im
 		
 		try 
 		{
-			startRequest(theRequest);
+			//startRequest(theRequest);
 			PatientDAO patientDAO = new PatientDAO(sessionFactory); 
 			log.info("Calling patientDAO.create");
-			return patientDAO.create(thePatient);  //, theRequestDetails
+			theNewPatient = patientDAO.create(thePatient);
+			log.info("Return the New Patient id = "+thePatient.getId());
+			method.setId(thePatient.getIdElement());
+			method.setResource(theNewPatient);
+			
 					
 		}
 		finally
 		{
-			endRequest(theRequest);
+			//endRequest(theRequest);
 			log.info("Finished call createPatient");
 		}
-		
+		return method;  //, theRequestDetails
 	}
 	
 	 @Read()
-	    public MethodOutcome getResourceById(HttpServletRequest theRequest,@IdParam IdType theId) {
+	    public Patient getResourceById(HttpServletRequest theRequest,@IdParam IdType theId) {
 		 
 		 	myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 		 	sessionFactory = myAppCtx.getBean(SessionFactory.class);
@@ -95,17 +106,13 @@ public class PatientResourceProvider extends BaseJPAResourceProvider<Patient> im
 			}
 			startRequest(theRequest);
 			PatientDAO patientDAO = new PatientDAO(sessionFactory); 
-			log.info("Calling patientDAO.create");
-			return patientDAO.read(theId);
-			/*
-	        Patient patient = new Patient();
-	        patient.addIdentifier();
-	        patient.getIdentifier().get(0).setSystem(new String("urn:hapitest:mrns"));
-	        patient.getIdentifier().get(0).setValue("00002");
-	        patient.addName().addFamily("Test");
-	        patient.getName().get(0).addGiven("PatientOne");
-	        patient.setGender(AdministrativeGender.FEMALE);
-	        return patient;*/
+			log.info("Calling patientDAO.read");
+			
+			MethodOutcome method = new MethodOutcome();
+			method.setResource(patientDAO.read(theId));
+			return (Patient) method.getResource();   //, theRequestDetails
+			
+			
 	    }
 	 @Search()
 	    public List<Patient> getPatient(@OptionalParam(name = Patient.SP_FAMILY) StringParam theFamilyName, @OptionalParam(name=Patient.SP_GIVEN) StringParam theGivenName) {

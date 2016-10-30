@@ -16,21 +16,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hl7.fhir.instance.model.api.IBaseMetaType;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IIdType;
-
-import ca.uhn.fhir.context.FhirVersionEnum;
 
 
 @Entity
 @Table(name="DOCUMENT_REFERENCE")
 public class DocumentReferenceEntity extends BaseResource {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,51 +63,6 @@ public class DocumentReferenceEntity extends BaseResource {
 	private String type;
 	public String getType() { return this.type; }
 	public void setType(String type) { 	this.type = type; 	}
-	@Override
-	public IIdType getIdElement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public IBaseMetaType getMeta() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public FhirVersionEnum getStructureFhirVersionEnum() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public IBaseResource setId(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public IBaseResource setId(IIdType arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<String> getFormatCommentsPost() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<String> getFormatCommentsPre() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public boolean hasFormatComment() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
 	
 	

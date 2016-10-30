@@ -7,7 +7,6 @@ import org.hl7.fhir.instance.model.api.IBaseMetaType;
 
 import org.hl7.fhir.instance.model.api.IIdType;
 
-import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.method.RequestDetails;
 
 //import java.util.List;
@@ -43,13 +42,13 @@ implements IDocumentReferenceDAO {
 	}
 
 	@Override
-	public MethodOutcome create(DocumentReference theResource) {
+	public DocumentReference create(DocumentReference theResource) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MethodOutcome read(IdType theId) {
+	public DocumentReference  read(IdType theId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

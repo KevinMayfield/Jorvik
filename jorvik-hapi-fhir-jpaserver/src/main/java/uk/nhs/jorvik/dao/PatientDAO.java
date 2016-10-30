@@ -2,6 +2,9 @@ package uk.nhs.jorvik.dao;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.method.RequestDetails;
 import uk.nhs.jorvik.entity.PatientEntity;
+import uk.nhs.jorvik.entity.PatientIdentifier;
 
 @Repository
 @Transactional
@@ -60,44 +64,61 @@ implements IPatientDAO {
 	}
 
 	@Override
-	public MethodOutcome create(Patient thePatient) {
-		log.info("called create");
-		PatientEntity entityPatient = new PatientEntity();
-		entityPatient.setFamilyName(thePatient.getName().get(0).getFamilyAsSingleString());
-		entityPatient.setGivenName(thePatient.getName().get(0).getGivenAsSingleString());
+	public Patient create(Patient thePatient) {
+		log.info("called Patient create");
+		
 		try
 		{
+			
 			EntityManager em = emf.createEntityManager();
-			em.persist(entityPatient);
+			log.info("Obtained entityManager");
+			em.getTransaction().begin();
+			
+			log.info("Call persist");
+			PatientEntity ep = new PatientEntity();
+			ep.setFamilyName(thePatient.getName().get(0).getFamilyAsSingleString());
+			ep.setGivenName(thePatient.getName().get(0).getGivenAsSingleString());
+			ep.setGender(thePatient.getGender().toCode() );
+			log.info("Built Patient entity");
+			
+			em.persist(ep);
+		
+			List<PatientIdentifier> pids = new ArrayList<PatientIdentifier>();
+			PatientIdentifier pi = new PatientIdentifier(ep);
+			pi.setSystem(thePatient.getIdentifier().get(0).getSystem());
+			pi.setValue(thePatient.getIdentifier().get(0).getValue());
+			ep.setIdentifiers(pids);
+			    
+			em.persist(pi);
+			
+			em.getTransaction().commit();
+			
+			log.info("Called it PERSIST id="+ep.getId().toString());
+			thePatient.setId(ep.getId().toString());
+			
 			em.close();
 			
-			//emf.createEntityManager().persist(entityPatient);
+			log.debug("Finished call to persist Patient");
 		}
 		catch (Exception ex)
 		{
 			log.error(ex.getMessage());
 		}
-		finally
-		{
-			log.info("In the finally");
-		}
 		
-		MethodOutcome method = new MethodOutcome();
-		method.setResource(thePatient);
-		return method;
+		log.info("In the finally");
+		return thePatient;		
 	}
 	@Override
-	public MethodOutcome read(IdType theId) {
-		log.info("called create "+ theId.toString());
+	public Patient read(IdType theId) {
+		log.info("called read theId="+ theId.toString());
+		log.info("called read Id="+ theId.getIdPart());
 		Patient patient = null;
 		try
 		{
 		
 			EntityManager em = emf.createEntityManager();
-			PatientEntity entityPatient = new PatientEntity();
-			entityPatient.setFamilyName("Blair");
-			entityPatient.setGivenName("Tony");
-			// TODO PatientEntity entityPatient = (PatientEntity)em. get(PatientEntity.class,Integer.parseInt(theId.getId().toString()));
+				
+			PatientEntity entityPatient = (PatientEntity) em.find(PatientEntity.class,Integer.parseInt(theId.getIdPart()));
 			em.close();
 			patient = new Patient();
 			patient.addIdentifier();
@@ -106,15 +127,14 @@ implements IPatientDAO {
 	        patient.addName().addFamily(entityPatient.getFamilyName());
 	        patient.getName().get(0).addGiven(entityPatient.getGivenName());
 	        patient.setGender(AdministrativeGender.FEMALE);
-	        
-	        MethodOutcome method = new MethodOutcome();
-			method.setResource(patient);
-			return method;
+	        log.info("Built the PATIENT");
+	       
+			return patient;
 		}
 		catch (Exception ex)
 		{
 			log.error(ex.getMessage());
-			log.error(ex.getStackTrace().toString());
+			//log.error(ex.getStackTrace().toString());
 		}
 		finally
 		{
@@ -124,7 +144,7 @@ implements IPatientDAO {
 		
 		MethodOutcome method = new MethodOutcome();
 		method.setResource(patient);
-		return method;
+		return patient;
 	}
 
 	
