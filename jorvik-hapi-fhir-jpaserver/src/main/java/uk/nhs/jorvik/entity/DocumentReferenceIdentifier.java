@@ -16,6 +16,10 @@ import javax.persistence.Table;
 public class DocumentReferenceIdentifier extends BaseIdentifier {
 	
 	
+	public DocumentReferenceIdentifier() {
+		
+		
+	}
 	public DocumentReferenceIdentifier(DocumentReferenceEntity edr) {
 		
 		this.documentReference = edr;
@@ -51,8 +55,8 @@ public class DocumentReferenceIdentifier extends BaseIdentifier {
 	        return documentReference.getId();
 	    }
 
-	    public void setDocumentReferenceId(DocumentReferenceEntity documentReference) {
-	        this.documentReference = documentReference;
+	    public void setDocumentReferenceId(Integer documentReference) {
+	        //this.documentReference = documentReference;
 	    }
 
 }

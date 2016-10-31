@@ -32,40 +32,87 @@ public class DocumentReferenceEntity extends BaseResource {
 	
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "RES_UPDATED", nullable = false)
+	@Column(name = "RES_UPDATED", nullable = true)
 	private Date myUpdated;
 	public Date getUpdatedDate() {
 		return myUpdated;
 	}
-	@Column(name = "class")
-	private String _class;
-	public String _getClass() { return this._class; }
-	public void _setClass(String _class) { this._class = _class; }
+	@Column(name = "classSnmdCT")
+	private String classSnmdCT;
+	public String getClassSnmdCT() { return this.classSnmdCT; }
+	public void setClassSnmdCT(String classSnmdCT) { this.classSnmdCT = classSnmdCT; }
 	
+	@Column(name = "classSnmdCTName")
+	private String classSnmdCTName;
+	public String getClassSnmdCTName() { return this.classSnmdCTName; }
+	public void setClassSnmdCTName(String classSnmdCTName) { this.classSnmdCTName = classSnmdCTName; }
 
-	@Column(name = "type")
-	private String type;
-	public String getType() { return this.type; }
-	public void setType(String type) { 	this.type = type; 	}
+	@Column(name = "typeSnmdCT")
+	private String typeSnmdCT;
+	public String getTypeSnmdCT() { return this.typeSnmdCT; }
+	public void setTypeSnmdCT(String typeSnmdCT) { 	this.typeSnmdCT = typeSnmdCT; 	}
+	
+	@Column(name = "typeSnmdCTName")
+	private String typeSnmdCTName;
+	public String getTypeSnmdCTName() { return this.typeSnmdCTName; }
+	public void setTypeSnmdCTName(String typeSnmdCTName) { 	this.typeSnmdCTName = typeSnmdCTName; 	}
+	
+	@Column(name = "PAS_PATIENT_ID")
+	private String pasPatientId;
+	public String getPASPatientId() { return this.pasPatientId; }
+	public void setPASPatient(String pasPatientId) { 	this.pasPatientId = pasPatientId; 	}
+	
+	@Column(name = "created", nullable = true)
+	private Date created;
+	public Date getCreated() {
+		return created;
+	}
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+	
+	@Column(name = "indexed", nullable = true)
+	private Date indexed;
+	public Date getIndexed() {
+		return indexed;
+	}
+	public void setIndexed(Date indexed) {
+		this.indexed = indexed;
+	}
+	
+	@Column(name = "attachmentContentType")
+	private String attachmentContentType;
+	public String getAttachmentContentType() { return this.attachmentContentType; }
+	public void setAttachmentContentType(String attachmentContentType) { 	this.attachmentContentType = attachmentContentType; 	}
+	
+	@Column(name = "attachmentUri")
+	private String attachmentUri;
+	public String getAttachmentUri() { return this.attachmentUri; }
+	public void setAttachmentUri(String attachmentUri) { 	this.attachmentUri = attachmentUri; 	}
+	
+	@Column(name = "attachmentTitle")
+	private String attachmentTitle;
+	public String getAttachmentTitle() { return this.attachmentTitle; }
+	public void setAttachmentTitle(String attachmentTitle) { 	this.attachmentTitle = attachmentTitle; 	}
 	
 	
 	@OneToMany(mappedBy="documentReferenceId", targetEntity=DocumentReferenceIdentifier.class)
 	//@OrderColumn (name = "IDENTIFIER_POSITION", nullable =false)
-    private Collection<DocumentReferenceIdentifier> identifiers;
+    private List<DocumentReferenceIdentifier> identifiers;
 	public void setIdentifiers(List<DocumentReferenceIdentifier> identifiers) {
         this.identifiers = identifiers;
     }
-	public Collection<DocumentReferenceIdentifier> getIdentifiers( ) {
+	public List<DocumentReferenceIdentifier> getIdentifiers( ) {
 		if (identifiers == null) {
 	        identifiers = new ArrayList<DocumentReferenceIdentifier>();
 	    }
         return this.identifiers;
     }
-	public Collection<DocumentReferenceIdentifier> addIdentifier(DocumentReferenceIdentifier pi) { 
+	public List<DocumentReferenceIdentifier> addIdentifier(DocumentReferenceIdentifier pi) { 
 		identifiers.add(pi);
 		return identifiers; }
 	
-	public Collection<DocumentReferenceIdentifier> removeIdentifier(DocumentReferenceIdentifier identifier){ 
+	public List<DocumentReferenceIdentifier> removeIdentifier(DocumentReferenceIdentifier identifier){ 
 		identifiers.remove(identifiers); return identifiers; }
 	
 	

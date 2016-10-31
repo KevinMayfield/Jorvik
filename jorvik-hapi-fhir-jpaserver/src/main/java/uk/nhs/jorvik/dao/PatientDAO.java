@@ -121,6 +121,7 @@ implements IPatientDAO {
 			PatientEntity entityPatient = (PatientEntity) em.find(PatientEntity.class,Integer.parseInt(theId.getIdPart()));
 			em.close();
 			patient = new Patient();
+			patient.setId(entityPatient.getId().toString());
 			patient.addIdentifier();
 	        patient.getIdentifier().get(0).setSystem(new String("urn:hapitest:mrns"));
 	        patient.getIdentifier().get(0).setValue("00002");

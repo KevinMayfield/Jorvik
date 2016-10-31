@@ -14,6 +14,10 @@ import javax.persistence.Table;
 @Table(name="PATIENT_IDENTIFIER")
 public class PatientIdentifier extends BaseIdentifier {
 	
+	public PatientIdentifier() {
+		
+	}
+	
 	public PatientIdentifier(PatientEntity ep) {
 		//setPatientId(ep); 
 		this.patient = ep;
