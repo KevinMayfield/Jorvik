@@ -9,3 +9,4 @@ jorvik-hapi-fhir-jpaserver/.classpath
 jorvik-hapi-fhir-jpaserver/.project
 *.prefs
 *.scss
+*.xml
