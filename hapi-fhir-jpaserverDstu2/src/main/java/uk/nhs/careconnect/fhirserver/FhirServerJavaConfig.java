@@ -124,7 +124,7 @@ hibernate.show_sql=true
 			//extraProperties.put("hibernate.dialect", org.hibernate.dialect.SQLServerDialect.class.getName());
 			extraProperties.put("hibernate.format_sql", "true");
 			extraProperties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-			extraProperties.put("hibernate.hbm2ddl.auto", "create"); // Following feedback
+			extraProperties.put("hibernate.hbm2ddl.auto", "update"); // Following feedback
 			extraProperties.put("hibernate.jdbc.batch_size", "20");
 			extraProperties.put("hibernate.cache.use_query_cache", "false");
 			extraProperties.put("hibernate.cache.use_second_level_cache", "false");

@@ -86,7 +86,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.5</version>
+            <version>5.1.6</version>
         </dependency>
 
 		<!-- This dependency includes the core HAPI-FHIR classes -->
@@ -199,7 +199,7 @@
 		</dependency>
 
 		<!-- This example uses Derby embedded database. If you are using another database such as Mysql or Oracle, you may omit the following dependencies and replace them with an appropriate database client
-               dependency for your database platform. -->
+               dependency for your database platform.
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
@@ -215,7 +215,7 @@
 			<artifactId>derbyclient</artifactId>
 			<version>${derby_version}</version>
 		</dependency>
-
+        -->
         <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
