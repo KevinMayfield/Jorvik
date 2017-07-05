@@ -10,3 +10,9 @@ jorvik-hapi-fhir-jpaserver/.project
 *.prefs
 *.scss
 *.xml
+*.lck
+*.ctrl
+*.iml
+*.log
+*.dat
+hapi-fhir-jpaserverDstu2/jpaserver_derby_files/log/README_DO_NOT_TOUCH_FILES.txt

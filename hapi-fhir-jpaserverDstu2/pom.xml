@@ -3,7 +3,7 @@
 	<artifactId>FHIRServerDSTU2</artifactId>
 	<packaging>war</packaging>
 	<groupId>uk.nhs.fhir.careconnect</groupId>
-	<version>2.2</version>
+	<version>2.5</version>
 	<name>HAPI FHIR DSTU2 Server</name>
 
  
@@ -20,24 +20,74 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit-version>4.12</junit-version>
-		<log4j-version>2.8.1</log4j-version>
-
+        <log4j-version>1.2.17</log4j-version>
+        <hapi-fhir-version>2.2</hapi-fhir-version>
 		<logback-version>1.1.3</logback-version>
 	
-		<springframework-version>4.3.1.RELEASE</springframework-version>
-		
-		<slf4j-version>1.7.12</slf4j-version>
-		<jetty-plugin-version>9.3.1-SNAPSHOT</jetty-plugin-version>
-		<commons-dbcp-version>1.4</commons-dbcp-version>
-		<hapi-fhir-version>2.5</hapi-fhir-version>
-		<thymeleaf-version>3.0.1.RELEASE</thymeleaf-version>
-		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
-		<phloc_schematron_version>2.7.1</phloc_schematron_version>
-		<jetty_version>9.3.10.v20160621</jetty_version>
 
-		<derby_version>10.13.1.1</derby_version>
+		<slf4j-version>1.7.25</slf4j-version>
+		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
+
+        <!-- taken from master HAPI POM -->
+        <derby_version>10.13.1.1</derby_version>
+        <jersey_version>2.24</jersey_version>
+        <jetty_version>9.3.14.v20161028</jetty_version>
+        <!-- Note on Hibernate versions: Hibernate 4.3+ uses JPA 2.1, which is too new for a number of platforms including JBoss EAP 6.x and Glassfish 3.0. Upgrade this version with caution! Also note that if
+            you change this, you may get a failure in hibernate4-maven-plugin. See the note in hapi-fhir-jpaserver-base/pom.xml's configuration for that plugin... -->
+        <!-- 5.2.0 has issues with hibernate-search 5.5.3 -->
+        <hibernate_version>5.1.0.Final</hibernate_version>
+        <hibernate_validator_version>5.2.4.Final</hibernate_validator_version>
+        <maven_assembly_plugin_version>2.5.3</maven_assembly_plugin_version>
+        <maven_license_plugin_version>1.8</maven_license_plugin_version>
+        <maven_source_plugin_version>2.4</maven_source_plugin_version>
+        <phloc_schematron_version>2.7.1</phloc_schematron_version>
+        <phloc_commons_version>4.4.6</phloc_commons_version>
+        <spring_version>4.3.1.RELEASE</spring_version>
+        <thymeleaf-version>3.0.1.RELEASE</thymeleaf-version>
+        <xmlunit_version>1.6</xmlunit_version>
+
+        <hibernate_search_version>5.5.4.Final</hibernate_search_version>
+
+        <lucene_version>5.3.1</lucene_version>
 	</properties>
 	<dependencies>
+
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-backward-codecs</artifactId>
+            <version>5.5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate_validator_version}</version>
+        </dependency>
+        <!-- JPA Server POM -->
+
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
+        </dependency>
 
 		<!-- This dependency includes the core HAPI-FHIR classes -->
 		<dependency>
@@ -47,7 +97,12 @@
 		</dependency>
 
 		<!-- At least one "structures" JAR must also be included -->
-		
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-structures-dstu2</artifactId>
@@ -89,7 +144,7 @@
             <artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j-version}</version>
         </dependency>
-        
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -129,10 +184,11 @@
 		</dependency>
 
 		<!-- Spring Web is used to deploy the server to a web container. -->
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${springframework-version}</version>
+			<version>${spring_version}</version>
 		</dependency>
 
 		<!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
@@ -160,60 +216,67 @@
 			<version>${derby_version}</version>
 		</dependency>
 
-		<!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
-			<version>${jetty_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<scope>test</scope>
-			<version>${jetty_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<scope>test</scope>
-			<version>${jetty_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<scope>test</scope>
-			<version>${jetty_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<scope>test</scope>
-			<version>${jetty_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.phloc</groupId>
-			<artifactId>phloc-schematron</artifactId>
-			<version>${phloc_schematron_version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>hamcrest-core</artifactId>
-					<groupId>org.hamcrest</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>java-hamcrest</artifactId>
-			<version>2.0.0.0</version>
-			<scope>test</scope>
-		</dependency>
+        <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-schematron</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>Saxon-HE</artifactId>
+                    <groupId>net.sf.saxon</groupId>
+                </exclusion>
+            </exclusions>
+            <version>${phloc_schematron_version}</version>
+        </dependency>
+
 		
 
 	</dependencies>
@@ -221,7 +284,7 @@
 	<build>
 
 		<!-- Tells Maven to name the generated WAR file as hapi-fhir-jpaserver-example.war -->
-		<finalName>hapi-fhir-jpaserverDstu2</finalName>
+		<finalName>FHIRServer</finalName>
 
 		<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn jetty:run" from the command line. -->
 		<pluginManagement>

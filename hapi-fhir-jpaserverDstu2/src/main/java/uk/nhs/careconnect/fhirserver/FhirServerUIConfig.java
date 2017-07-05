@@ -20,7 +20,7 @@ import ca.uhn.fhir.to.TesterConfig;
  */
 @Configuration
 @Import(FhirTesterMvcConfig.class)
-public class FhirTesterConfig {
+public class FhirServerUIConfig {
 
 	/**
 	 * This bean tells the testing webpage which servers it should configure itself
@@ -44,8 +44,8 @@ public class FhirTesterConfig {
 			.addServer()
 				.withId("home")
 				.withFhirVersion(FhirVersionEnum.DSTU2)
-				.withBaseUrl("${serverBase}/baseDstu2")
-				.withName("Local Tester")
+				.withBaseUrl("${serverBase}/DSTU2")
+				.withName("Local FHIR Server")
 				.addServer()
 				.withId("hapi")
 				.withFhirVersion(FhirVersionEnum.DSTU2)

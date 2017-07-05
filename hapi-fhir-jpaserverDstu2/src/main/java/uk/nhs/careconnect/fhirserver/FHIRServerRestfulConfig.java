@@ -1,14 +1,5 @@
 package uk.nhs.careconnect.fhirserver;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
-
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
@@ -24,9 +15,15 @@ import ca.uhn.fhir.rest.server.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.ServletException;
+import java.util.Collection;
+import java.util.List;
 
 
-public class JpaServerDemo extends RestfulServer {
+public class FHIRServerRestfulConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
 
