@@ -13,7 +13,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			uk.co.mayfieldis.hapifhir.jpa.demo.FhirServerConfigDstu2
+			uk.nhs.careconnect.fhirserver.FhirServerConfigDstu2
 		</param-value>
 	</context-param>
 
@@ -28,14 +28,14 @@
 		</init-param>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>uk.co.mayfieldis.hapifhir.jpa.demo.FhirTesterConfig</param-value>
+			<param-value>uk.nhs.careconnect.fhirserver.FhirTesterConfig</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
 	<servlet>
 		<servlet-name>fhirServlet</servlet-name>
-		<servlet-class>uk.co.mayfieldis.hapifhir.jpa.demo.JpaServerDemo</servlet-class>
+		<servlet-class>uk.nhs.careconnect.fhirserver.JpaServerDemo</servlet-class>
 		<init-param>
 			<param-name>ImplementationDescription</param-name>
 			<param-value>FHIR JPA Server</param-value>
