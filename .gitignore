@@ -1,0 +1,11 @@
+/eir/nbproject/private/
+hapi-fhir-jpaserverDstu2/.idea/misc.xml
+hapi-fhir-jpaserver/.tern-project
+hapi-fhir-jpaserverDstu2/.idea/vcs.xml
+hapi-fhir-jpaserverDstu2/.idea/workspace.xml
+HL7v2-HAPI/.settings/org.eclipse.jdt.core.prefs
+HL7v2-HAPI/.settings/org.eclipse.m2e.core.prefs
+jorvik-hapi-fhir-jpaserver/.classpath
+jorvik-hapi-fhir-jpaserver/.project
+*.prefs
+*.scss
